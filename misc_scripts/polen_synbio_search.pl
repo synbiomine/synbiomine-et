@@ -30,8 +30,8 @@ script queries SynBioMine to retrieve any gene expression data for the gene.
 
 Currently, three different groups use Polen:
 \tCambridge : receive messages and itegrate content into SynBioMine, then publish URL
-\tUCL : publish links to part characterisation data
-\tNewcastle : receive part characterisation messages and publish messages on new models
+\tUCL : publish links to part characterisation 'data sheet'
+\tNewcastle : receive data sheet messages and publish messages on 'virtual part' models
 
 Output: Constructs a JSON message containing the part data. However,
 in future this should probably just provide a perma URL to the integrated object page
@@ -115,7 +115,7 @@ print "BLASTing sequence: $part_sequence\n" if $debug;
 my $blast_db = "$work_dir/prokaryote_genomes";
 my $blast_out = `blastn -query $work_dir/tmp_file.txt -db $blast_db -evalue 1e-1 -dust no -outfmt 6`;
 
-print "B: ", $blast_out, "\n" if $debug; ###
+print "B: ", $blast_out, "\n" if $debug; ### verbose Blast results - debug
 
 my @blast_res;
 if ($blast_out =~ m/\n/) {
@@ -123,7 +123,7 @@ if ($blast_out =~ m/\n/) {
 } else {
   push(@blast_res, $blast_out);
 }
-print join("\n", @blast_res), "\n" if $debug;
+print join("\n", @blast_res), "\n" if $debug; ### verbose top Blast results - debug
 
 # BLAST output 
 # Field	 	Description
@@ -140,7 +140,7 @@ print join("\n", @blast_res), "\n" if $debug;
 # 11	 	E-value calculated using Karlin-Altschul statistics.
 # 12	 	Bit score calculated using Karlin-Altschul statistics.
 
-#my $region;
+# loop through results and split data into varaibles
 for my $result (@blast_res) {
   my ($q_name, $targ, $perc, $a_len, $mism, $gap, 
       + $q_start, $q_end, $db_start, $db_end, $other) = split("\t", $result);
@@ -172,15 +172,17 @@ for my $result (@blast_res) {
     $organism_strand = "-1";
   }
 
-  my $region = "$chromosome:$organism_start..$organism_end";
+  my $region = "$chromosome:$organism_start..$organism_end"; # make location string to send around
 
+# only perfect matches [>99 % identity]
   my ($gene_from_synbio, $expressionRef, @synbio_expr_results); 
   if ($perc > 99) {
     print "MATCH: BLAST found sequence with: ", $perc, "\% match\n", ###
 	  "$part_name, $part_sequence\t$region $organism_strand\n" if $debug;
     print "Searching for genes in $region\n" if $debug;
 
-    my ($org_short, $genesFromSynbio_Ref) = regionSearch($region);  # calls a module to query synbiomine for gene id
+# call a module to query synbiomine to get gene_id
+    my ($org_short, $genesFromSynbio_Ref) = regionSearch($region);  
 
     unless ($genesFromSynbio_Ref) { # finish if we didn't find a gene
       print "Sorry. No gene found at $region in SynBioMine\n";
