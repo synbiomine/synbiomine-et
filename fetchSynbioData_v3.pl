@@ -2,6 +2,7 @@
 
 use strict;
 use warnings;
+use File::Spec::Functions;
 use Getopt::Std;
 use Net::FTP;
 #use Net::FTP::AutoReconnect;
@@ -76,12 +77,17 @@ my $date_dir  = $DAY . "_" . $MONTH . "_" . $YEAR;
 
 # make a new date directory under each of the data directories
 foreach my $source (@sources) {
-  if (not -d "$base/$source") {
-    mkdir "$base/$source", 0755 or die "Could not make $base/$source";
+
+  my $source_dir = catdir($base, $source);
+
+  if (not -d $source_dir) {
+    mkdir "$source_dir", 0755 or die "Could not make $source_dir\n";
   }
 
-  -d "$base/$source/$date_dir" and die "$base/$source/$date_dir already exists.  Aborting.\n";
-  mkdir $base . "/$source/$date_dir", 0755 or die "Could not make $base/$source/$date_dir. Check that $base/$source exists.\n";
+  my $source_date_dir = catdir($source_dir, $date_dir);
+
+  -d $source_date_dir and die "$source_date_dir already exists.  Aborting.\n";
+  mkdir $source_date_dir, 0755 or die "Could not make $source_date_dir.  Aborting.\n";
 }
 
 # email addr is required for NCBI FTP use
