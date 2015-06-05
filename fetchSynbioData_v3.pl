@@ -70,14 +70,14 @@ my $base = $ARGV[0];
 
 my $date_dir  = $DAY . "_" . $MONTH . "_" . $YEAR;
 
-# email addr is required for NCBI FTP use
-my $contact = 'mike@intermine.org'; # Please set your email address here to help us debug in case of problems.
-my $agent = LWP::UserAgent->new(agent => "libwww-perl $contact");
-
 # make a new date directory under each of the data directories
 foreach my $source (@sources) {
   mkdir $base . "/$source/$date_dir", 0755 or die "Couldn't make $base/$source/$date_dir. Check that $base/$source exists.\n";
 }
+
+# email addr is required for NCBI FTP use
+my $contact = 'mike@intermine.org'; # Please set your email address here to help us debug in case of problems.
+my $agent = LWP::UserAgent->new(agent => "libwww-perl $contact");
 
 # Global FTP params
 $ENV{FTP_PASSIVE} = 1;
