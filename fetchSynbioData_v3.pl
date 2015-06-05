@@ -15,7 +15,7 @@ use feature ':5.12';
 
 my @sources = qw(genbank go-annotation kegg taxons uniprot);
 
-my $usage = "Usage:fetchSynbioData.pl [-h] path_to/data_directory
+my $usage = "Usage:fetchSynbioData.pl [-h] data_directory
 
 Data download script for SynBioMine.
 The data directory needs to contain sub-directories named:
@@ -65,14 +65,22 @@ my $tm = localtime;
 my ($DAY, $MONTH, $YEAR) = ($tm->mday, ($tm->mon)+1, ($tm->year)+1900);
 
 #my $base = "/SAN_synbiomine/data/";
-@ARGV > 0 or die "path_to/data_directory must be specified.\n";
+@ARGV > 0 or die "data_directory must be specified.\n";
 my $base = $ARGV[0];
+
+if (not -d $base) {
+  mkdir $base, 0755 or die "Could not create data_directory $base.\n";
+}
 
 my $date_dir  = $DAY . "_" . $MONTH . "_" . $YEAR;
 
 # make a new date directory under each of the data directories
 foreach my $source (@sources) {
-  mkdir $base . "/$source/$date_dir", 0755 or die "Couldn't make $base/$source/$date_dir. Check that $base/$source exists.\n";
+  if (not -d "$base/$source") {
+    mkdir "$base/$source", 0755 or die "Could not make $base/$source";
+  }
+
+  mkdir $base . "/$source/$date_dir", 0755 or die "Could not make $base/$source/$date_dir. Check that $base/$source exists.\n";
 }
 
 # email addr is required for NCBI FTP use
