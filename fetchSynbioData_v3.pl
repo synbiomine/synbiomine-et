@@ -80,6 +80,7 @@ foreach my $source (@sources) {
     mkdir "$base/$source", 0755 or die "Could not make $base/$source";
   }
 
+  -d "$base/$source/$date_dir" and die "$base/$source/$date_dir already exists.  Aborting.\n";
   mkdir $base . "/$source/$date_dir", 0755 or die "Could not make $base/$source/$date_dir. Check that $base/$source exists.\n";
 }
 
