@@ -216,10 +216,10 @@ for (@assem) {
 }
 
 ### Now... Process GO proteomes to get GO annotations ###
-my $go_dir = $base . "go-annotation";
+my $go_dir = $base . "/go-annotation";
 
 # But, while we're logged in we'll get some of extra uniprot files
-my $unip_dir = $base . "uniprot";
+my $unip_dir = $base . "/uniprot";
 my $unip_xtra_dir = "/pub/databases/uniprot/current_release/knowledgebase/complete";
 my $unip_kw_dir = "/pub/databases/uniprot/current_release/knowledgebase/complete/docs";
 my $unip_splice = "uniprot_sprot_varsplic.fasta";
@@ -308,7 +308,7 @@ $ftp3->quit;
 
 # Now... FTP to NCBI genomes to get chromosome fasta (.fna) and refseq annotations (.gff)
 my $refseq = '/genomes/refseq/bacteria'; # used for path
-my $genbank_dir = $base . "genbank";
+my $genbank_dir = $base . "/genbank";
 
 my $ftp2 = Net::FTP->new($hostname, BlockSize => 20480, Timeout => $timeout, Debug   => 0); # Construct FTP object
 $ftp2->login($username, $password)
@@ -366,13 +366,13 @@ $ftp2->quit;
 
 
 # process KEGG and fetch UniProt protein files
-my $kegg_dir = $base . "kegg/$date_dir";
+my $kegg_dir = $base . "/kegg/$date_dir";
 # kegg_org.txt is list of organism acronyms; kegg_taxa.txt is the kegg config file
 open (KEGG_ORG_OUT, ">$kegg_dir/kegg_org.txt") or die "Can't write file: $kegg_dir/kegg_org.txt: $!\n";
 open (KEGG_TAXA_OUT, ">$kegg_dir/kegg_taxa.txt") or die "Can't write file: $kegg_dir/kegg_taxa.txt: $!\n";
 
 # set up the taxons directory
-my $taxon_dir = $base . "taxons/$date_dir";
+my $taxon_dir = $base . "/taxons/$date_dir";
 open (TAXON_OUT, ">$taxon_dir/taxons_$date_dir.txt") or die "Can't write file: $taxon_dir/taxons_$date_dir.txt: $!\n";
 
 my $reference = 'reviewed:yes'; # proteomes which usually have some curation
@@ -422,7 +422,7 @@ sub query_uniprot {
   my ($db, $taxon, $reference) = @_;
 
 # Alternative formats: html | tab | xls | fasta | gff | txt | xml | rdf | list | rss
-  my $file = $base . "uniprot/$date_dir/". $taxon . "_" . $db . '.xml';
+  my $file = $base . "/uniprot/$date_dir/". $taxon . "_" . $db . '.xml';
   my $query_taxon = "http://www.uniprot.org/uniprot/?query=organism:$taxon+$reference&format=xml&include=yes";
 
   my $response_taxon = $agent->mirror($query_taxon, $file);
