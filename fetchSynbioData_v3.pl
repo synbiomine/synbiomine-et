@@ -71,7 +71,7 @@ my ($DAY, $MONTH, $YEAR) = ($tm->mday, ($tm->mon)+1, ($tm->year)+1900);
 my $base = $ARGV[0];
 
 if (not -d $base) {
-  mkdir $base, 0755 or die "Could not create data_directory $base.\n";
+  mkdir $base, 0755 or die "Could not create data_directory $base: $!\n";
 }
 
 my $date_dir  = $DAY . "_" . $MONTH . "_" . $YEAR;
@@ -82,7 +82,7 @@ foreach my $source (@sources) {
   my $source_dir = catdir($base, $source);
 
   if (not -d $source_dir) {
-    mkdir "$source_dir", 0755 or die "Could not make $source_dir\n";
+    mkdir "$source_dir", 0755 or die "Could not make $source_dir: $!\n";
   }
 
   my $source_date_dir = catdir($source_dir, $date_dir);
@@ -100,6 +100,7 @@ foreach my $source (@sources) {
     }
   }
 
+  #symlink $source_date_dir, $current_symlink or die "Failed to link $source_date_dir with $source_current_symlink: $!\n";
   symlink $date_dir, $source_current_symlink or die "Failed to link $source_date_dir with $source_current_symlink: $!\n";
 }
 
