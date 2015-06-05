@@ -63,7 +63,7 @@ my $tm = localtime;
 my ($DAY, $MONTH, $YEAR) = ($tm->mday, ($tm->mon)+1, ($tm->year)+1900);
 
 #my $base = "/SAN_synbiomine/data/";
-my $base = ($ARGV[0]) ? ($ARGV[0]) : "./";
+my $base = ($ARGV[0]) ? ($ARGV[0]) : ".";
 
 my $date_dir  = $DAY . "_" . $MONTH . "_" . $YEAR;
 
@@ -72,11 +72,11 @@ my $contact = 'mike@intermine.org'; # Please set your email address here to help
 my $agent = LWP::UserAgent->new(agent => "libwww-perl $contact");
 
 # make a new date directory under each of the data directories
-mkdir $base . "uniprot/$date_dir", 0755 or die "Couldn't make dir:$base uniprot/$date_dir. Check that $base uniprot exists\n";
-mkdir $base . "genbank/$date_dir", 0755 or die "Couldn't make dir:$base genbank/$date_dir. Check that $base genbank exists\n";
-mkdir $base . "kegg/$date_dir", 0755 or die "Couldn't make dir:$base kegg/$date_dir. Check that $base kegg exists\n";
-mkdir $base . "taxons/$date_dir", 0755 or die "Couldn't make dir:$base taxons/$date_dir. Check that $base taxons exists\n";
-mkdir $base . "go-annotation/$date_dir", 0755 or die "Couldn't make dir:$base go-annotation/$date_dir. Check that $base go-annotation exists\n";
+mkdir $base . "/uniprot/$date_dir", 0755 or die "Couldn't make $base/uniprot/$date_dir. Check that $base/uniprot exists.\n";
+mkdir $base . "/genbank/$date_dir", 0755 or die "Couldn't make $base/genbank/$date_dir. Check that $base/genbank exists.\n";
+mkdir $base . "/kegg/$date_dir", 0755 or die "Couldn't make dir:$base/kegg/$date_dir. Check that $base/kegg exists.\n";
+mkdir $base . "/taxons/$date_dir", 0755 or die "Couldn't make dir:$base/taxons/$date_dir. Check that $base/taxons exists.\n";
+mkdir $base . "/go-annotation/$date_dir", 0755 or die "Couldn't make dir:$base/go-annotation/$date_dir. Check that $base/go-annotation exists.\n";
 
 # Global FTP params
 $ENV{FTP_PASSIVE} = 1;
