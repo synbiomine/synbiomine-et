@@ -63,7 +63,8 @@ my $tm = localtime;
 my ($DAY, $MONTH, $YEAR) = ($tm->mday, ($tm->mon)+1, ($tm->year)+1900);
 
 #my $base = "/SAN_synbiomine/data/";
-my $base = ($ARGV[0]) ? ($ARGV[0]) : ".";
+@ARGV > 0 or die "path_to/data_directory must be specified.\n";
+my $base = $ARGV[0];
 
 my $date_dir  = $DAY . "_" . $MONTH . "_" . $YEAR;
 
