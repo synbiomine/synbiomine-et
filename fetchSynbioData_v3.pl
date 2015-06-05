@@ -14,6 +14,7 @@ use IO::Uncompress::Gunzip qw(:all);
 
 use feature ':5.12';
 
+my $current_symlink = "current";
 my @sources = qw(genbank go-annotation kegg taxons uniprot);
 
 my $usage = "Usage:fetchSynbioData.pl [-h] data_directory
@@ -88,6 +89,18 @@ foreach my $source (@sources) {
 
   -d $source_date_dir and die "$source_date_dir already exists.  Aborting.\n";
   mkdir $source_date_dir, 0755 or die "Could not make $source_date_dir.  Aborting.\n";
+
+  my $source_current_symlink = catdir($source_dir, $current_symlink);
+
+  if (-e $source_current_symlink) {
+    if (-l $source_current_symlink) {
+      unlink $source_current_symlink or die "Failed to remove symlink $source_current_symlink: $!\n";
+    } else {
+      die "$source_current_symlink is unexpectedly not a symlink!  Aborting.\n";
+    }
+  }
+
+  symlink $date_dir, $source_current_symlink or die "Failed to link $source_date_dir with $source_current_symlink: $!\n";
 }
 
 # email addr is required for NCBI FTP use
