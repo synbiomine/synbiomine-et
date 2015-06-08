@@ -280,7 +280,7 @@ $ftp3->quit;
 
 ##################
 
-notify_new_activity("Performing rest of work");
+notify_new_activity("Fetching NCBI FASTA, GFF and assembly reports");
 
 # Now... FTP to NCBI genomes to get chromosome fasta (.fna) and refseq annotations (.gff)
 my $refseq = '/genomes/refseq/bacteria'; # used for path
@@ -340,6 +340,7 @@ for my $key (keys %org_taxon) {
 
 $ftp2->quit;
 
+notify_new_activity("Performing rest of work");
 
 # process KEGG and fetch UniProt protein files
 my $kegg_dir = $base . "/kegg/$date_dir";
