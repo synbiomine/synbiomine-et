@@ -122,7 +122,7 @@ my $ebi_hostname = 'ftp.ebi.ac.uk';
 my $ebi_home = '/pub/databases/GO/goa/proteomes'; 
 my $ebi_file = 'proteome2taxid'; # this is where we get the look-up file that maps GO proteome to organism
 
-my $go_ref = &filtered_ftp_call($ebi_hostname, $ebi_home, $ebi_file, $username, $password);
+my $go_ref = &fetch_filtered_data($ebi_hostname, $ebi_home, $ebi_file, $username, $password);
 my @go_taxons = @{ $go_ref };
 
 my %GO_proteomes; # Make a look-up of tax id to GO proteome
@@ -141,7 +141,7 @@ my $hostname = 'ftp.ncbi.nlm.nih.gov';
 my $home = '/genomes/ASSEMBLY_REPORTS'; 
 my $file = 'assembly_summary_refseq.txt'; # this is where we get the look-up file that maps assembly ID to organism
 
-my $assem_ref = &filtered_ftp_call($hostname, $home, $file, $username, $password);
+my $assem_ref = &fetch_filtered_data($hostname, $home, $file, $username, $password);
 my @assem = @{ $assem_ref };
 
 ###while (<$handle>) { ### if we want all the bacteria we'd probably use this loop
@@ -516,7 +516,7 @@ sub kegg_dbget {
 =pod
 Return FTP data where lines have t omatch Bacillus|Escherichia|Geobacillus
 =cut
-sub filtered_ftp_call {
+sub fetch_filtered_data {
 
   my ($hostname, $home, $file, $username, $password) = @_;
 
