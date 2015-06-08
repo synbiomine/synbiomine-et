@@ -221,9 +221,14 @@ my $unip_dir = catdir($base, "uniprot");
 my $unip_xtra_dir = "/pub/databases/uniprot/current_release/knowledgebase/complete";
 my $unip_xtra_ftp_path = "/pub/databases/uniprot/current_release/knowledgebase/complete";
 my $unip_kw_dir = "/pub/databases/uniprot/current_release/knowledgebase/complete/docs";
+
 my $unip_splice_gz_ftp_path = catdir($unip_xtra_ftp_path, "uniprot_sprot_varsplic.fasta.gz");
 my $unip_splice_dest_path = catdir($unip_dir, $date_dir, "uniprot_sprot_varsplic.fasta");
-my $unip_xsd = "uniprot.xsd";
+
+my $unip_xsd_bn = "uniprot.xsd";
+my $unip_xsd_ftp_path = catdir($unip_xtra_ftp_path, $unip_xsd_bn);
+my $unip_xsd_path = catdir($unip_dir, $date_dir, $unip_xsd_bn);
+
 my $unip_kw = "keywlist.xml";
 my $unip_kw_gz = "keywlist.xml.gz";
 
@@ -236,10 +241,15 @@ $ftp3->login($username, $password) or die "Cannot login ", $ftp3->message;
 my $retr_spli_fh = fetch_fh($ftp3, $unip_splice_gz_ftp_path, 0) or die "Cannot retrieve $unip_splice_gz_ftp_path: $!\n";
 gunzip_fh($retr_spli_fh, $unip_splice_dest_path) or die "Could not gunzip to $unip_splice_dest_path: $GunzipError\n";
 
+notify_new_activity("Fetching to $unip_xsd_path");
+fetch_file($ftp3, $unip_xsd_ftp_path, $unip_xsd_path, 0) or die "Cannot retrieve $unip_xsd_ftp_path: $!\n";
+
+=pod
 $ftp3->cwd($unip_xtra_dir) or die "Cannot change working directory ", $ftp3->message;
 
 $ftp3->get($unip_xsd, "$unip_dir/$date_dir/$unip_xsd")
   or warn "Problem with $unip_xtra_dir\nCannot retrieve $unip_xsd\n";
+=cut
 
 $ftp3->cwd($unip_kw_dir) or die "Cannot change working directory ", $ftp3->message;
 
@@ -539,23 +549,24 @@ sub fetch_filtered_data {
 }
 
 =pod
-Fetch the given file.
+Fetch the given file
+=cut
+sub fetch_file {
+  my ($ftp, $ftp_path, $to_path, $use_ascii) = @_;
+
+  set_ftp_transfer_mode($ftp, $use_ascii);
+
+  return $ftp->get($ftp_path, $to_path)
+}
+
+=pod
+Fetch the given file as a filehandle.
 Returns the filehandle on success
 =cut
 sub fetch_fh {
   my ($ftp, $ftp_path, $use_ascii) = @_;
 
-  # $ftp3->cwd($unip_xtra_dir) or die "Cannot change working directory ", $ftp3->message;
-
-  #$ftp3->get($unip_splice_gz, "$unip_dir/$date_dir/$unip_splice")
-  #  or warn "Problem with $unip_xtra_dir\nCannot retrieve $unip_splice_gz\n";
-
-  # Make sure we are in the right mode
-  if ($use_ascii) {
-    $ftp->ascii or die "Cannot set ascii mode: $!";
-  } else {
-    $ftp->binary or die "Cannot set binary mode: $!";
-  }
+  set_ftp_transfer_mode($ftp, $use_ascii);
 
   return $ftp->retr($ftp_path); # or warn "Cannot retrieve $ftp_path: $!\n";
 }
@@ -567,6 +578,16 @@ sub gunzip_fh {
   my ($fh, $to_path) = @_;
 
   return gunzip $fh => $to_path, AutoClose => 1;
+}
+
+sub set_ftp_transfer_mode {
+  my ($ftp, $use_ascii) = @_;
+
+  if ($use_ascii) {
+    $ftp->ascii or die "Cannot set ascii mode: $!";
+  } else {
+    $ftp->binary or die "Cannot set binary mode: $!";
+  }
 }
 
 =pod
