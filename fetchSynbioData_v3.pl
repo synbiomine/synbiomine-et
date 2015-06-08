@@ -144,37 +144,6 @@ my $file = 'assembly_summary_refseq.txt'; # this is where we get the look-up fil
 my $assem_ref = &ftp_call($hostname, $home, $file, $username, $password);
 my @assem = @{ $assem_ref };
 
-
-sub ftp_call {
-
-  my ($hostname, $home, $file, $username, $password) = @_;
-
-  # Open the connection to the host
-  my $ftp = Net::FTP->new($hostname, BlockSize => 20480, Timeout => $timeout, Debug   => 1); # Construct FTP object
-  $ftp->login($username, $password)
-    or die "Cannot login ", $ftp->message;      # Log in
-
-  # change to the right directory
-  $ftp->cwd($home)
-  or die "Cannot change working directory ", $ftp->message;  # Change directory
-
-  #my @dir_list = grep /_uid/, $ftp->ls();
-
-  # get the assembly report file and open it as a file handle
-  my $handle = $ftp->retr($file)
-    or die "get failed ", $ftp->message;
-
-  # just grab the three Genera that we want from the handle and slurp into an array
-  my @assem = grep /Bacillus|Escherichia|Geobacillus/, <$handle>;
-
-  ### my @assem = grep / subtilis/, <$handle>; # quick version for testing
-
-  close ($handle); # we've finished with the file
-  $ftp->quit; # we've finished with the FTP connection
-
-  return \@assem;
-}
-
 ###while (<$handle>) { ### if we want all the bacteria we'd probably use this loop
 
 my (%org_taxon);
@@ -545,4 +514,32 @@ sub kegg_dbget {
 
 }
 
+sub ftp_call {
 
+  my ($hostname, $home, $file, $username, $password) = @_;
+
+  # Open the connection to the host
+  my $ftp = Net::FTP->new($hostname, BlockSize => 20480, Timeout => $timeout, Debug   => 1); # Construct FTP object
+  $ftp->login($username, $password)
+    or die "Cannot login ", $ftp->message;      # Log in
+
+  # change to the right directory
+  $ftp->cwd($home)
+  or die "Cannot change working directory ", $ftp->message;  # Change directory
+
+  #my @dir_list = grep /_uid/, $ftp->ls();
+
+  # get the assembly report file and open it as a file handle
+  my $handle = $ftp->retr($file)
+    or die "get failed ", $ftp->message;
+
+  # just grab the three Genera that we want from the handle and slurp into an array
+  my @assem = grep /Bacillus|Escherichia|Geobacillus/, <$handle>;
+
+  ### my @assem = grep / subtilis/, <$handle>; # quick version for testing
+
+  close ($handle); # we've finished with the file
+  $ftp->quit; # we've finished with the FTP connection
+
+  return \@assem;
+}
