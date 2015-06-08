@@ -221,7 +221,6 @@ my $unip_dir = catdir($base, "uniprot");
 my $unip_xtra_dir = "/pub/databases/uniprot/current_release/knowledgebase/complete";
 my $unip_xtra_ftp_path = "/pub/databases/uniprot/current_release/knowledgebase/complete";
 my $unip_kw_dir = "/pub/databases/uniprot/current_release/knowledgebase/complete/docs";
-# my $unip_splice = "uniprot_sprot_varsplic.fasta";
 my $unip_splice_gz_ftp_path = catdir($unip_xtra_ftp_path, "uniprot_sprot_varsplic.fasta.gz");
 my $unip_splice_dest_path = catdir($unip_dir, $date_dir, "uniprot_sprot_varsplic.fasta");
 my $unip_xsd = "uniprot.xsd";
