@@ -229,12 +229,10 @@ my $unip_kw = "keywlist.xml";
 my $unip_kw_gz = "keywlist.xml.gz";
 
 my $ftp3 = Net::FTP->new($ebi_hostname, BlockSize => 20480, Timeout => $timeout);
-$ftp3->login($username, $password)
-  or die "Cannot login ", $ftp3->message; 
+$ftp3->login($username, $password) or die "Cannot login ", $ftp3->message; 
 
 # change dir and fetch the uniprot extra files
-$ftp3->cwd($unip_xtra_dir)
-  or die "Cannot change working directory ", $ftp3->message;
+$ftp3->cwd($unip_xtra_dir) or die "Cannot change working directory ", $ftp3->message;
 
 #$ftp3->get($unip_splice_gz, "$unip_dir/$date_dir/$unip_splice")
 #  or warn "Problem with $unip_xtra_dir\nCannot retrieve $unip_splice_gz\n";
@@ -257,8 +255,7 @@ else {
 $ftp3->get($unip_xsd, "$unip_dir/$date_dir/$unip_xsd")
   or warn "Problem with $unip_xtra_dir\nCannot retrieve $unip_xsd\n";
 
-$ftp3->cwd($unip_kw_dir)
-  or die "Cannot change working directory ", $ftp3->message;  # Change directory
+$ftp3->cwd($unip_kw_dir) or die "Cannot change working directory ", $ftp3->message;
 
 #$ftp3->get($unip_kw, "$unip_dir/$date_dir/$unip_kw")
 #  or warn "Problem with $unip_kw_dir\nCannot retrieve $unip_kw\n";
@@ -278,8 +275,7 @@ else {
 # Switch to the GO anotation dir to fetch those files
 say "Trying FTP for: $ebi_hostname";
 
-$ftp3->cwd($ebi_home)
-or die "Cannot change working directory ", $ftp3->message;  # Change directory
+$ftp3->cwd($ebi_home) or die "Cannot change working directory ", $ftp3->message;  # Change directory
 
 # Loop through the taxon IDs and download the GO annotation file (.goa)
 for my $key (keys %org_taxon) {
@@ -311,8 +307,7 @@ my $refseq = '/genomes/refseq/bacteria'; # used for path
 my $genbank_dir = $base . "/genbank";
 
 my $ftp2 = Net::FTP->new($hostname, BlockSize => 20480, Timeout => $timeout);
-$ftp2->login($username, $password)
-  or die "Cannot login ", $ftp2->message;
+$ftp2->login($username, $password) or die "Cannot login ", $ftp2->message;
 
 # Loop through the taxon IDs and download the GFF, chrm fasta and the report file
 for my $key (keys %org_taxon) {
@@ -324,8 +319,7 @@ for my $key (keys %org_taxon) {
   my $refseq_path = $refseq . "/" . $species . "/" . $assembly_dir;
   say "Trying FTP for: $refseq_path";
 
-  $ftp2->cwd("$refseq/$species/$assembly_dir")
-    or die "Cannot change working directory ", $ftp2->message;
+  $ftp2->cwd("$refseq/$species/$assembly_dir") or die "Cannot change working directory ", $ftp2->message;
 
 # get a list of the matching files
   my @file_list = grep /\.gff.gz|\.fna.gz|_report.txt/, $ftp2->ls();
@@ -530,29 +524,25 @@ sub fetch_filtered_data {
 
   my ($hostname, $home, $file, $username, $password) = @_;
 
-  # Open the connection to the host
   # my $ftp = Net::FTP->new($hostname, BlockSize => 20480, Timeout => $timeout, Debug   => 1); # Construct FTP object
   my $ftp = Net::FTP->new($hostname, BlockSize => 20480, Timeout => $timeout);
-  $ftp->login($username, $password)
-    or die "Cannot login ", $ftp->message;      # Log in
 
-  # change to the right directory
-  $ftp->cwd($home)
-  or die "Cannot change working directory ", $ftp->message;  # Change directory
+  $ftp->login($username, $password) or die "Cannot login ", $ftp->message;
+
+  $ftp->cwd($home) or die "Cannot change working directory ", $ftp->message;
 
   #my @dir_list = grep /_uid/, $ftp->ls();
 
-  # get the assembly report file and open it as a file handle
-  my $handle = $ftp->retr($file)
-    or die "get failed ", $ftp->message;
+  # get the assembly report file
+  my $handle = $ftp->retr($file) or die "get failed ", $ftp->message;
 
   # just grab the three Genera that we want from the handle and slurp into an array
   my @assem = grep /Bacillus|Escherichia|Geobacillus/, <$handle>;
 
   ### my @assem = grep / subtilis/, <$handle>; # quick version for testing
 
-  close ($handle); # we've finished with the file
-  $ftp->quit; # we've finished with the FTP connection
+  close ($handle);
+  $ftp->quit;
 
   return \@assem;
 }
