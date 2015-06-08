@@ -154,7 +154,7 @@ notify_new_activity("Constructing download file information");
 
 ###while (<$handle>) { ### if we want all the bacteria we'd probably use this loop
 
-my (%org_taxon);
+my %org_taxon;
 
 # just process the three genera
 for (@assem) {
