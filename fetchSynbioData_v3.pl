@@ -201,10 +201,10 @@ for (@assem) {
     if ( exists $org_taxon{$taxid} ) {
     # For B. subtilis 168 we want the representative genome - the reference genome has odd IDs
       if ( ($taxid eq '224308') and ($refseq_category =~ /reference-genome/) ) {
-	next;
+	      next;
       }
       elsif ($refseq_category =~ /representative-genome/) {
-	next;
+	      next;
       }
     }
 
@@ -246,8 +246,7 @@ if ($retr_spli_fh) {
   gunzip $retr_spli_fh => "$unip_dir/$date_dir/$unip_splice", AutoClose => 1
     or warn "Zip error $unip_xtra_dir\nCannot uncompress '$unip_splice_gz': $GunzipError\n";
   say "Success - adding: $unip_dir/$date_dir/$unip_splice";
-}
-else {
+} else {
   say "Darn! Problem with $unip_xtra_dir\nCouldn't get $unip_splice_gz";
   next;
 }
@@ -266,8 +265,7 @@ if ($retr_kw_fh) {
   gunzip $retr_kw_fh => "$unip_dir/$date_dir/$unip_kw", AutoClose => 1
     or warn "Zip error $unip_xtra_dir\nCannot uncompress '$unip_kw_gz': $GunzipError\n";
   say "Success - adding: $unip_dir/$date_dir/$unip_kw";
-}
-else {
+} else {
   say "Darn! Problem with $unip_kw_dir\nCouldn't get $unip_kw_gz";
   next;
 }
@@ -307,6 +305,7 @@ my $refseq = '/genomes/refseq/bacteria'; # used for path
 my $genbank_dir = $base . "/genbank";
 
 my $ftp2 = Net::FTP->new($hostname, BlockSize => 20480, Timeout => $timeout);
+
 $ftp2->login($username, $password) or die "Cannot login ", $ftp2->message;
 
 # Loop through the taxon IDs and download the GFF, chrm fasta and the report file
@@ -338,20 +337,21 @@ for my $key (keys %org_taxon) {
       my $retr_fh = $ftp2->retr($gb_file) or warn "Problem with $refseq_path\nCannot retrieve $gb_file\n";
 
       if ($retr_fh) {
-	gunzip $retr_fh => "$genbank_dir/$date_dir/$assembly_vers/$raw", AutoClose => 1
-	  or warn "Zip error $refseq_path\nCannot uncompress '$gb_file': $GunzipError\n";
-	say "Success - adding: $genbank_dir/$date_dir/$assembly_vers/$raw";
+        gunzip $retr_fh => "$genbank_dir/$date_dir/$assembly_vers/$raw", AutoClose => 1
+          or warn "Zip error $refseq_path\nCannot uncompress '$gb_file': $GunzipError\n";
+        say "Success - adding: $genbank_dir/$date_dir/$assembly_vers/$raw";
       }
       else {
-	say "Darn! Problem with $refseq_path\nCouldn't get $gb_file";
-	next;
+        say "Darn! Problem with $refseq_path\nCouldn't get $gb_file";
+        next;
       }
-    }
-    else {
+    } else {
       $ftp2->ascii or die "Cannot set ascii mode: $!"; # set ascii mode for non-binary otherwise you get errors 
+
       say "Fetching: $gb_file";
+
       $ftp2->get($gb_file, "$genbank_dir/$date_dir/$assembly_vers/$gb_file")
-	or warn "Problem with $refseq_path\n\nCannot retrieve $gb_file\n";
+	      or warn "Problem with $refseq_path\n\nCannot retrieve $gb_file\n";
     }
   }
 }
@@ -427,14 +427,14 @@ sub query_uniprot {
     my $results = $response_taxon->header('X-Total-Results');
     unless ($results) {
       if ($db =~ /sprot/) {
-	say "No SwissProt results for $taxon";
-	unlink $file; # unlink - if the file doesn't exist
-	return;
+        say "No SwissProt results for $taxon";
+        unlink $file; # unlink - if the file doesn't exist
+        return;
       }
       else {
-	say "No TrEMBL results for $taxon\n";
-	unlink $file; # unlink - if the file doesn't exist
-	return;
+        say "No TrEMBL results for $taxon\n";
+        unlink $file; # unlink - if the file doesn't exist
+        return;
       }
     }
 
