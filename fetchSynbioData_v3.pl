@@ -70,6 +70,8 @@ my ($DAY, $MONTH, $YEAR) = ($tm->mday, ($tm->mon)+1, ($tm->year)+1900);
 @ARGV > 0 or die "data_directory must be specified.\n";
 my $base = $ARGV[0];
 
+notify_new_activity("Creating data directory structure at [$base]");
+
 if (not -d $base) {
   mkdir $base, 0755 or die "Could not create data_directory $base: $!\n";
 }
@@ -104,6 +106,8 @@ foreach my $source (@sources) {
   symlink $date_dir, $source_current_symlink or die "Failed to link $source_date_dir with $source_current_symlink: $!\n";
 }
 
+notify_new_activity("Downloading EBI taxon ID -> GOA map");
+
 # email addr is required for NCBI FTP use
 my $contact = 'justincc@intermine.org'; # Please set your email address here to help us debug in case of problems.
 my $agent = LWP::UserAgent->new(agent => "libwww-perl $contact");
@@ -133,6 +137,8 @@ for my $go_proteome (@go_taxons) {
 }
 
 # say join("\n", @go_taxons);
+
+notify_new_activity("Constructing download file information from NCBI assembly summary");
 
 # set ftp address for ncbi
 my $hostname = 'ftp.ncbi.nlm.nih.gov';
@@ -205,11 +211,13 @@ for (@assem) {
   }
 }
 
+notify_new_activity("Performing rest of work");
+
 ### Now... Process GO proteomes to get GO annotations ###
-my $go_dir = $base . "/go-annotation";
+my $go_dir = catdir($base, "go-annotation");
 
 # But, while we're logged in we'll get some of extra uniprot files
-my $unip_dir = $base . "/uniprot";
+my $unip_dir = catdir($base, "uniprot");
 my $unip_xtra_dir = "/pub/databases/uniprot/current_release/knowledgebase/complete";
 my $unip_kw_dir = "/pub/databases/uniprot/current_release/knowledgebase/complete/docs";
 my $unip_splice = "uniprot_sprot_varsplic.fasta";
@@ -544,4 +552,13 @@ sub fetch_filtered_data {
   $ftp->quit; # we've finished with the FTP connection
 
   return \@assem;
+}
+
+=pod
+Provide an eye-catching way of showing when we engage in different activities in this script
+=cut
+sub notify_new_activity {
+  my ($activity) = @_;
+
+  say "==> $activity <==";
 }
