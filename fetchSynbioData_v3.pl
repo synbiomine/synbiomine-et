@@ -176,7 +176,7 @@ for (@assem) {
     my $assembly_dir = "all_assembly_versions/" . $assembly_vers;
 
     my $species;
-# they've probably made it more complicated than it needs to be so we habe to define
+# they've probably made it more complicated than it needs to be so we have to define
 # rules on whether the directory is Genus_species or if it covers a species sp.
     if ($organism_name =~ / sp\. /) {
       $organism_name =~ /(.+)/; # grab the whole thing if it's Genus sp.
