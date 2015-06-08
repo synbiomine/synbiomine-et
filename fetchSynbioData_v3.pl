@@ -231,14 +231,13 @@ my $unip_kw_gz = "keywlist.xml.gz";
 my $ftp3 = Net::FTP->new($ebi_hostname, BlockSize => 20480, Timeout => $timeout);
 $ftp3->login($username, $password) or die "Cannot login ", $ftp3->message; 
 
-# change dir and fetch the uniprot extra files
 $ftp3->cwd($unip_xtra_dir) or die "Cannot change working directory ", $ftp3->message;
 
 #$ftp3->get($unip_splice_gz, "$unip_dir/$date_dir/$unip_splice")
 #  or warn "Problem with $unip_xtra_dir\nCannot retrieve $unip_splice_gz\n";
 
-$ftp3->binary or die "Cannot set binary mode: $!"; # binary mode for the zip file
-say "Fetch and unzip: $unip_splice_gz --> $unip_splice"; # fetch and unzip
+$ftp3->binary or die "Cannot set binary mode: $!";
+say "Fetch and unzip: $unip_splice_gz --> $unip_splice";
 
 my $retr_spli_fh = $ftp3->retr($unip_splice_gz) or warn "Problem with $unip_xtra_dir\nCannot retrieve $unip_splice_gz\n";
 
@@ -273,7 +272,7 @@ if ($retr_kw_fh) {
 # Switch to the GO anotation dir to fetch those files
 say "Trying FTP for: $ebi_hostname";
 
-$ftp3->cwd($ebi_home) or die "Cannot change working directory ", $ftp3->message;  # Change directory
+$ftp3->cwd($ebi_home) or die "Cannot change working directory ", $ftp3->message;
 
 # Loop through the taxon IDs and download the GO annotation file (.goa)
 for my $key (keys %org_taxon) {
