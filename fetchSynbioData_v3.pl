@@ -248,7 +248,6 @@ if ($retr_spli_fh) {
   say "Success - adding: $unip_dir/$date_dir/$unip_splice";
 } else {
   say "Darn! Problem with $unip_xtra_dir\nCouldn't get $unip_splice_gz";
-  next;
 }
 
 $ftp3->get($unip_xsd, "$unip_dir/$date_dir/$unip_xsd")
