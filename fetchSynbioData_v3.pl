@@ -228,13 +228,13 @@ my $unip_xsd = "uniprot.xsd";
 my $unip_kw = "keywlist.xml";
 my $unip_kw_gz = "keywlist.xml.gz";
 
-my $ftp3 = Net::FTP->new($ebi_hostname, BlockSize => 20480, Timeout => $timeout, Debug   => 0); # Construct FTP object
+my $ftp3 = Net::FTP->new($ebi_hostname, BlockSize => 20480, Timeout => $timeout);
 $ftp3->login($username, $password)
-  or die "Cannot login ", $ftp3->message;      # Log in - again
+  or die "Cannot login ", $ftp3->message; 
 
 # change dir and fetch the uniprot extra files
 $ftp3->cwd("$unip_xtra_dir")
-  or die "Cannot change working directory ", $ftp3->message;  # Change directory
+  or die "Cannot change working directory ", $ftp3->message;
 
 #$ftp3->get($unip_splice_gz, "$unip_dir/$date_dir/$unip_splice")
 #  or warn "Problem with $unip_xtra_dir\nCannot retrieve $unip_splice_gz\n";
@@ -310,9 +310,9 @@ $ftp3->quit;
 my $refseq = '/genomes/refseq/bacteria'; # used for path
 my $genbank_dir = $base . "/genbank";
 
-my $ftp2 = Net::FTP->new($hostname, BlockSize => 20480, Timeout => $timeout, Debug   => 0); # Construct FTP object
+my $ftp2 = Net::FTP->new($hostname, BlockSize => 20480, Timeout => $timeout);
 $ftp2->login($username, $password)
-  or die "Cannot login ", $ftp2->message;      # Log in - again
+  or die "Cannot login ", $ftp2->message;
 
 # Loop through the taxon IDs and download the GFF, chrm fasta and the report file
 for my $key (keys %org_taxon) {
@@ -325,7 +325,7 @@ for my $key (keys %org_taxon) {
   say "Trying FTP for: $refseq_path";
 
   $ftp2->cwd("$refseq/$species/$assembly_dir")
-    or die "Cannot change working directory ", $ftp2->message;  # Change directory
+    or die "Cannot change working directory ", $ftp2->message;
 
 # get a list of the matching files
   my @file_list = grep /\.gff.gz|\.fna.gz|_report.txt/, $ftp2->ls();
