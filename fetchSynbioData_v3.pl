@@ -511,7 +511,6 @@ sub kegg_dbget {
     say KEGG_ORG_OUT $tla; # Write out space-separated taxons for use in project.xml fields
     say KEGG_TAXA_OUT $tla . ".taxonId = " . $kegg_taxon; # write to KEGG config file
   }
-
 }
 
 sub ftp_call {
