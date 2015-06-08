@@ -233,7 +233,7 @@ $ftp3->login($username, $password)
   or die "Cannot login ", $ftp3->message; 
 
 # change dir and fetch the uniprot extra files
-$ftp3->cwd("$unip_xtra_dir")
+$ftp3->cwd($unip_xtra_dir)
   or die "Cannot change working directory ", $ftp3->message;
 
 #$ftp3->get($unip_splice_gz, "$unip_dir/$date_dir/$unip_splice")
@@ -257,7 +257,7 @@ else {
 $ftp3->get($unip_xsd, "$unip_dir/$date_dir/$unip_xsd")
   or warn "Problem with $unip_xtra_dir\nCannot retrieve $unip_xsd\n";
 
-$ftp3->cwd("$unip_kw_dir")
+$ftp3->cwd($unip_kw_dir)
   or die "Cannot change working directory ", $ftp3->message;  # Change directory
 
 #$ftp3->get($unip_kw, "$unip_dir/$date_dir/$unip_kw")
@@ -278,7 +278,7 @@ else {
 # Switch to the GO anotation dir to fetch those files
 say "Trying FTP for: $ebi_hostname";
 
-$ftp3->cwd("$ebi_home")
+$ftp3->cwd($ebi_home)
 or die "Cannot change working directory ", $ftp3->message;  # Change directory
 
 # Loop through the taxon IDs and download the GO annotation file (.goa)
