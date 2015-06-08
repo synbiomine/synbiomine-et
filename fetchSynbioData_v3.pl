@@ -229,6 +229,7 @@ my $unip_kw = "keywlist.xml";
 my $unip_kw_gz = "keywlist.xml.gz";
 
 my $ftp3 = Net::FTP->new($ebi_hostname, BlockSize => 20480, Timeout => $timeout);
+
 $ftp3->login($username, $password) or die "Cannot login ", $ftp3->message; 
 
 $ftp3->cwd($unip_xtra_dir) or die "Cannot change working directory ", $ftp3->message;
