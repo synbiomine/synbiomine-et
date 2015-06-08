@@ -244,13 +244,6 @@ gunzip_fh($retr_spli_fh, $unip_splice_dest_path) or die "Could not gunzip to $un
 notify_new_activity("Fetching to $unip_xsd_path");
 fetch_file($ftp3, $unip_xsd_ftp_path, $unip_xsd_path, 0) or die "Cannot retrieve $unip_xsd_ftp_path: $!\n";
 
-=pod
-$ftp3->cwd($unip_xtra_dir) or die "Cannot change working directory ", $ftp3->message;
-
-$ftp3->get($unip_xsd, "$unip_dir/$date_dir/$unip_xsd")
-  or warn "Problem with $unip_xtra_dir\nCannot retrieve $unip_xsd\n";
-=cut
-
 $ftp3->cwd($unip_kw_dir) or die "Cannot change working directory ", $ftp3->message;
 
 notify_new_activity("Fetching $unip_kw");
