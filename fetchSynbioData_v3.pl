@@ -218,19 +218,20 @@ my $go_dir = catdir($base, "go-annotation");
 
 # But, while we're logged in we'll get some of extra uniprot files
 my $unip_dir = catdir($base, "uniprot");
-my $unip_xtra_dir = "/pub/databases/uniprot/current_release/knowledgebase/complete";
-my $unip_xtra_ftp_path = "/pub/databases/uniprot/current_release/knowledgebase/complete";
-my $unip_kw_dir = "/pub/databases/uniprot/current_release/knowledgebase/complete/docs";
+my $unip_kb_ftp_path = "/pub/databases/uniprot/current_release/knowledgebase/complete";
+# my $unip_xtra_dir = "/pub/databases/uniprot/current_release/knowledgebase/complete";
+# my $unip_xtra_ftp_path = "/pub/databases/uniprot/current_release/knowledgebase/complete";
+my $unip_kb_docs_ftp_path = "$unip_kb_ftp_path/docs";
 
-my $unip_splice_gz_ftp_path = catdir($unip_xtra_ftp_path, "uniprot_sprot_varsplic.fasta.gz");
+my $unip_splice_gz_ftp_path = "$unip_kb_ftp_path/uniprot_sprot_varsplic.fasta.gz";
 my $unip_splice_dest_path = catdir($unip_dir, $date_dir, "uniprot_sprot_varsplic.fasta");
 
 my $unip_xsd_bn = "uniprot.xsd";
-my $unip_xsd_ftp_path = catdir($unip_xtra_ftp_path, $unip_xsd_bn);
+my $unip_xsd_ftp_path = "$unip_kb_ftp_path/$unip_xsd_bn";
 my $unip_xsd_path = catdir($unip_dir, $date_dir, $unip_xsd_bn);
 
-my $unip_kw = "keywlist.xml";
-my $unip_kw_gz = "keywlist.xml.gz";
+my $unip_kw_ftp_path = "$unip_kb_docs_ftp_path/keywlist.xml.gz";
+my $unip_kw_path = catdir($unip_dir, $date_dir, "keywlist.xml");
 
 notify_new_activity("Fetching to $unip_splice_dest_path");
 
@@ -238,29 +239,15 @@ my $ftp3 = Net::FTP->new($ebi_hostname, BlockSize => 20480, Timeout => $timeout)
 
 $ftp3->login($username, $password) or die "Cannot login ", $ftp3->message; 
 
-my $retr_spli_fh = fetch_fh($ftp3, $unip_splice_gz_ftp_path, 0) or die "Cannot retrieve $unip_splice_gz_ftp_path: $!\n";
+my $retr_spli_fh = fetch_fh($ftp3, $unip_splice_gz_ftp_path, 0);
 gunzip_fh($retr_spli_fh, $unip_splice_dest_path) or die "Could not gunzip to $unip_splice_dest_path: $GunzipError\n";
 
 notify_new_activity("Fetching to $unip_xsd_path");
 fetch_file($ftp3, $unip_xsd_ftp_path, $unip_xsd_path, 0) or die "Cannot retrieve $unip_xsd_ftp_path: $!\n";
 
-$ftp3->cwd($unip_kw_dir) or die "Cannot change working directory ", $ftp3->message;
-
-notify_new_activity("Fetching $unip_kw");
-
-#$ftp3->get($unip_kw, "$unip_dir/$date_dir/$unip_kw")
-#  or warn "Problem with $unip_kw_dir\nCannot retrieve $unip_kw\n";
-# say "Fetch and unzip: $unip_kw_gz --> $unip_kw"; # fetch and unzip
-my $retr_kw_fh = $ftp3->retr($unip_kw_gz) or warn "Problem with $unip_kw_dir\nCannot retrieve $unip_kw_gz\n";
-
-if ($retr_kw_fh) {
-  gunzip $retr_kw_fh => "$unip_dir/$date_dir/$unip_kw", AutoClose => 1
-    or warn "Zip error $unip_xtra_dir\nCannot uncompress '$unip_kw_gz': $GunzipError\n";
-  # say "Success - adding: $unip_dir/$date_dir/$unip_kw";
-} else {
-  say "Darn! Problem with $unip_kw_dir\nCouldn't get $unip_kw_gz";
-  next;
-}
+notify_new_activity("Fetching to $unip_kw_path");
+my $retr_kw_fh = fetch_fh($ftp3, $unip_kw_ftp_path, 0);
+gunzip_fh($retr_kw_fh, $unip_kw_path) or die "Could not gunzip to $unip_kw_path: $GunzipError\n";
 
 notify_new_activity("Performing rest of work");
 
@@ -561,7 +548,9 @@ sub fetch_fh {
 
   set_ftp_transfer_mode($ftp, $use_ascii);
 
-  return $ftp->retr($ftp_path); # or warn "Cannot retrieve $ftp_path: $!\n";
+  my $fh = $ftp->retr($ftp_path) or die "Cannot retrieve $ftp_path: $!\n";
+
+  return $fh;
 }
 
 =pod
