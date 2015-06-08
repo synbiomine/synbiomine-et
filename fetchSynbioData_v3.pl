@@ -138,7 +138,7 @@ for my $go_proteome (@go_taxons) {
 
 # say join("\n", @go_taxons);
 
-notify_new_activity("Constructing download file information from NCBI assembly summary");
+notify_new_activity("Downloading NCBI assembly summary");
 
 # set ftp address for ncbi
 my $hostname = 'ftp.ncbi.nlm.nih.gov';
@@ -149,6 +149,8 @@ my $file = 'assembly_summary_refseq.txt'; # this is where we get the look-up fil
 
 my $assem_ref = &fetch_filtered_data($hostname, $home, $file, $username, $password);
 my @assem = @{ $assem_ref };
+
+notify_new_activity("Constructing download file information");
 
 ###while (<$handle>) { ### if we want all the bacteria we'd probably use this loop
 
