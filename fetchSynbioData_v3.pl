@@ -219,36 +219,25 @@ my $go_dir = catdir($base, "go-annotation");
 # But, while we're logged in we'll get some of extra uniprot files
 my $unip_dir = catdir($base, "uniprot");
 my $unip_xtra_dir = "/pub/databases/uniprot/current_release/knowledgebase/complete";
+my $unip_xtra_ftp_path = "/pub/databases/uniprot/current_release/knowledgebase/complete";
 my $unip_kw_dir = "/pub/databases/uniprot/current_release/knowledgebase/complete/docs";
-my $unip_splice = "uniprot_sprot_varsplic.fasta";
-my $unip_splice_gz = "uniprot_sprot_varsplic.fasta.gz";
+# my $unip_splice = "uniprot_sprot_varsplic.fasta";
+my $unip_splice_gz_ftp_path = catdir($unip_xtra_ftp_path, "uniprot_sprot_varsplic.fasta.gz");
+my $unip_splice_dest_path = catdir($unip_dir, $date_dir, "uniprot_sprot_varsplic.fasta");
 my $unip_xsd = "uniprot.xsd";
 my $unip_kw = "keywlist.xml";
 my $unip_kw_gz = "keywlist.xml.gz";
 
-notify_new_activity("Fetching $unip_splice");
+notify_new_activity("Fetching to $unip_splice_dest_path");
 
 my $ftp3 = Net::FTP->new($ebi_hostname, BlockSize => 20480, Timeout => $timeout);
 
 $ftp3->login($username, $password) or die "Cannot login ", $ftp3->message; 
 
+my $retr_spli_fh = fetch_fh($ftp3, $unip_splice_gz_ftp_path, 0) or die "Cannot retrieve $unip_splice_gz_ftp_path: $!\n";
+gunzip_fh($retr_spli_fh, $unip_splice_dest_path) or die "Could not gunzip to $unip_splice_dest_path: $GunzipError\n";
+
 $ftp3->cwd($unip_xtra_dir) or die "Cannot change working directory ", $ftp3->message;
-
-#$ftp3->get($unip_splice_gz, "$unip_dir/$date_dir/$unip_splice")
-#  or warn "Problem with $unip_xtra_dir\nCannot retrieve $unip_splice_gz\n";
-
-$ftp3->binary or die "Cannot set binary mode: $!";
-# say "Fetch and unzip: $unip_splice_gz --> $unip_splice";
-
-my $retr_spli_fh = $ftp3->retr($unip_splice_gz) or warn "Problem with $unip_xtra_dir\nCannot retrieve $unip_splice_gz\n";
-
-if ($retr_spli_fh) {
-  gunzip $retr_spli_fh => "$unip_dir/$date_dir/$unip_splice", AutoClose => 1
-    or warn "Zip error $unip_xtra_dir\nCannot uncompress '$unip_splice_gz': $GunzipError\n";
-  # say "Success - adding: $unip_dir/$date_dir/$unip_splice";
-} else {
-  say "Darn! Problem with $unip_xtra_dir\nCouldn't get $unip_splice_gz";
-}
 
 $ftp3->get($unip_xsd, "$unip_dir/$date_dir/$unip_xsd")
   or warn "Problem with $unip_xtra_dir\nCannot retrieve $unip_xsd\n";
@@ -548,6 +537,37 @@ sub fetch_filtered_data {
   $ftp->quit;
 
   return \@assem;
+}
+
+=pod
+Fetch the given file.
+Returns the filehandle on success
+=cut
+sub fetch_fh {
+  my ($ftp, $ftp_path, $use_ascii) = @_;
+
+  # $ftp3->cwd($unip_xtra_dir) or die "Cannot change working directory ", $ftp3->message;
+
+  #$ftp3->get($unip_splice_gz, "$unip_dir/$date_dir/$unip_splice")
+  #  or warn "Problem with $unip_xtra_dir\nCannot retrieve $unip_splice_gz\n";
+
+  # Make sure we are in the right mode
+  if ($use_ascii) {
+    $ftp->ascii or die "Cannot set ascii mode: $!";
+  } else {
+    $ftp->binary or die "Cannot set binary mode: $!";
+  }
+
+  return $ftp->retr($ftp_path); # or warn "Cannot retrieve $ftp_path: $!\n";
+}
+
+=pod
+Gunzip the given filehandle
+=cut
+sub gunzip_fh {
+  my ($fh, $to_path) = @_;
+
+  return gunzip $fh => $to_path, AutoClose => 1;
 }
 
 =pod
