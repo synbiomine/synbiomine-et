@@ -239,14 +239,14 @@ my $ftp3 = Net::FTP->new($ebi_hostname, BlockSize => 20480, Timeout => $timeout)
 
 $ftp3->login($username, $password) or die "Cannot login ", $ftp3->message; 
 
-my $retr_spli_fh = fetch_fh($ftp3, $unip_splice_gz_ftp_path, 0);
+my $retr_spli_fh = fetch_fh($ftp3, $unip_splice_gz_ftp_path);
 gunzip_fh($retr_spli_fh, $unip_splice_dest_path);
 
 notify_new_activity("Fetching to $unip_xsd_path");
-fetch_file($ftp3, $unip_xsd_ftp_path, $unip_xsd_path, 0);
+fetch_file($ftp3, $unip_xsd_ftp_path, $unip_xsd_path);
 
 notify_new_activity("Fetching to $unip_kw_path");
-my $retr_kw_fh = fetch_fh($ftp3, $unip_kw_ftp_path, 0);
+my $retr_kw_fh = fetch_fh($ftp3, $unip_kw_ftp_path);
 gunzip_fh($retr_kw_fh, $unip_kw_path);
 
 notify_new_activity("Performing rest of work");
