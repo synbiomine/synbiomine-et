@@ -529,7 +529,8 @@ sub fetch_filtered_data {
   my ($hostname, $home, $file, $username, $password) = @_;
 
   # Open the connection to the host
-  my $ftp = Net::FTP->new($hostname, BlockSize => 20480, Timeout => $timeout, Debug   => 1); # Construct FTP object
+  # my $ftp = Net::FTP->new($hostname, BlockSize => 20480, Timeout => $timeout, Debug   => 1); # Construct FTP object
+  my $ftp = Net::FTP->new($hostname, BlockSize => 20480, Timeout => $timeout);
   $ftp->login($username, $password)
     or die "Cannot login ", $ftp->message;      # Log in
 
