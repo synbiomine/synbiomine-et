@@ -154,6 +154,7 @@ notify_new_activity("Constructing download file information");
 
 ###while (<$handle>) { ### if we want all the bacteria we'd probably use this loop
 
+# We will populate this with data for ftp access later
 my %org_taxon;
 
 # just process the three genera
@@ -247,7 +248,7 @@ notify_new_activity("Fetching to $unip_kw_path");
 my $retr_kw_fh = fetch_fh($ftp3, $unip_kw_ftp_path);
 gunzip_fh($retr_kw_fh, $unip_kw_path);
 
-notify_new_activity("Performing rest of work");
+notify_new_activity("Downloading GO annotation files for species");
 
 # Switch to the GO anotation dir to fetch those files
 # say "Trying FTP for: $ebi_hostname";
@@ -260,10 +261,10 @@ for my $key (keys %org_taxon) {
 # Check to see if our strains have GO annotations (look-up on tax ID)
   if (exists $GO_proteomes{$key} ) {
 
-# if yes, we're going download the file
+# if yes, we're going to download the file
     my $go_file = $GO_proteomes{$key}; 
 
-    say "Processing FILE: ", $go_file;
+    # say "Processing FILE: ", $go_file;
 
     say "Fetching: $go_file";
     $ftp3->ascii or die "Cannot set ascii mode: $!"; # set ascii mode for non-binary otherwise you get errors 
@@ -271,13 +272,15 @@ for my $key (keys %org_taxon) {
     $ftp3->get($go_file, "$go_dir/$date_dir/$go_file")
       or warn "Problem with $ebi_home\nCannot retrieve $go_file\n";
   } else {
-    say "No GO annotation found for $key";
+    say "No GO annotation found for taxon ID $key";
   }
 }
 
 $ftp3->quit;
 
 ##################
+
+notify_new_activity("Performing rest of work");
 
 # Now... FTP to NCBI genomes to get chromosome fasta (.fna) and refseq annotations (.gff)
 my $refseq = '/genomes/refseq/bacteria'; # used for path
