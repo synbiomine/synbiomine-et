@@ -105,7 +105,7 @@ foreach my $source (@sources) {
 }
 
 # email addr is required for NCBI FTP use
-my $contact = 'mike@intermine.org'; # Please set your email address here to help us debug in case of problems.
+my $contact = 'justincc@intermine.org'; # Please set your email address here to help us debug in case of problems.
 my $agent = LWP::UserAgent->new(agent => "libwww-perl $contact");
 
 # Global FTP params
