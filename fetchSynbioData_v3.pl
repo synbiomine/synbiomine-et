@@ -213,8 +213,6 @@ for (@assem) {
   }
 }
 
-notify_new_activity("Performing rest of work");
-
 ### Now... Process GO proteomes to get GO annotations ###
 my $go_dir = catdir($base, "go-annotation");
 
@@ -228,6 +226,8 @@ my $unip_xsd = "uniprot.xsd";
 my $unip_kw = "keywlist.xml";
 my $unip_kw_gz = "keywlist.xml.gz";
 
+notify_new_activity("Fetching $unip_splice");
+
 my $ftp3 = Net::FTP->new($ebi_hostname, BlockSize => 20480, Timeout => $timeout);
 
 $ftp3->login($username, $password) or die "Cannot login ", $ftp3->message; 
@@ -238,14 +238,14 @@ $ftp3->cwd($unip_xtra_dir) or die "Cannot change working directory ", $ftp3->mes
 #  or warn "Problem with $unip_xtra_dir\nCannot retrieve $unip_splice_gz\n";
 
 $ftp3->binary or die "Cannot set binary mode: $!";
-say "Fetch and unzip: $unip_splice_gz --> $unip_splice";
+# say "Fetch and unzip: $unip_splice_gz --> $unip_splice";
 
 my $retr_spli_fh = $ftp3->retr($unip_splice_gz) or warn "Problem with $unip_xtra_dir\nCannot retrieve $unip_splice_gz\n";
 
 if ($retr_spli_fh) {
   gunzip $retr_spli_fh => "$unip_dir/$date_dir/$unip_splice", AutoClose => 1
     or warn "Zip error $unip_xtra_dir\nCannot uncompress '$unip_splice_gz': $GunzipError\n";
-  say "Success - adding: $unip_dir/$date_dir/$unip_splice";
+  # say "Success - adding: $unip_dir/$date_dir/$unip_splice";
 } else {
   say "Darn! Problem with $unip_xtra_dir\nCouldn't get $unip_splice_gz";
 }
@@ -255,22 +255,26 @@ $ftp3->get($unip_xsd, "$unip_dir/$date_dir/$unip_xsd")
 
 $ftp3->cwd($unip_kw_dir) or die "Cannot change working directory ", $ftp3->message;
 
+notify_new_activity("Fetching $unip_kw");
+
 #$ftp3->get($unip_kw, "$unip_dir/$date_dir/$unip_kw")
 #  or warn "Problem with $unip_kw_dir\nCannot retrieve $unip_kw\n";
-say "Fetch and unzip: $unip_kw_gz --> $unip_kw"; # fetch and unzip
+# say "Fetch and unzip: $unip_kw_gz --> $unip_kw"; # fetch and unzip
 my $retr_kw_fh = $ftp3->retr($unip_kw_gz) or warn "Problem with $unip_kw_dir\nCannot retrieve $unip_kw_gz\n";
 
 if ($retr_kw_fh) {
   gunzip $retr_kw_fh => "$unip_dir/$date_dir/$unip_kw", AutoClose => 1
     or warn "Zip error $unip_xtra_dir\nCannot uncompress '$unip_kw_gz': $GunzipError\n";
-  say "Success - adding: $unip_dir/$date_dir/$unip_kw";
+  # say "Success - adding: $unip_dir/$date_dir/$unip_kw";
 } else {
   say "Darn! Problem with $unip_kw_dir\nCouldn't get $unip_kw_gz";
   next;
 }
 
+notify_new_activity("Performing rest of work");
+
 # Switch to the GO anotation dir to fetch those files
-say "Trying FTP for: $ebi_hostname";
+# say "Trying FTP for: $ebi_hostname";
 
 $ftp3->cwd($ebi_home) or die "Cannot change working directory ", $ftp3->message;
 
