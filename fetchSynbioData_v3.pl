@@ -240,14 +240,14 @@ my $ftp3 = Net::FTP->new($ebi_hostname, BlockSize => 20480, Timeout => $timeout)
 $ftp3->login($username, $password) or die "Cannot login ", $ftp3->message; 
 
 my $retr_spli_fh = fetch_fh($ftp3, $unip_splice_gz_ftp_path, 0);
-gunzip_fh($retr_spli_fh, $unip_splice_dest_path) or die "Could not gunzip to $unip_splice_dest_path: $GunzipError\n";
+gunzip_fh($retr_spli_fh, $unip_splice_dest_path);
 
 notify_new_activity("Fetching to $unip_xsd_path");
-fetch_file($ftp3, $unip_xsd_ftp_path, $unip_xsd_path, 0) or die "Cannot retrieve $unip_xsd_ftp_path: $!\n";
+fetch_file($ftp3, $unip_xsd_ftp_path, $unip_xsd_path, 0);
 
 notify_new_activity("Fetching to $unip_kw_path");
 my $retr_kw_fh = fetch_fh($ftp3, $unip_kw_ftp_path, 0);
-gunzip_fh($retr_kw_fh, $unip_kw_path) or die "Could not gunzip to $unip_kw_path: $GunzipError\n";
+gunzip_fh($retr_kw_fh, $unip_kw_path);
 
 notify_new_activity("Performing rest of work");
 
@@ -559,7 +559,7 @@ Gunzip the given filehandle
 sub gunzip_fh {
   my ($fh, $to_path) = @_;
 
-  return gunzip $fh => $to_path, AutoClose => 1;
+  return gunzip $fh => $to_path, AutoClose => 1 or die "Could not gunzip $fh: $GunzipError\n";
 }
 
 sub set_ftp_transfer_mode {
