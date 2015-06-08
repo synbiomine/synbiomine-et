@@ -217,21 +217,19 @@ for (@assem) {
 my $go_dir = catdir($base, "go-annotation");
 
 # But, while we're logged in we'll get some of extra uniprot files
-my $unip_dir = catdir($base, "uniprot");
+my $unip_dir = catdir($base, "uniprot", $date_dir);
 my $unip_kb_ftp_path = "/pub/databases/uniprot/current_release/knowledgebase/complete";
-# my $unip_xtra_dir = "/pub/databases/uniprot/current_release/knowledgebase/complete";
-# my $unip_xtra_ftp_path = "/pub/databases/uniprot/current_release/knowledgebase/complete";
 my $unip_kb_docs_ftp_path = "$unip_kb_ftp_path/docs";
 
 my $unip_splice_gz_ftp_path = "$unip_kb_ftp_path/uniprot_sprot_varsplic.fasta.gz";
-my $unip_splice_dest_path = catdir($unip_dir, $date_dir, "uniprot_sprot_varsplic.fasta");
+my $unip_splice_dest_path = catdir($unip_dir, "uniprot_sprot_varsplic.fasta");
 
 my $unip_xsd_bn = "uniprot.xsd";
 my $unip_xsd_ftp_path = "$unip_kb_ftp_path/$unip_xsd_bn";
-my $unip_xsd_path = catdir($unip_dir, $date_dir, $unip_xsd_bn);
+my $unip_xsd_path = catdir($unip_dir, $unip_xsd_bn);
 
 my $unip_kw_ftp_path = "$unip_kb_docs_ftp_path/keywlist.xml.gz";
-my $unip_kw_path = catdir($unip_dir, $date_dir, "keywlist.xml");
+my $unip_kw_path = catdir($unip_dir, "keywlist.xml");
 
 notify_new_activity("Fetching to $unip_splice_dest_path");
 
