@@ -218,9 +218,6 @@ for (@assem) {
 
 # say "Constructed " . scalar(keys %org_taxon) . " download entries out of " . scalar(@assem) . " assembly entries";
 
-### Now... Process GO proteomes to get GO annotations ###
-my $go_dir = catdir($base, "go-annotation");
-
 # But, while we're logged in we'll get some of extra uniprot files
 my $unip_dir = catdir($base, "uniprot", $date_dir);
 my $unip_kb_ftp_path = "/pub/databases/uniprot/current_release/knowledgebase/complete";
@@ -253,7 +250,9 @@ fetch_file($ftp3, $unip_xsd_ftp_path, $unip_xsd_path);
 my $retr_kw_fh = fetch_fh($ftp3, $unip_kw_ftp_path);
 gunzip_fh($retr_kw_fh, $unip_kw_path);
 
-notify_new_activity("Downloading GO annotation files for species");
+notify_new_activity("Downloading GO annotation files for organisms");
+
+my $go_dir = catdir($base, "go-annotation");
 
 # Switch to the GO anotation dir to fetch those files
 # say "Trying FTP for: $ebi_hostname";
