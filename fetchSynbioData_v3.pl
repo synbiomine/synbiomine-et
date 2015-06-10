@@ -390,11 +390,11 @@ for my $taxon (sort {$a <=> $b} keys %org_taxon) {
 
   say "### Processing taxon: $taxon ###";
 
-  &kegg_dbget($taxon); # send the taxon ID to the KEGG search subroutine - get the org acronym
+  kegg_dbget($taxon); # send the taxon ID to the KEGG search subroutine - get the org acronym
 
 # Send the Taxon IDs to the UniProt subroutine to get the proteins
-  &query_uniprot($db_sp, $taxon, $reference); # Get swissprot
-  &query_uniprot($db_tr, $taxon, $complete); # Get TrEMBL
+  query_uniprot($db_sp, $taxon, $reference); # Get swissprot
+  query_uniprot($db_tr, $taxon, $complete); # Get TrEMBL
 }
 
 # Write the taxons to file
