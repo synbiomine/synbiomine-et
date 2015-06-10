@@ -300,10 +300,10 @@ for my $key (keys %org_taxon) {
   my ($species, $assembly_vers, $refseq_category, $assembly_dir) = @{ $org_taxon{$key} };
   mkdir "$genbank_dir/$date_dir/$assembly_vers", 0755;
 
-  my $refseq_path = $refseq . "/" . $species . "/" . $assembly_dir;
+  my $refseq_path = "$refseq/$species/$assembly_dir";
   say "Fetching files from $refseq_path";
 
-  $ftp2->cwd("$refseq/$species/$assembly_dir") or die "Cannot change working directory ", $ftp2->message;
+  $ftp2->cwd($refseq_path) or die "Cannot change working directory ", $ftp2->message;
 
 # get a list of the matching files
   my @file_list = grep /\.gff.gz|\.fna.gz|_report.txt/, $ftp2->ls();
