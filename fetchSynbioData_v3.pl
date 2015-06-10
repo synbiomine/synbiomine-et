@@ -154,7 +154,7 @@ for (@assem) {
 
 # We're only interested in reference or representative genomes - complete and probably have refseq annotations
 # they used to use hyphen, now they use space so check for both in case they change back
-  next unless ( ($refseq_category) && ($refseq_category =~ /-genome| genome/) ); 
+  next unless (($refseq_category) && ($refseq_category =~ /-genome| genome/)); 
 
 # There's a strange Bacillus species that has [] around its name!
 # [Bacillus] selenitireducens MLS10
