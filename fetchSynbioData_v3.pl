@@ -235,7 +235,8 @@ my $unip_xsd_path = catdir($unip_dir, $unip_xsd_bn);
 my $unip_kw_ftp_path = "$unip_kb_docs_ftp_path/keywlist.xml.gz";
 my $unip_kw_path = catdir($unip_dir, "keywlist.xml");
 
-notify_new_activity("Fetching to $unip_splice_dest_path");
+notify_new_activity("Downloading UniProt files");
+# notify_new_activity("Fetching to $unip_splice_dest_path");
 
 my $ftp3 = Net::FTP->new($ebi_hostname, BlockSize => 20480, Timeout => $timeout);
 
@@ -244,10 +245,10 @@ $ftp3->login($username, $password) or die "Cannot login ", $ftp3->message;
 my $retr_spli_fh = fetch_fh($ftp3, $unip_splice_gz_ftp_path);
 gunzip_fh($retr_spli_fh, $unip_splice_dest_path);
 
-notify_new_activity("Fetching to $unip_xsd_path");
+# notify_new_activity("Fetching to $unip_xsd_path");
 fetch_file($ftp3, $unip_xsd_ftp_path, $unip_xsd_path);
 
-notify_new_activity("Fetching to $unip_kw_path");
+# notify_new_activity("Fetching to $unip_kw_path");
 my $retr_kw_fh = fetch_fh($ftp3, $unip_kw_ftp_path);
 gunzip_fh($retr_kw_fh, $unip_kw_path);
 
@@ -283,7 +284,7 @@ $ftp3->quit;
 
 ##################
 
-notify_new_activity("Fetching NCBI FASTA, GFF and assembly reports");
+notify_new_activity("Downloading NCBI FASTA, GFF and assembly reports");
 
 # Now... FTP to NCBI genomes to get chromosome fasta (.fna) and refseq annotations (.gff)
 my $refseq = '/genomes/refseq/bacteria'; # used for path
