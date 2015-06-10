@@ -178,7 +178,8 @@ for (@assem) {
 # We want the chromosome data
   if ($assembly_level =~ /Chromosome/) {
 
-    say $_; # so we can see what's going on - redirect
+    # TODO: Put this kind of information in a future verbose switch
+    # say $_; # so we can see what's going on - redirect
 
 # We're going to construct the directories used to download GFF & fna files
     my $assembly_vers = $assembly_id . "_" . $asm_name;
@@ -213,6 +214,8 @@ for (@assem) {
     $org_taxon{$taxid} = [$species, $assembly_vers, $refseq_category, $assembly_dir]; 
   }
 }
+
+say "Constructed " . scalar(keys %org_taxon) . " download entries out of " . scalar(@assem) . " assembly entries";
 
 ### Now... Process GO proteomes to get GO annotations ###
 my $go_dir = catdir($base, "go-annotation");
