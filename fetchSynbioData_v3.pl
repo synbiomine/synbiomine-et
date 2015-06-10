@@ -356,6 +356,12 @@ for my $key (sort {$a <=> $b} keys %org_taxon) {
 
 $ftp2->quit;
 
+notify_new_activity("Adding reference proteomes");
+
+# Add reference proteomes - not real strains so there's no genome sequence
+add_taxon(\%org_taxon, 1392, "reference model 1392 - no genome sequence"); # Bacillus anthracis
+add_taxon(\%org_taxon, 83333, "reference model 83333 - no genome sequence"); # E Coli strain K12
+
 notify_new_activity("Performing rest of work");
 
 # process KEGG and fetch UniProt protein files
@@ -374,10 +380,6 @@ my $complete = 'reviewed:no'; # proteomes whith mostly automated annotation
 # extensions for filenames
 my $db_sp = "uniprot_sprot"; 
 my $db_tr = "uniprot_trembl";
-
-# Add reference proteomes - not real strains so there's no genome sequence
-add_taxon(\%org_taxon, 1392, "reference model 1392 - no genome sequence"); # Bacillus anthracis
-add_taxon(\%org_taxon, 83333, "reference model 83333 - no genome sequence"); # E Coli strain K12
 
 # Loop through the taxons again
 my @taxa;
@@ -516,13 +518,16 @@ sub kegg_dbget {
 Add a taxon that just has a description 
 =cut
 sub add_taxon {
-  my %taxons = %{$_[0]};
+  my ($taxons, $taxon_id, $taxon_description) = @_;
+=pod
+  my $taxons = %{$_[0]};
   my $taxon_id = $_[1];
   my $taxon_description = $_[2];
+=cut
 
   say "Adding taxon $taxon_id => $taxon_description";
 
-  $taxons{taxon_id} = $taxon_description;
+  $taxons->{$taxon_id} = $taxon_description;
 }
 
 =pod
