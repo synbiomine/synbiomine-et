@@ -298,7 +298,7 @@ for my $key (keys %org_taxon) {
   mkdir "$genbank_dir/$date_dir/$assembly_vers", 0755;
 
   my $refseq_path = $refseq . "/" . $species . "/" . $assembly_dir;
-  say "Trying FTP for: $refseq_path";
+  say "Fetching files from $refseq_path";
 
   $ftp2->cwd("$refseq/$species/$assembly_dir") or die "Cannot change working directory ", $ftp2->message;
 
@@ -307,21 +307,21 @@ for my $key (keys %org_taxon) {
 
 # loop through the file list and download them to the relevant organsims genbank directory
   for my $gb_file (@file_list) {
-    say "Processing FILE: ", $gb_file;
+    # say "Processing FILE: ", $gb_file;
 
     if ($gb_file =~ /\.gz/) {
       $gb_file =~ /(.+)\.gz/;
       my $raw = $1;
 
       $ftp2->binary or die "Cannot set binary mode: $!"; # binary mode for the zip file
-      say "Fetch and unzip: $gb_file --> $raw"; # fetch and unzip
+      # say "Fetch and unzip: $gb_file --> $raw"; # fetch and unzip
 
       my $retr_fh = $ftp2->retr($gb_file) or warn "Problem with $refseq_path\nCannot retrieve $gb_file\n";
 
       if ($retr_fh) {
         gunzip $retr_fh => "$genbank_dir/$date_dir/$assembly_vers/$raw", AutoClose => 1
           or warn "Zip error $refseq_path\nCannot uncompress '$gb_file': $GunzipError\n";
-        say "Success - adding: $genbank_dir/$date_dir/$assembly_vers/$raw";
+        # say "Success - adding: $genbank_dir/$date_dir/$assembly_vers/$raw";
       }
       else {
         say "Darn! Problem with $refseq_path\nCouldn't get $gb_file";
@@ -330,7 +330,7 @@ for my $key (keys %org_taxon) {
     } else {
       $ftp2->ascii or die "Cannot set ascii mode: $!"; # set ascii mode for non-binary otherwise you get errors 
 
-      say "Fetching: $gb_file";
+      # say "Fetching: $gb_file";
 
       $ftp2->get($gb_file, "$genbank_dir/$date_dir/$assembly_vers/$gb_file")
 	      or warn "Problem with $refseq_path\n\nCannot retrieve $gb_file\n";
