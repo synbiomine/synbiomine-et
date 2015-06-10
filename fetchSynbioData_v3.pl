@@ -388,7 +388,7 @@ for my $taxon (sort {$a <=> $b} keys %org_taxon) {
 
   push (@taxa, $taxon); # store the taxon IDs to write to file later
 
-  say "Processing taxon: ", $taxon;
+  say "### Processing taxon: $taxon ###";
 
   &kegg_dbget($taxon); # send the taxon ID to the KEGG search subroutine - get the org acronym
 
@@ -473,6 +473,8 @@ sub kegg_dbget {
 
   my $content = $response->content;
 
+  # say "Response '$content'";
+
   open my ($str_fh), '+<', \$content;
 
 # Parse the response and check to see if any match the taxon ID
@@ -506,8 +508,8 @@ sub kegg_dbget {
     }
     $org_name =~ s/ \(.+\)$//g;
 
-    say "info: $kegg_info";
-    say "out: $tla, $kegg_taxon, $org_name";
+    say "Found kegg org code $tla";
+    # say "out: $tla, $kegg_taxon, $org_name";
     say KEGG_ORG_OUT $tla; # Write out space-separated taxons for use in project.xml fields
     say KEGG_TAXA_OUT $tla . ".taxonId = " . $kegg_taxon; # write to KEGG config file
   }
