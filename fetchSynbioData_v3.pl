@@ -150,7 +150,7 @@ my $file = 'assembly_summary_refseq.txt'; # this is where we get the look-up fil
 my $assem_ref = &fetch_filtered_data($hostname, $home, $file, $username, $password);
 my @assem = @{ $assem_ref };
 
-notify_new_activity("Constructing download file information");
+notify_new_activity("Constructing individual organism download information");
 
 ###while (<$handle>) { ### if we want all the bacteria we'd probably use this loop
 
