@@ -581,5 +581,5 @@ Provide an eye-catching way of showing when we engage in different activities in
 sub notify_new_activity {
   my ($activity) = @_;
 
-  say "==> $activity <==";
+  say "~~~ $activity ~~~";
 }
