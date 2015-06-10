@@ -407,8 +407,13 @@ close (TAXON_OUT);
 
 exit(1);
 
+##############################
 ######## SUBROUTINES #########
-# Subroutine user agent to connect to UniProt #
+##############################
+
+=pod
+Subroutine user agent to connect to UniProt
+=cut
 sub query_uniprot {
 
   my ($db, $taxon, $reference) = @_;
