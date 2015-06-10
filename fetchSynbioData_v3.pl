@@ -370,7 +370,7 @@ $org_taxon{"1392"} = ["reference model 1392 - no genome sequence"];
 # Loop through the taxons again
 my @taxa;
 for my $key (keys %org_taxon) {
-  say "\n$key: ", join(" * ", @{ $org_taxon{$key} } ); # for debug
+  say "$key: " . join(" * ", @{$org_taxon{$key}}); # for debug
 
   my $taxon = $key;
   push (@taxa, $taxon); # store the taxon IDs to write to file later
