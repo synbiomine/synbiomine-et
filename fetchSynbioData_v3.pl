@@ -106,8 +106,6 @@ foreach my $source (@sources) {
   symlink $date_dir, $source_current_symlink or die "Failed to link $source_date_dir with $source_current_symlink: $!\n";
 }
 
-notify_new_activity("Downloading EBI taxon ID -> GOA map");
-
 # email addr is required for NCBI FTP use
 my $contact = 'justincc@intermine.org'; # Please set your email address here to help us debug in case of problems.
 my $agent = LWP::UserAgent->new(agent => "libwww-perl $contact");
@@ -118,25 +116,6 @@ my $timeout      = 600;     # seconds, default is 120
 #my $retries      = 5;
 my $username = 'anonymous'; # allow anonymous FTPO with email addr as pwd
 my $password = 'justincc@intermine.org'; # required
-
-# set ftp address for EBI GO server
-my $ebi_hostname = 'ftp.ebi.ac.uk';
-
-# Hardcode the directory and filename we want to get
-my $ebi_home = '/pub/databases/GO/goa/proteomes'; 
-my $ebi_file = 'proteome2taxid'; # this is where we get the look-up file that maps GO proteome to organism
-
-my $go_ref = &fetch_filtered_data($ebi_hostname, $ebi_home, $ebi_file, $username, $password);
-my @go_taxons = @{ $go_ref };
-
-my %GO_proteomes; # Make a look-up of tax id to GO proteome
-for my $go_proteome (@go_taxons) {
-  chomp $go_proteome;
-  my ($org, $tax, $proteome) = split("\t", $go_proteome);
-  $GO_proteomes{$tax} = $proteome;
-}
-
-# say join("\n", @go_taxons);
 
 notify_new_activity("Downloading NCBI assembly summary");
 
@@ -218,37 +197,28 @@ for (@assem) {
 
 # say "Constructed " . scalar(keys %org_taxon) . " download entries out of " . scalar(@assem) . " assembly entries";
 
-# But, while we're logged in we'll get some of extra uniprot files
-my $unip_dir = catdir($base, "uniprot", $date_dir);
-my $unip_kb_ftp_path = "/pub/databases/uniprot/current_release/knowledgebase/complete";
-my $unip_kb_docs_ftp_path = "$unip_kb_ftp_path/docs";
+###########
 
-my $unip_splice_gz_ftp_path = "$unip_kb_ftp_path/uniprot_sprot_varsplic.fasta.gz";
-my $unip_splice_dest_path = catdir($unip_dir, "uniprot_sprot_varsplic.fasta");
+notify_new_activity("Downloading EBI taxon ID -> GOA map");
 
-my $unip_xsd_bn = "uniprot.xsd";
-my $unip_xsd_ftp_path = "$unip_kb_ftp_path/$unip_xsd_bn";
-my $unip_xsd_path = catdir($unip_dir, $unip_xsd_bn);
+# set ftp address for EBI GO server
+my $ebi_hostname = 'ftp.ebi.ac.uk';
 
-my $unip_kw_ftp_path = "$unip_kb_docs_ftp_path/keywlist.xml.gz";
-my $unip_kw_path = catdir($unip_dir, "keywlist.xml");
+# Hardcode the directory and filename we want to get
+my $ebi_home = '/pub/databases/GO/goa/proteomes'; 
+my $ebi_file = 'proteome2taxid'; # this is where we get the look-up file that maps GO proteome to organism
 
-notify_new_activity("Downloading UniProt files");
-# notify_new_activity("Fetching to $unip_splice_dest_path");
+my $go_ref = &fetch_filtered_data($ebi_hostname, $ebi_home, $ebi_file, $username, $password);
+my @go_taxons = @{ $go_ref };
 
-my $ftp3 = Net::FTP->new($ebi_hostname, BlockSize => 20480, Timeout => $timeout);
+my %GO_proteomes; # Make a look-up of tax id to GO proteome
+for my $go_proteome (@go_taxons) {
+  chomp $go_proteome;
+  my ($org, $tax, $proteome) = split("\t", $go_proteome);
+  $GO_proteomes{$tax} = $proteome;
+}
 
-$ftp3->login($username, $password) or die "Cannot login ", $ftp3->message; 
-
-my $retr_spli_fh = fetch_fh($ftp3, $unip_splice_gz_ftp_path);
-gunzip_fh($retr_spli_fh, $unip_splice_dest_path);
-
-# notify_new_activity("Fetching to $unip_xsd_path");
-fetch_file($ftp3, $unip_xsd_ftp_path, $unip_xsd_path);
-
-# notify_new_activity("Fetching to $unip_kw_path");
-my $retr_kw_fh = fetch_fh($ftp3, $unip_kw_ftp_path);
-gunzip_fh($retr_kw_fh, $unip_kw_path);
+# say join("\n", @go_taxons);
 
 notify_new_activity("Downloading GO annotation files for organisms");
 
@@ -256,7 +226,9 @@ my $go_dir = catdir($base, "go-annotation");
 
 # Switch to the GO anotation dir to fetch those files
 # say "Trying FTP for: $ebi_hostname";
+my $ftp3 = Net::FTP->new($ebi_hostname, BlockSize => 20480, Timeout => $timeout);
 
+$ftp3->login($username, $password) or die "Cannot login ", $ftp3->message; 
 $ftp3->cwd($ebi_home) or die "Cannot change working directory ", $ftp3->message;
 
 # Loop through the taxon IDs and download the GO annotation file (.goa)
@@ -279,6 +251,36 @@ for my $key (keys %org_taxon) {
     say "No GO annotation found for taxon ID $key";
   }
 }
+
+##################
+
+notify_new_activity("Downloading UniProt files");
+
+my $unip_dir = catdir($base, "uniprot", $date_dir);
+my $unip_kb_ftp_path = "/pub/databases/uniprot/current_release/knowledgebase/complete";
+my $unip_kb_docs_ftp_path = "$unip_kb_ftp_path/docs";
+
+my $unip_splice_gz_ftp_path = "$unip_kb_ftp_path/uniprot_sprot_varsplic.fasta.gz";
+my $unip_splice_dest_path = catdir($unip_dir, "uniprot_sprot_varsplic.fasta");
+
+my $unip_xsd_bn = "uniprot.xsd";
+my $unip_xsd_ftp_path = "$unip_kb_ftp_path/$unip_xsd_bn";
+my $unip_xsd_path = catdir($unip_dir, $unip_xsd_bn);
+
+my $unip_kw_ftp_path = "$unip_kb_docs_ftp_path/keywlist.xml.gz";
+my $unip_kw_path = catdir($unip_dir, "keywlist.xml");
+
+# notify_new_activity("Fetching to $unip_splice_dest_path");
+
+my $retr_spli_fh = fetch_fh($ftp3, $unip_splice_gz_ftp_path);
+gunzip_fh($retr_spli_fh, $unip_splice_dest_path);
+
+# notify_new_activity("Fetching to $unip_xsd_path");
+fetch_file($ftp3, $unip_xsd_ftp_path, $unip_xsd_path);
+
+# notify_new_activity("Fetching to $unip_kw_path");
+my $retr_kw_fh = fetch_fh($ftp3, $unip_kw_ftp_path);
+gunzip_fh($retr_kw_fh, $unip_kw_path);
 
 $ftp3->quit;
 
