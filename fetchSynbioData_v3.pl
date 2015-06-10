@@ -383,10 +383,9 @@ my $db_tr = "uniprot_trembl";
 
 # Loop through the taxons again
 my @taxa;
-for my $key (sort {$a <=> $b} keys %org_taxon) {
+for my $taxon (sort {$a <=> $b} keys %org_taxon) {
   # say "$key: " . join(" * ", @{$org_taxon{$key}}); # for debug
 
-  my $taxon = $key;
   push (@taxa, $taxon); # store the taxon IDs to write to file later
 
   say "Processing taxon: ", $taxon;
