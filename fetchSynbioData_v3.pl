@@ -211,10 +211,12 @@ for (@assem) {
 
   # store the data to use for FTP access later
     $org_taxon{$taxid} = [$species, $assembly_vers, $refseq_category, $assembly_dir]; 
+
+    say "$taxid => $species, $assembly_vers, $refseq_category, $assembly_dir";
   }
 }
 
-say "Constructed " . scalar(keys %org_taxon) . " download entries out of " . scalar(@assem) . " assembly entries";
+# say "Constructed " . scalar(keys %org_taxon) . " download entries out of " . scalar(@assem) . " assembly entries";
 
 ### Now... Process GO proteomes to get GO annotations ###
 my $go_dir = catdir($base, "go-annotation");
