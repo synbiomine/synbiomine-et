@@ -519,11 +519,6 @@ Add a taxon that just has a description
 =cut
 sub add_taxon {
   my ($taxons, $taxon_id, $taxon_description) = @_;
-=pod
-  my $taxons = %{$_[0]};
-  my $taxon_id = $_[1];
-  my $taxon_description = $_[2];
-=cut
 
   say "Adding taxon $taxon_id => $taxon_description";
 
@@ -536,15 +531,6 @@ Return FTP data where lines have t omatch Bacillus|Escherichia|Geobacillus
 sub fetch_filtered_data {
 
   my ($ftp, $file) = @_;
-
-=pod
-  # my $ftp = Net::FTP->new($hostname, BlockSize => 20480, Timeout => $timeout, Debug   => 1); # Construct FTP object
-  my $ftp = Net::FTP->new($hostname, BlockSize => 20480, Timeout => $timeout);
-
-  $ftp->login($username, $password) or die "Cannot login ", $ftp->message;
-
-  $ftp->cwd($home) or die "Cannot change working directory ", $ftp->message;
-=cut
 
   #my @dir_list = grep /_uid/, $ftp->ls();
 
