@@ -364,8 +364,8 @@ my $db_sp = "uniprot_sprot";
 my $db_tr = "uniprot_trembl";
 
 # Add reference proteomes - not real strains so there's no genome sequence
-$org_taxon{"83333"} = ["reference model 83333 - no genome sequence"];
-$org_taxon{"1392"} = ["reference model 1392 - no genome sequence"];
+$org_taxon{"83333"} = ["reference model 83333 - no genome sequence"]; # E Coli strain K12
+$org_taxon{"1392"} = ["reference model 1392 - no genome sequence"]; # Bacillus anthracis
 
 # Loop through the taxons again
 my @taxa;
