@@ -198,9 +198,13 @@ for (@assem) {
 
   # store the data to use for FTP access later
     $org_taxon{$taxid} = [$species, $assembly_vers, $refseq_category, $assembly_dir]; 
-
-    say "$taxid => $species, $assembly_vers, $refseq_category, $assembly_dir";
   }
+}
+
+# Do this in sorted order
+for my $key (sort {$a <=> $b} keys %org_taxon) {
+  my @vals = @{$org_taxon{$key}};
+  say "$key => " . join(", ", @vals);
 }
 
 # say "Constructed " . scalar(keys %org_taxon) . " download entries out of " . scalar(@assem) . " assembly entries";
@@ -240,7 +244,7 @@ my $go_dir = catdir($base, "go-annotation");
 $ftp3->ascii or die "Cannot set ascii mode: " . $ftp3->message; # set ascii mode for non-binary otherwise you get errors 
 
 # Loop through the taxon IDs and download the GO annotation file (.goa)
-for my $key (keys %org_taxon) {
+for my $key (sort {$a <=> $b} keys %org_taxon) {
 
 # Check to see if our strains have GO annotations (look-up on tax ID)
   if (exists $GO_proteomes{$key} ) {
@@ -250,7 +254,7 @@ for my $key (keys %org_taxon) {
 
     # say "Processing FILE: ", $go_file;
 
-    say "Fetching: $go_file";
+    say "Fetching: $key => $go_file";
 
     $ftp3->get($go_file, "$go_dir/$date_dir/$go_file")
       or warn "Problem with $ebi_home, cannot retrieve $go_file: " . $ftp3->message . "\n";
@@ -304,14 +308,14 @@ my $ftp2 = Net::FTP->new($hostname, BlockSize => 20480, Timeout => $timeout);
 $ftp2->login($username, $password) or die "Cannot login ", $ftp2->message;
 
 # Loop through the taxon IDs and download the GFF, chrm fasta and the report file
-for my $key (keys %org_taxon) {
+for my $key (sort {$a <=> $b} keys %org_taxon) {
 
 # Make a directory for each genbank organism
   my ($species, $assembly_vers, $refseq_category, $assembly_dir) = @{ $org_taxon{$key} };
   mkdir "$genbank_dir/$date_dir/$assembly_vers", 0755;
 
   my $refseq_path = "$refseq/$species/$assembly_dir";
-  say "Fetching files from $refseq_path";
+  say "Fetching files from $key => $refseq_path";
 
   $ftp2->cwd($refseq_path) or die "Cannot change working directory ", $ftp2->message;
 
@@ -378,7 +382,7 @@ $org_taxon{"1392"} = ["reference model 1392 - no genome sequence"]; # Bacillus a
 
 # Loop through the taxons again
 my @taxa;
-for my $key (keys %org_taxon) {
+for my $key (sort {$a <=> $b} keys %org_taxon) {
   # say "$key: " . join(" * ", @{$org_taxon{$key}}); # for debug
 
   my $taxon = $key;
