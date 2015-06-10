@@ -126,7 +126,15 @@ my $hostname = 'ftp.ncbi.nlm.nih.gov';
 my $home = '/genomes/ASSEMBLY_REPORTS'; 
 my $file = 'assembly_summary_refseq.txt'; # this is where we get the look-up file that maps assembly ID to organism
 
-my $assem_ref = &fetch_filtered_data($hostname, $home, $file, $username, $password);
+my $ncbi_ftp = Net::FTP->new($hostname, BlockSize => 20480, Timeout => $timeout);
+
+$ncbi_ftp->login($username, $password) or die "Cannot login ", $ncbi_ftp->message; 
+$ncbi_ftp->cwd($home) or die "Cannot change working directory ", $ncbi_ftp->message;
+
+my $assem_ref = &fetch_filtered_data($ncbi_ftp, $file);
+
+$ncbi_ftp->quit;
+
 my @assem = @{ $assem_ref };
 
 notify_new_activity("Constructing individual organism download information");
@@ -201,14 +209,19 @@ for (@assem) {
 
 notify_new_activity("Downloading EBI taxon ID -> GOA map");
 
-# set ftp address for EBI GO server
 my $ebi_hostname = 'ftp.ebi.ac.uk';
 
 # Hardcode the directory and filename we want to get
 my $ebi_home = '/pub/databases/GO/goa/proteomes'; 
 my $ebi_file = 'proteome2taxid'; # this is where we get the look-up file that maps GO proteome to organism
 
-my $go_ref = &fetch_filtered_data($ebi_hostname, $ebi_home, $ebi_file, $username, $password);
+# say "Trying FTP for: $ebi_hostname";
+my $ftp3 = Net::FTP->new($ebi_hostname, BlockSize => 20480, Timeout => $timeout);
+
+$ftp3->login($username, $password) or die "Cannot login ", $ftp3->message; 
+$ftp3->cwd($ebi_home) or die "Cannot change working directory ", $ftp3->message;
+
+my $go_ref = &fetch_filtered_data($ftp3, $ebi_file);
 my @go_taxons = @{ $go_ref };
 
 my %GO_proteomes; # Make a look-up of tax id to GO proteome
@@ -224,12 +237,7 @@ notify_new_activity("Downloading GO annotation files for organisms");
 
 my $go_dir = catdir($base, "go-annotation");
 
-# Switch to the GO anotation dir to fetch those files
-# say "Trying FTP for: $ebi_hostname";
-my $ftp3 = Net::FTP->new($ebi_hostname, BlockSize => 20480, Timeout => $timeout);
-
-$ftp3->login($username, $password) or die "Cannot login ", $ftp3->message; 
-$ftp3->cwd($ebi_home) or die "Cannot change working directory ", $ftp3->message;
+$ftp3->ascii or die "Cannot set ascii mode: " . $ftp3->message; # set ascii mode for non-binary otherwise you get errors 
 
 # Loop through the taxon IDs and download the GO annotation file (.goa)
 for my $key (keys %org_taxon) {
@@ -243,10 +251,9 @@ for my $key (keys %org_taxon) {
     # say "Processing FILE: ", $go_file;
 
     say "Fetching: $go_file";
-    $ftp3->ascii or die "Cannot set ascii mode: $!"; # set ascii mode for non-binary otherwise you get errors 
 
     $ftp3->get($go_file, "$go_dir/$date_dir/$go_file")
-      or warn "Problem with $ebi_home\nCannot retrieve $go_file\n";
+      or warn "Problem with $ebi_home, cannot retrieve $go_file: " . $ftp3->message . "\n";
   } else {
     say "No GO annotation found for taxon ID $key";
   }
@@ -507,29 +514,31 @@ Return FTP data where lines have t omatch Bacillus|Escherichia|Geobacillus
 =cut
 sub fetch_filtered_data {
 
-  my ($hostname, $home, $file, $username, $password) = @_;
+  my ($ftp, $file) = @_;
 
+=pod
   # my $ftp = Net::FTP->new($hostname, BlockSize => 20480, Timeout => $timeout, Debug   => 1); # Construct FTP object
   my $ftp = Net::FTP->new($hostname, BlockSize => 20480, Timeout => $timeout);
 
   $ftp->login($username, $password) or die "Cannot login ", $ftp->message;
 
   $ftp->cwd($home) or die "Cannot change working directory ", $ftp->message;
+=cut
 
   #my @dir_list = grep /_uid/, $ftp->ls();
 
-  # get the assembly report file
+  # We're using a filehandle on the basis that it is more memory efficient as we can discard each
+  # retrieved line after processing instead of slurping in the whole file at once
   my $handle = $ftp->retr($file) or die "get failed ", $ftp->message;
 
-  # just grab the three Genera that we want from the handle and slurp into an array
-  my @assem = grep /Bacillus|Escherichia|Geobacillus/, <$handle>;
+  # just grab the three Genera that we want
+  my @entries = grep /Bacillus|Escherichia|Geobacillus/, <$handle>;
 
-  ### my @assem = grep / subtilis/, <$handle>; # quick version for testing
+  # We need to signal the end of the retr() data transfer but can't use close since it stops future re-use of the connection
+  $handle->abort();
+  # close ($handle);
 
-  close ($handle);
-  $ftp->quit;
-
-  return \@assem;
+  return \@entries;
 }
 
 =pod
@@ -570,9 +579,9 @@ sub set_ftp_transfer_mode {
   my ($ftp, $use_ascii) = @_;
 
   if ($use_ascii) {
-    $ftp->ascii or die "Cannot set ascii mode: $!";
+    $ftp->ascii or die "Cannot set ascii mode: ", $ftp->message;
   } else {
-    $ftp->binary or die "Cannot set binary mode: $!";
+    $ftp->binary or die "Cannot set binary mode: ", $ftp->message;
   }
 }
 
