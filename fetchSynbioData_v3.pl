@@ -203,8 +203,7 @@ for (@assem) {
 
 # Do this in sorted order
 for my $key (sort {$a <=> $b} keys %org_taxon) {
-  my @vals = @{$org_taxon{$key}};
-  say "$key => " . join(", ", @vals);
+  say "$key => " . join(", ", @{$org_taxon{$key}});
 }
 
 # say "Constructed " . scalar(keys %org_taxon) . " download entries out of " . scalar(@assem) . " assembly entries";
@@ -377,8 +376,10 @@ my $db_sp = "uniprot_sprot";
 my $db_tr = "uniprot_trembl";
 
 # Add reference proteomes - not real strains so there's no genome sequence
-$org_taxon{"83333"} = ["reference model 83333 - no genome sequence"]; # E Coli strain K12
-$org_taxon{"1392"} = ["reference model 1392 - no genome sequence"]; # Bacillus anthracis
+add_taxon(\%org_taxon, 1392, "reference model 1392 - no genome sequence"); # Bacillus anthracis
+add_taxon(\%org_taxon, 83333, "reference model 83333 - no genome sequence"); # E Coli strain K12
+# $org_taxon{"83333"} = ["reference model 83333 - no genome sequence"]; # E Coli strain K12
+# $org_taxon{"1392"} = ["reference model 1392 - no genome sequence"]; # Bacillus anthracis
 
 # Loop through the taxons again
 my @taxa;
@@ -511,6 +512,19 @@ sub kegg_dbget {
     say KEGG_ORG_OUT $tla; # Write out space-separated taxons for use in project.xml fields
     say KEGG_TAXA_OUT $tla . ".taxonId = " . $kegg_taxon; # write to KEGG config file
   }
+}
+
+=pod
+Add a taxon that just has a description 
+=cut
+sub add_taxon {
+  my %taxons = %{$_[0]};
+  my $taxon_id = $_[1];
+  my $taxon_description = $_[2];
+
+  say "Adding taxon $taxon_id => $taxon_description";
+
+  $taxons{taxon_id} = $taxon_description;
 }
 
 =pod
