@@ -432,13 +432,13 @@ sub query_uniprot {
       if ($db =~ /sprot/) {
         say "No SwissProt results for $taxon";
         unlink $file; # unlink - if the file doesn't exist
-        return;
       }
       else {
         say "No TrEMBL results for $taxon\n";
         unlink $file; # unlink - if the file doesn't exist
-        return;
       }
+
+      return;
     }
 
 # Check the timestamps to see if the server data is newer
@@ -447,7 +447,6 @@ sub query_uniprot {
     say "Success for Taxon: $taxon with $db";
     say "File $file: downloaded $results entries of UniProt release $release ($date)";
     say "\n";
-    return;
   }
   elsif ($response_taxon->code == HTTP::Status::RC_NOT_MODIFIED) {
     say "File $file: up-to-date"; # if it's not newer, don't download
@@ -456,7 +455,6 @@ sub query_uniprot {
     warn 'Failed, got ' . $response_taxon->status_line .
       ' for ' . $response_taxon->request->uri . "\n"; # report if errors generated
   }
-  return;
 }
 
 =pod
