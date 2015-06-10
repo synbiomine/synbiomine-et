@@ -157,7 +157,6 @@ notify_new_activity("Constructing download file information");
 # We will populate this with data for ftp access later
 my %org_taxon;
 
-# just process the three genera
 for (@assem) {
   chomp;
 
@@ -375,7 +374,6 @@ for my $key (keys %org_taxon) {
   my $taxon = $key;
   push (@taxa, $taxon); # store the taxon IDs to write to file later
 
-# For each taxon
   say "Processing taxon: ", $taxon;
 
   &kegg_dbget($taxon); # send the taxon ID to the KEGG search subroutine - get the org acronym
@@ -383,7 +381,6 @@ for my $key (keys %org_taxon) {
 # Send the Taxon IDs to the UniProt subroutine to get the proteins
   &query_uniprot($db_sp, $taxon, $reference); # Get swissprot
   &query_uniprot($db_tr, $taxon, $complete); # Get TrEMBL
-
 }
 
 # Write the taxons to file
@@ -443,8 +440,10 @@ sub query_uniprot {
   return;
 }
 
+=pod
 # Search KEGG to get three-letter kegg org codes
 # Use the taxon ID to query KEGG's WS (using dbget) - I can't believe there's no taxon look-up!
+=cut
 sub kegg_dbget {
 
   my $taxon = shift;
@@ -456,14 +455,10 @@ sub kegg_dbget {
   my $response = $agent->request($request); # submit the request
 
 # Check the response
-  $response->is_success or say "Error: " . 
-  $response->code . " " . $response->message;
+  $response->is_success or say "Error: " . $response->code . " " . $response->message;
 
-# Grab the conetent
   my $content = $response->content;
-  #say $content;
 
-# Open content as file handle
   open my ($str_fh), '+<', \$content;
 
 # Parse the response and check to see if any match the taxon ID
