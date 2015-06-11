@@ -36,8 +36,9 @@ defined $opts{"t"} and $tabView++; # tab summary - maps assembly vers to org nam
 defined $opts{"g"} and $gffconfig++; # writes gff_config.txt file to run dir
 defined $opts{"v"} and $verbose++; # used for debugging
 
-# if no directory is given as input, use /SAN_synbiomine/data/ genbank dir 
-my $dir = ($ARGV[0]) ? "$ARGV[0]" : '/SAN_synbiomine/data/genbank/current';
+@ARGV > 0 or die "data_directory must be specified.\n";
+my $dir = $ARGV[0];
+# my $dir = ($ARGV[0]) ? "$ARGV[0]" : '/SAN_synbiomine/data/genbank/current';
 
 # if they want the config, open the file for writing (-g option)
 if ($gffconfig) {
