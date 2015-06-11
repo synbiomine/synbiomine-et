@@ -96,8 +96,6 @@ $out_dir = ($out_dir) ? $out_dir : "\."; # set output dir - or use current by de
 
 open(ORG_FILE, "< $org_file") || die "cannot open $org_file: $!\n"; # open kegg org file
 
-say "Executing KEGG pathways script";
-
 # process the organism file
 while (<ORG_FILE>) {
   chomp; # new lines off
