@@ -16,7 +16,7 @@ my $usage = "Usage:writeSynbioMineProjectXML.pl [-tvgh] genbank_directory
 
 synopsis: reads the genbank directory and writes associated data that's needed for the build.
 Default output writes the source XML needed for the project.xml.
-Run with the -g option, writes infor for the gff_config file. 
+Run with the -g option, writes info for the gff_config file. 
 The -t option will generate a tab-separated genomes summary file (see below)
 
 options:

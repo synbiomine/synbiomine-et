@@ -395,6 +395,8 @@ for my $taxon (sort {$a <=> $b} keys %org_taxon) {
 # Send the Taxon IDs to the UniProt subroutine to get the proteins
   query_uniprot($db_sp, $taxon, $reference); # Get swissprot
   query_uniprot($db_tr, $taxon, $complete); # Get TrEMBL
+  
+  print "\n";
 }
 
 # Write the taxons to file
@@ -444,9 +446,12 @@ sub query_uniprot {
 # Check the timestamps to see if the server data is newer
     my $release = $response_taxon->header('X-UniProt-Release');
     my $date = sprintf("%4d-%02d-%02d", HTTP::Date::parse_date($response_taxon->header('Last-Modified')));
-    say "Success for Taxon: $taxon with $db";
-    say "File $file: downloaded $results entries of UniProt release $release ($date)";
-    say "\n";
+
+    say "Fetched $results entries in UniProt release $release ($date) for $db";
+
+    # say "Success for Taxon: $taxon with $db";
+    # say "File $file: downloaded $results entries of UniProt release $release ($date)";
+    # say "\n";
   }
   elsif ($response_taxon->code == HTTP::Status::RC_NOT_MODIFIED) {
     say "File $file: up-to-date"; # if it's not newer, don't download
