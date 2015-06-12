@@ -220,7 +220,7 @@ for my $key (sort {$a <=> $b} keys %org_taxon) {
   say "Selected $key => " . join(", ", @{$org_taxon{$key}});
 }
 
-# say "Constructed " . scalar(keys %org_taxon) . " download entries out of " . scalar(@assem) . " assembly entries";
+say "Selected " . scalar(keys %org_taxon) . " assemblies";
 
 ###########
 
@@ -333,8 +333,8 @@ for my $key (sort {$a <=> $b} keys %org_taxon) {
     say "No FTP directory $key => $refseq_path.  Skipping";
     next;
   }
-# or die "Cannot change working directory ", $ftp2->message;
-  say "Fetching files from $key => $refseq_path";
+
+  say "Fetching files for $key => $refseq_path";
 
 # get a list of the matching files
   my @file_list = grep /\.gff.gz|\.fna.gz|_report.txt/, $ftp2->ls();
@@ -567,6 +567,9 @@ sub fetch_filtered_data {
 
   # just grab the three Genera that we want
   my @entries = grep /Bacillus|Escherichia|Geobacillus/, <$handle>;
+
+  # justincc 20150612 Ignoring phages and viruses as these are unlikely to be useful but need to check
+  @entries = grep !/phage|virus/, @entries;
 
   # We need to signal the end of the retr() data transfer but can't use close since it stops future re-use of the connection
   $handle->abort();
