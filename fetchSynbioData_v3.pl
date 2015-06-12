@@ -454,7 +454,7 @@ sub query_uniprot {
         unlink $file; # unlink - if the file doesn't exist
       }
       else {
-        say "No TrEMBL results for $taxon\n";
+        say "No TrEMBL results for $taxon";
         unlink $file; # unlink - if the file doesn't exist
       }
 
