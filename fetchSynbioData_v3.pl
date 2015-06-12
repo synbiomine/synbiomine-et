@@ -54,12 +54,13 @@ The taxon IDs are needed by other data sources in the project.xml e.g. pubmed-ge
 
 options:
 \t-h\tthis usage
+\t-v\tmore verbose logging
 
 ";
 
 my (%opts, $verbose);
 
-getopts('h', \%opts);
+getopts('hv', \%opts);
 defined $opts{"h"} and die $usage;
 defined $opts{"v"} and $verbose = 1;
 
@@ -138,7 +139,7 @@ $ncbi_ftp->quit;
 
 my @assem = @{ $assem_ref };
 
-notify_new_activity("Constructing individual organism download information");
+notify_new_activity("Selecting assemblies");
 
 ###while (<$handle>) { ### if we want all the bacteria we'd probably use this loop
 
@@ -152,6 +153,8 @@ for (@assem) {
     $species_taxid, $organism_name, $infraspecific_name, $isolate, $version_status, 
     $assembly_level, $release_type, $genome_rep, $seq_rel_date, $asm_name, 
     $submitter, $gbrs_paired_asm, $paired_asm_comp) = split("\t", $_);
+
+  say "Examining $taxid => $assembly_id, $organism_name" if ($verbose);
 
 # We're only interested in reference or representative genomes - complete and probably have refseq annotations
 # they used to use hyphen, now they use space so check for both in case they change back
@@ -204,7 +207,7 @@ for (@assem) {
 
 # Do this in sorted order
 for my $key (sort {$a <=> $b} keys %org_taxon) {
-  say "$key => " . join(", ", @{$org_taxon{$key}});
+  say "Selected $key => " . join(", ", @{$org_taxon{$key}});
 }
 
 # say "Constructed " . scalar(keys %org_taxon) . " download entries out of " . scalar(@assem) . " assembly entries";
