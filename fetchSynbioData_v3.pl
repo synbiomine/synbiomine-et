@@ -164,7 +164,8 @@ for (@assem) {
   }
 
 # We want the chromosome data
-  if (not $assembly_level =~ /Chromosome/) {
+  # if (not $assembly_level =~ /Chromosome/) {
+  if (not $assembly_level =~ /Chromosome|Complete Genome/) {
     say "Ignoring non-chromosome assembly level $assembly_level" if ($verbose);
     next;
   }
@@ -327,9 +328,13 @@ for my $key (sort {$a <=> $b} keys %org_taxon) {
   mkdir "$genbank_dir/$date_dir/$assembly_vers", 0755;
 
   my $refseq_path = "$refseq/$species/$assembly_dir";
-  say "Fetching files from $key => $refseq_path";
 
-  $ftp2->cwd($refseq_path) or die "Cannot change working directory ", $ftp2->message;
+  if (not $ftp2->cwd($refseq_path)) {
+    say "No FTP directory $key => $refseq_path.  Skipping";
+    next;
+  }
+# or die "Cannot change working directory ", $ftp2->message;
+  say "Fetching files from $key => $refseq_path";
 
 # get a list of the matching files
   my @file_list = grep /\.gff.gz|\.fna.gz|_report.txt/, $ftp2->ls();
