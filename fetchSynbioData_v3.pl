@@ -278,7 +278,7 @@ for my $key (sort {$a <=> $b} keys %org_taxon) {
 
 ##################
 
-notify_new_activity("Downloading UniProt files");
+notify_new_activity("Downloading UniProt summary files");
 
 my $unip_dir = catdir($base, "uniprot", $date_dir);
 my $unip_kb_ftp_path = "/pub/databases/uniprot/current_release/knowledgebase/complete";
