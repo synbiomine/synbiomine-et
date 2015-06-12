@@ -158,51 +158,60 @@ for (@assem) {
 
 # We're only interested in reference or representative genomes - complete and probably have refseq annotations
 # they used to use hyphen, now they use space so check for both in case they change back
-  next unless (($refseq_category) && ($refseq_category =~ /-genome| genome/)); 
+  if (not ($refseq_category && $refseq_category =~ /-genome| genome/)) {
+    say "Ignoring non-genome category $refseq_category" if ($verbose);
+    next;
+  }
 
-# There's a strange Bacillus species that has [] around its name!
-# [Bacillus] selenitireducens MLS10
+# We want the chromosome data
+  if (not $assembly_level =~ /Chromosome/) {
+    say "Ignoring non-chromosome assembly level $assembly_level" if ($verbose);
+    next;
+  }
+
+  # next unless (($refseq_category) && ($refseq_category =~ /-genome| genome/)); 
+
+  # There's a strange Bacillus species that has [] around its name!
+  # [Bacillus] selenitireducens MLS10
   $organism_name =~ s/\[/_/;
   $organism_name =~ s/\]//;
 
-# We want the chromosome data
-  if ($assembly_level =~ /Chromosome/) {
+  # We're going to construct the directories used to download GFF & fna files
+  my $assembly_vers = $assembly_id . "_" . $asm_name;
+  my $assembly_dir = "all_assembly_versions/" . $assembly_vers;
 
-    # TODO: Put this kind of information in a future verbose switch
-    # say $_; # so we can see what's going on - redirect
+  my $species;
 
-# We're going to construct the directories used to download GFF & fna files
-    my $assembly_vers = $assembly_id . "_" . $asm_name;
-    my $assembly_dir = "all_assembly_versions/" . $assembly_vers;
+  # they've probably made it more complicated than it needs to be so we have to define
+  # rules on whether the directory is Genus_species or if it covers a species sp.
+  if ($organism_name =~ / sp\. /) {
+    $organism_name =~ /(.+)/; # grab the whole thing if it's Genus sp.
+    $species = $1;
+  }
+  else {
+    $organism_name =~ /(\w+ \w+)/; # otherwise grab genus_species
+    $species = $1;
+  }
 
-    my $species;
-# they've probably made it more complicated than it needs to be so we have to define
-# rules on whether the directory is Genus_species or if it covers a species sp.
-    if ($organism_name =~ / sp\. /) {
-      $organism_name =~ /(.+)/; # grab the whole thing if it's Genus sp.
-      $species = $1;
+  $species =~ s/ /_/g; # replace spaces with underscore
+
+  # there are some duplicate entries - check whether we've seen it before
+  if ( exists $org_taxon{$taxid} ) {
+  # For B. subtilis 168 we want the representative genome - the reference genome has odd IDs
+    if ( ($taxid eq '224308') and ($refseq_category =~ /reference-genome/) ) {
+      say "Specifically ignoring reference genome for this organism" if ($verbose);
+      next;
     }
-    else {
-      $organism_name =~ /(\w+ \w+)/; # otherwise grab genus_species
-      $species = $1;
+    elsif ($refseq_category =~ /representative-genome/) {
+      say "Ignoring representative genome as we already have an assembly for this organism" if ($verbose);
+      next;
     }
 
-    $species =~ s/ /_/g; # replace spaces with underscore
-
-# there are some duplicate entries - check whether we've seen it before
-    if ( exists $org_taxon{$taxid} ) {
-    # For B. subtilis 168 we want the representative genome - the reference genome has odd IDs
-      if ( ($taxid eq '224308') and ($refseq_category =~ /reference-genome/) ) {
-	      next;
-      }
-      elsif ($refseq_category =~ /representative-genome/) {
-	      next;
-      }
-    }
+    say "Replacing assembly $org_taxon{$taxid}[1] with later candidate $assembly_vers" if ($verbose);
+  }
 
   # store the data to use for FTP access later
-    $org_taxon{$taxid} = [$species, $assembly_vers, $refseq_category, $assembly_dir]; 
-  }
+  $org_taxon{$taxid} = [$species, $assembly_vers, $refseq_category, $assembly_dir]; 
 }
 
 # Do this in sorted order
