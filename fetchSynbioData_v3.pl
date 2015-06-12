@@ -17,7 +17,7 @@ use feature ':5.12';
 my $current_symlink = "current";
 my @sources = qw(genbank go-annotation kegg taxons uniprot);
 
-my $usage = "Usage:fetchSynbioData.pl [-h] data_directory
+my $usage = "Usage:fetchSynbioData.pl [-hv] data_directory
 
 Data download script for SynBioMine.
 The data directory needs to contain sub-directories named:
@@ -57,10 +57,11 @@ options:
 
 ";
 
-my (%opts);
+my (%opts, $verbose);
 
 getopts('h', \%opts);
 defined $opts{"h"} and die $usage;
+defined $opts{"v"} and $verbose = 1;
 
 # date settings - used to make a new working folder
 my $tm = localtime;
