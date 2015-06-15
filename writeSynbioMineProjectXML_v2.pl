@@ -3,6 +3,7 @@
 use strict;
 use warnings;
 use Getopt::Std;
+use XML::LibXML;
 
 # allows us to use 'say' instead of print
 use feature ':5.12';
@@ -52,6 +53,8 @@ opendir(DIR, $dir) or die "cannot open dir: $!";
 # generate headers if a tab summary is needed (-t option)
 say "taxID\torganism name\tsubdir\tfile prefix" if ($tabView);
 #say GFF_CONF_OUT "taxID: taxname\talt ID\tlocus_tag\tsymbol\tsynonym" if ($gffconfig);
+
+my $xmlParser = XML::LibXML->new();
 
 # read the sub dir listing - name with assembly IDs
 while (my $subdir = readdir DIR) {
@@ -224,37 +227,41 @@ exit 0;
 sub gff_print {
   my ($orgm, $taxID, $taxname, $subdir, $gbDir, $gffFile) = @_;
 
-  my $gff_block = <<EOF;
-    <source name="$orgm-gff" type="synbio-gff">
-      <property name="gff3.taxonId" value="$taxID"/>
-      <property name="gff3.seqDataSourceName" value="NCBI"/>
-      <property name="gff3.dataSourceName" value="NCBI"/>
-      <property name="gff3.seqClsName" value="Chromosome"/>
-      <property name="gff3.dataSetTitle" value="$taxname genomic features"/>
-      <property name="src.data.dir" location="$gbDir/"/>
-      <property name="src.data.dir.includes" value="$gffFile"/>
-    </source>
-EOF
- say $gff_block, unless ($tabView or $gffconfig);
+  my $xml = $xmlParser->parse_string(<<'XML');
+<source name="$orgm-gff" type="synbio-gff">
+  <property name="gff3.taxonId" value="$taxID"/>
+  <property name="gff3.seqDataSourceName" value="NCBI"/>
+  <property name="gff3.dataSourceName" value="NCBI"/>
+  <property name="gff3.seqClsName" value="Chromosome"/>
+  <property name="gff3.dataSetTitle" value="$taxname genomic features"/>
+  <property name="src.data.dir" location="$gbDir/"/>
+  <property name="src.data.dir.includes" value="$gffFile"/>
+</source>
+XML
+
+  say $xml->documentElement()->toString(), unless ($tabView or $gffconfig);
+  print "\n";
 }
 
 sub chrm_print {
   my ($orgm, $taxID, $taxname, $chrm, $gbDir) = @_;
 
-  my $chrm_block = <<EOF;
-    <source name="$orgm-chromosome-fasta" type="fasta">
-      <property name="fasta.taxonId" value="$taxID"/>
-      <property name="fasta.className" value="org.intermine.model.bio.Chromosome"/>
-      <property name="fasta.dataSourceName" value="GenBank"/>
-      <property name="fasta.dataSetTitle" value="$taxname chromosome, complete genome"/>
-      <property name="fasta.includes" value="$chrm"/>
-      <property name="fasta.classAttribute" value="primaryIdentifier"/>
-      <property name="src.data.dir" location="$gbDir/"/>
-      <property name="fasta.loaderClassName"
-                value="org.intermine.bio.dataconversion.NCBIFastaLoaderTask"/>   
-    </source>
-EOF
- say $chrm_block unless ($tabView or $gffconfig);
+  my $xml = $xmlParser->parse_string(<<'XML');
+<source name="$orgm-chromosome-fasta" type="fasta">
+  <property name="fasta.taxonId" value="$taxID"/>
+  <property name="fasta.className" value="org.intermine.model.bio.Chromosome"/>
+  <property name="fasta.dataSourceName" value="GenBank"/>
+  <property name="fasta.dataSetTitle" value="$taxname chromosome, complete genome"/>
+  <property name="fasta.includes" value="$chrm"/>
+  <property name="fasta.classAttribute" value="primaryIdentifier"/>
+  <property name="src.data.dir" location="$gbDir/"/>
+  <property name="fasta.loaderClassName"
+            value="org.intermine.bio.dataconversion.NCBIFastaLoaderTask"/>   
+</source>
+XML
+
+  say $xml->documentElement()->toString(), unless ($tabView or $gffconfig);
+  print "\n";
 }
 
 # We don't integrate this anymore
