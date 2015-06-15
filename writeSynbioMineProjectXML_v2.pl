@@ -199,14 +199,17 @@ while (my $subdir = readdir DIR) {
   my $chrm = "$largest\.fna"; # chromosome fasta
 #  my $fasta = "$largest\.frn"; # RNA fasta - we don't use this any more
 
-  if (-e "$gbDir/$gffFile") {
-    say $gffFile if ($verbose);
-    &gff_print($orgm, $taxID, $taxname, $subdir, $gbDir, $gffFile);
-  }
+  if (not($tabView or $gffconfig))
+  {
+    if (-e "$gbDir/$gffFile") {
+      say $gffFile if ($verbose);
+      &gff_print($orgm, $taxID, $taxname, $subdir, $gbDir, $gffFile);
+    }
 
-  if (-e "$gbDir/$chrm") {
-    say $chrm if ($verbose);
-    &chrm_print($orgm, $taxID, $taxname, $chrm, $gbDir);
+    if (-e "$gbDir/$chrm") {
+      say $chrm if ($verbose);
+      &chrm_print($orgm, $taxID, $taxname, $chrm, $gbDir);
+    }
   }
 
 # don't use gene fasta any more
@@ -239,8 +242,7 @@ sub gff_print {
 </source>
 XML
 
-  say $xml->documentElement()->toString(), unless ($tabView or $gffconfig);
-  print "\n";
+  say $xml->documentElement()->toString() . "\n";
 }
 
 sub chrm_print {
@@ -260,8 +262,7 @@ sub chrm_print {
 </source>
 XML
 
-  say $xml->documentElement()->toString(), unless ($tabView or $gffconfig);
-  print "\n";
+  say $xml->documentElement()->toString() . "\n";
 }
 
 # We don't integrate this anymore
