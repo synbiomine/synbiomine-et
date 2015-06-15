@@ -96,13 +96,11 @@ $out_dir = ($out_dir) ? $out_dir : "\."; # set output dir - or use current by de
 
 open(ORG_FILE, "< $org_file") || die "cannot open $org_file: $!\n"; # open kegg org file
 
-say "Executing KEGG pathways script" if ($verbose);
-
 # process the organism file
 while (<ORG_FILE>) {
   chomp; # new lines off
   my $org = $_;
-  say "Processing organism: $org" if ($verbose);
+  say "Processing organism: $org";
 
   my $content = &kegg_ws($org); # query KEGG WS sub routine with org ID
   sleep(3); # be nice and sleep between requests
@@ -110,7 +108,7 @@ while (<ORG_FILE>) {
 
 }
 
-say "All done - enjoy your results" if ($verbose);
+say "All done - enjoy your results";
 exit(1);
 
 ## sub routines ##
