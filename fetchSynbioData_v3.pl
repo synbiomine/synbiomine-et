@@ -123,6 +123,7 @@ notify_new_activity("Downloading NCBI assembly summary");
 
 # set ftp address for ncbi
 my $hostname = 'ftp.ncbi.nlm.nih.gov';
+my $genbank_dir = catdir($base, "genbank", $date_dir);
 
 # Hardcode the directory and filename we want to get
 my $home = '/genomes/ASSEMBLY_REPORTS'; 
@@ -133,7 +134,7 @@ my $ncbi_ftp = Net::FTP->new($hostname, BlockSize => 20480, Timeout => $timeout)
 $ncbi_ftp->login($username, $password) or die "Cannot login ", $ncbi_ftp->message; 
 $ncbi_ftp->cwd($home) or die "Cannot change working directory ", $ncbi_ftp->message;
 
-my $assem_ref = &fetch_filtered_data($ncbi_ftp, $file);
+my $assem_ref = &fetch_filtered_data($ncbi_ftp, $file, catdir($genbank_dir, $file));
 
 $ncbi_ftp->quit;
 
@@ -232,13 +233,15 @@ my $ebi_hostname = 'ftp.ebi.ac.uk';
 my $ebi_home = '/pub/databases/GO/goa/proteomes'; 
 my $ebi_file = 'proteome2taxid'; # this is where we get the look-up file that maps GO proteome to organism
 
+my $go_dir = catdir($base, "go-annotation", $date_dir);
+
 # say "Trying FTP for: $ebi_hostname";
 my $ftp3 = Net::FTP->new($ebi_hostname, BlockSize => 20480, Timeout => $timeout);
 
 $ftp3->login($username, $password) or die "Cannot login ", $ftp3->message; 
 $ftp3->cwd($ebi_home) or die "Cannot change working directory ", $ftp3->message;
 
-my $go_ref = &fetch_filtered_data($ftp3, $ebi_file);
+my $go_ref = &fetch_filtered_data($ftp3, $ebi_file, catdir($go_dir, $ebi_file));
 my @go_taxons = @{ $go_ref };
 
 my %GO_proteomes; # Make a look-up of tax id to GO proteome
@@ -251,8 +254,6 @@ for my $go_proteome (@go_taxons) {
 # say join("\n", @go_taxons);
 
 notify_new_activity("Downloading GO annotation files for organisms");
-
-my $go_dir = catdir($base, "go-annotation");
 
 $ftp3->ascii or die "Cannot set ascii mode: " . $ftp3->message; # set ascii mode for non-binary otherwise you get errors 
 
@@ -269,7 +270,7 @@ for my $key (sort {$a <=> $b} keys %org_taxon) {
 
     say "Fetching: $key => $go_file";
 
-    $ftp3->get($go_file, "$go_dir/$date_dir/$go_file")
+    $ftp3->get($go_file, catdir($go_dir, $go_file))
       or warn "Problem with $ebi_home, cannot retrieve $go_file: " . $ftp3->message . "\n";
   } else {
     say "No GO annotation found for taxon ID $key";
@@ -314,7 +315,6 @@ notify_new_activity("Downloading NCBI FASTA, GFF and assembly reports");
 
 # Now... FTP to NCBI genomes to get chromosome fasta (.fna) and refseq annotations (.gff)
 my $refseq = '/genomes/refseq/bacteria'; # used for path
-my $genbank_dir = $base . "/genbank";
 
 my $ftp2 = Net::FTP->new($hostname, BlockSize => 20480, Timeout => $timeout);
 
@@ -325,7 +325,7 @@ for my $key (sort {$a <=> $b} keys %org_taxon) {
 
 # Make a directory for each genbank organism
   my ($species, $assembly_vers, $refseq_category, $assembly_dir) = @{ $org_taxon{$key} };
-  mkdir "$genbank_dir/$date_dir/$assembly_vers", 0755;
+  mkdir "$genbank_dir/$assembly_vers", 0755;
 
   my $refseq_path = "$refseq/$species/$assembly_dir";
 
@@ -353,7 +353,7 @@ for my $key (sort {$a <=> $b} keys %org_taxon) {
       my $retr_fh = $ftp2->retr($gb_file) or warn "Problem with $refseq_path\nCannot retrieve $gb_file\n";
 
       if ($retr_fh) {
-        gunzip $retr_fh => "$genbank_dir/$date_dir/$assembly_vers/$raw", AutoClose => 1
+        gunzip $retr_fh => "$genbank_dir/$assembly_vers/$raw", AutoClose => 1
           or warn "Zip error $refseq_path\nCannot uncompress '$gb_file': $GunzipError\n";
         # say "Success - adding: $genbank_dir/$date_dir/$assembly_vers/$raw";
       }
@@ -366,7 +366,7 @@ for my $key (sort {$a <=> $b} keys %org_taxon) {
 
       # say "Fetching: $gb_file";
 
-      $ftp2->get($gb_file, "$genbank_dir/$date_dir/$assembly_vers/$gb_file")
+      $ftp2->get($gb_file, "$genbank_dir/$assembly_vers/$gb_file")
 	      or warn "Problem with $refseq_path\n\nCannot retrieve $gb_file\n";
     }
   }
@@ -557,13 +557,16 @@ Return FTP data where lines have t omatch Bacillus|Escherichia|Geobacillus
 =cut
 sub fetch_filtered_data {
 
-  my ($ftp, $file) = @_;
+  my ($ftp, $src, $dest) = @_;
 
   #my @dir_list = grep /_uid/, $ftp->ls();
 
   # We're using a filehandle on the basis that it is more memory efficient as we can discard each
   # retrieved line after processing instead of slurping in the whole file at once
-  my $handle = $ftp->retr($file) or die "get failed ", $ftp->message;
+  #my $handle = $ftp->retr($file) or die "get failed ", $ftp->message;
+  $ftp->get($src, $dest) or die "Failed to get $src for $dest: $ftp->message";
+
+  open(my $handle, "<", $dest) or die "Could not open $dest for reading: $!";
 
   # just grab the three Genera that we want
   my @entries = grep /Bacillus|Escherichia|Geobacillus/, <$handle>;
@@ -572,8 +575,8 @@ sub fetch_filtered_data {
   @entries = grep !/phage|virus/, @entries;
 
   # We need to signal the end of the retr() data transfer but can't use close since it stops future re-use of the connection
-  $handle->abort();
-  # close ($handle);
+  # $handle->abort();
+  close ($handle);
 
   return \@entries;
 }
