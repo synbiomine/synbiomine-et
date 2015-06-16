@@ -217,8 +217,10 @@ while (my $subdir = readdir DIR) {
 #  my $fasta = "$largest\.frn"; # RNA fasta - we don't use this any more
 
   if (not($tabView or $gffconfig)) {
-    try_add_source(catdir($gbDir, $gffFile), "$orgm-gff", sub { my $sourceName = $_[0]; gen_gff($sourceName, $taxID, $taxname, $subdir, $gbDir, $gffFile); });
-    try_add_source(catdir($gbDir, $chrm), "$orgm-chromosome-fasta", sub { my $sourceName = $_[0]; gen_chrm($sourceName, $taxID, $taxname, $chrm, $gbDir); });
+    try_add_source(
+      catdir($gbDir, $gffFile), $taxID, "$orgm-gff", sub { gen_gff("$orgm-gff", $taxID, $taxname, $subdir, $gbDir, $gffFile); });
+    try_add_source(
+      catdir($gbDir, $chrm), $taxID, "$orgm-chromosome-fasta", sub { gen_chrm("$orgm-chromosome-fasta", $taxID, $taxname, $chrm, $gbDir); });
   }
 
   # don't use gene fasta any more
@@ -249,18 +251,18 @@ if ($insert) {
 exit 0;
 
 sub try_add_source {
-  my ($sourceFile, $sourceName, $genSub) = @_;
+  my ($sourceFile, $taxID, $sourceName, $genSub) = @_;
 
   if (-e $sourceFile) {
     say $sourceFile if ($verbose);
 
     if ($sources_e->findnodes("source[\@name='$sourceName']")) {
-      say "Found existing source $sourceName.  Skipping.";
+      say "Found existing source $taxID => $sourceName.  Skipping.";
     } else {
-      my $xml = $genSub->($sourceName);
+      my $xml = $genSub->();
 
       if ($insert) {
-        say "Adding source $sourceName";
+        say "Adding source $taxID => $sourceName";
         $sources_e->appendWellBalancedChunk($xml);
       } else {
         print $xml;
