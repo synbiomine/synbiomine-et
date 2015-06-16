@@ -218,24 +218,39 @@ while (my $subdir = readdir DIR) {
   {
     if (-e "$gbDir/$gffFile") {
       say $gffFile if ($verbose);
-      my $xml = gen_gff($orgm, $taxID, $taxname, $subdir, $gbDir, $gffFile);
 
-      if (not defined $insertPath) {
-        print $xml;
+      my $sourceName = "$orgm-gff";
+
+      if ($sources_e->findnodes("source[\@name='$sourceName']")) {
+        say "Found existing source $sourceName.  Skipping.";
       } else {
-        $sources_e->appendWellBalancedChunk($xml);
+        my $xml = gen_gff($orgm, $taxID, $taxname, $subdir, $gbDir, $gffFile);
+
+        if (not defined $insertPath) {
+          print $xml;
+        } else {
+          say "Adding source $sourceName";
+          $sources_e->appendWellBalancedChunk($xml);
+        }
       }
     }
 
     if (-e "$gbDir/$chrm") {
       say $chrm if ($verbose);
-      
-      my $xml = gen_chrm($orgm, $taxID, $taxname, $chrm, $gbDir);
-    
-      if (not defined $insertPath) {
-        print $xml;
+
+      my $sourceName = "$orgm-chromosome-fasta";
+
+      if ($sources_e->findnodes("source[\@name='$sourceName']")) {
+        say "Found existing source $sourceName.  Skipping.";
       } else {
-        $sources_e->appendWellBalancedChunk($xml);
+        my $xml = gen_chrm($orgm, $taxID, $taxname, $chrm, $gbDir);
+      
+        if (not defined $insertPath) {
+          print $xml;
+        } else {
+          say "Adding source $sourceName";
+          $sources_e->appendWellBalancedChunk($xml);
+        }
       }
     }
   }
