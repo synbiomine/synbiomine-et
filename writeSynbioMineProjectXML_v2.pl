@@ -13,7 +13,7 @@ binmode(STDOUT, 'utf8');
 # Silence warnings when printing null fields
 no warnings ('uninitialized');
 
-my $usage = "Usage:writeSynbioMineProjectXML.pl [-tvgh] genbank_directory
+my $usage = "Usage:writeSynbioMineProjectXML.pl [-tvgh] [-i <project-xml>] genbank_directory
 
 synopsis: reads the genbank directory and writes associated data that's needed for the build.
 Default output writes the source XML needed for the project.xml.
@@ -25,19 +25,23 @@ options:
 \t-g\twrite gff_config file 
 \t-t\tprint details in tab view
 \ttaxID\torganism name\tsubdir\tfile prefix
+\t-i\tif neither -g or -t are specified then the generated XML entries are inserted directly into the given project.xml file and written back out
+\t  \totherwise the XML will be printed
 
 \t-v\tverbose mode - additional output for debugging
 ";
 
 my (%opts, $tabView, $gffconfig, $verbose);
 
-getopts('htgv', \%opts);
+getopts('htgvi:', \%opts);
 defined $opts{"h"} and die $usage;
 defined $opts{"t"} and $tabView++; # tab summary - maps assembly vers to org name & tax ID
 defined $opts{"g"} and $gffconfig++; # writes gff_config.txt file to run dir
 defined $opts{"v"} and $verbose++; # used for debugging
+my $insertPath = $opts{i};
 
 @ARGV > 0 or die "data_directory must be specified.\n";
+
 my $dir = $ARGV[0];
 # my $dir = ($ARGV[0]) ? "$ARGV[0]" : '/SAN_synbiomine/data/genbank/current';
 
@@ -54,7 +58,18 @@ opendir(DIR, $dir) or die "cannot open dir: $!";
 say "taxID\torganism name\tsubdir\tfile prefix" if ($tabView);
 #say GFF_CONF_OUT "taxID: taxname\talt ID\tlocus_tag\tsymbol\tsynonym" if ($gffconfig);
 
+my ($projectXml, $sources_e);
 my $xmlParser = XML::LibXML->new();
+
+if (defined $insertPath) {
+  $projectXml = $xmlParser->parse_file($insertPath);
+
+  my @nodes = $projectXml->getDocumentElement()->findnodes("/project/sources");
+
+  not @nodes and die "Could not find node /project/sources in project XML at $projectXml";
+
+  $sources_e = $nodes[0];
+}
 
 # read the sub dir listing - name with assembly IDs
 while (my $subdir = readdir DIR) {
@@ -203,66 +218,91 @@ while (my $subdir = readdir DIR) {
   {
     if (-e "$gbDir/$gffFile") {
       say $gffFile if ($verbose);
-      &gff_print($orgm, $taxID, $taxname, $subdir, $gbDir, $gffFile);
+      my $xml = gen_gff($orgm, $taxID, $taxname, $subdir, $gbDir, $gffFile);
+
+      if (not defined $insertPath) {
+        print $xml;
+      } else {
+        $sources_e->appendWellBalancedChunk($xml);
+      }
     }
 
     if (-e "$gbDir/$chrm") {
       say $chrm if ($verbose);
-      &chrm_print($orgm, $taxID, $taxname, $chrm, $gbDir);
+      
+      my $xml = gen_chrm($orgm, $taxID, $taxname, $chrm, $gbDir);
+    
+      if (not defined $insertPath) {
+        print $xml;
+      } else {
+        $sources_e->appendWellBalancedChunk($xml);
+      }
     }
   }
 
-# don't use gene fasta any more
-#  if (-e "$gbDir/$fasta") {
-#    say $fasta if ($verbose);
-#    &fasta_print($orgm, $taxID, $taxname, $fasta, $gbDir);
-#  }
-  
-closedir(CURR); # close the assembly dir
+  # don't use gene fasta any more
+  #  if (-e "$gbDir/$fasta") {
+  #    say $fasta if ($verbose);
+  #    &fasta_print($orgm, $taxID, $taxname, $fasta, $gbDir);
+  #  }
+    
+  closedir(CURR); # close the assembly dir
 }
+
+# For some reason, appendWellBalancedChunk() is destroying the indentation level of the </sources> end tag.
+# This is a super bad way to restore it.
+$sources_e->appendTextNode("  ");
 
 close (GFF_CONF_OUT) if ($gffconfig); # close the config file if using -g
 
 closedir(DIR); # close the genbank dir
+
+if (defined $insertPath) {
+  # say "XML [" . $projectXml->toString() . "]";
+  
+  # This will put the <?xml... declaration at the top of the file where previously there may have been none.
+  # Ideally we would retain exact format but this is a pita
+  $projectXml->toFile($insertPath); 
+}
+
 exit 0;
 
 ### subs to print the source XML for properties.xml
-sub gff_print {
+sub gen_gff {
   my ($orgm, $taxID, $taxname, $subdir, $gbDir, $gffFile) = @_;
 
-  my $xml = $xmlParser->parse_string(<<'XML');
-<source name="$orgm-gff" type="synbio-gff">
-  <property name="gff3.taxonId" value="$taxID"/>
-  <property name="gff3.seqDataSourceName" value="NCBI"/>
-  <property name="gff3.dataSourceName" value="NCBI"/>
-  <property name="gff3.seqClsName" value="Chromosome"/>
-  <property name="gff3.dataSetTitle" value="$taxname genomic features"/>
-  <property name="src.data.dir" location="$gbDir/"/>
-  <property name="src.data.dir.includes" value="$gffFile"/>
-</source>
-XML
+  # This is terribly messy but detecting the correct indent level automatically
+  # in the project XML doc is not trivial
+  return <<XML;
 
-  say $xml->documentElement()->toString() . "\n";
+    <source name="$orgm-gff" type="synbio-gff">
+      <property name="gff3.taxonId" value="$taxID"/>
+      <property name="gff3.seqDataSourceName" value="NCBI"/>
+      <property name="gff3.dataSourceName" value="NCBI"/>
+      <property name="gff3.seqClsName" value="Chromosome"/>
+      <property name="gff3.dataSetTitle" value="$taxname genomic features"/>
+      <property name="src.data.dir" location="$gbDir/"/>
+      <property name="src.data.dir.includes" value="$gffFile"/>
+    </source>
+XML
 }
 
-sub chrm_print {
+sub gen_chrm {
   my ($orgm, $taxID, $taxname, $chrm, $gbDir) = @_;
 
-  my $xml = $xmlParser->parse_string(<<'XML');
-<source name="$orgm-chromosome-fasta" type="fasta">
-  <property name="fasta.taxonId" value="$taxID"/>
-  <property name="fasta.className" value="org.intermine.model.bio.Chromosome"/>
-  <property name="fasta.dataSourceName" value="GenBank"/>
-  <property name="fasta.dataSetTitle" value="$taxname chromosome, complete genome"/>
-  <property name="fasta.includes" value="$chrm"/>
-  <property name="fasta.classAttribute" value="primaryIdentifier"/>
-  <property name="src.data.dir" location="$gbDir/"/>
-  <property name="fasta.loaderClassName"
-            value="org.intermine.bio.dataconversion.NCBIFastaLoaderTask"/>   
-</source>
-XML
+  return <<XML;
 
-  say $xml->documentElement()->toString() . "\n";
+    <source name="$orgm-chromosome-fasta" type="fasta">
+      <property name="fasta.taxonId" value="$taxID"/>
+      <property name="fasta.className" value="org.intermine.model.bio.Chromosome"/>
+      <property name="fasta.dataSourceName" value="GenBank"/>
+      <property name="fasta.dataSetTitle" value="$taxname chromosome, complete genome"/>
+      <property name="fasta.includes" value="$chrm"/>
+      <property name="fasta.classAttribute" value="primaryIdentifier"/>
+      <property name="src.data.dir" location="$gbDir/"/>
+      <property name="fasta.loaderClassName" value="org.intermine.bio.dataconversion.NCBIFastaLoaderTask"/>   
+    </source>
+XML
 }
 
 # We don't integrate this anymore
