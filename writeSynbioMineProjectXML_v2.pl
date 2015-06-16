@@ -2,6 +2,7 @@
 
 use strict;
 use warnings;
+use File::Spec::Functions;
 use Getopt::Std;
 use XML::LibXML;
 
@@ -214,45 +215,9 @@ while (my $subdir = readdir DIR) {
   my $chrm = "$largest\.fna"; # chromosome fasta
 #  my $fasta = "$largest\.frn"; # RNA fasta - we don't use this any more
 
-  if (not($tabView or $gffconfig))
-  {
-    if (-e "$gbDir/$gffFile") {
-      say $gffFile if ($verbose);
-
-      my $sourceName = "$orgm-gff";
-
-      if ($sources_e->findnodes("source[\@name='$sourceName']")) {
-        say "Found existing source $sourceName.  Skipping.";
-      } else {
-        my $xml = gen_gff($sourceName, $taxID, $taxname, $subdir, $gbDir, $gffFile);
-
-        if (not defined $insertPath) {
-          print $xml;
-        } else {
-          say "Adding source $sourceName";
-          $sources_e->appendWellBalancedChunk($xml);
-        }
-      }
-    }
-
-    if (-e "$gbDir/$chrm") {
-      say $chrm if ($verbose);
-
-      my $sourceName = "$orgm-chromosome-fasta";
-
-      if ($sources_e->findnodes("source[\@name='$sourceName']")) {
-        say "Found existing source $sourceName.  Skipping.";
-      } else {
-        my $xml = gen_chrm($sourceName, $taxID, $taxname, $chrm, $gbDir);
-      
-        if (not defined $insertPath) {
-          print $xml;
-        } else {
-          say "Adding source $sourceName";
-          $sources_e->appendWellBalancedChunk($xml);
-        }
-      }
-    }
+  if (not($tabView or $gffconfig)) {
+    try_add_source(catdir($gbDir, $gffFile), "$orgm-gff", sub { my $sourceName = $_[0]; gen_gff($sourceName, $taxID, $taxname, $subdir, $gbDir, $gffFile); });
+    try_add_source(catdir($gbDir, $chrm), "$orgm-chromosome-fasta", sub { my $sourceName = $_[0]; gen_chrm($sourceName, $taxID, $taxname, $chrm, $gbDir); });
   }
 
   # don't use gene fasta any more
@@ -281,6 +246,27 @@ if (defined $insertPath) {
 }
 
 exit 0;
+
+sub try_add_source {
+  my ($sourceFile, $sourceName, $genSub) = @_;
+
+  if (-e $sourceFile) {
+    say $sourceFile if ($verbose);
+
+    if ($sources_e->findnodes("source[\@name='$sourceName']")) {
+      say "Found existing source $sourceName.  Skipping.";
+    } else {
+      my $xml = $genSub->($sourceName);
+
+      if (not defined $insertPath) {
+        print $xml;
+      } else {
+        say "Adding source $sourceName";
+        $sources_e->appendWellBalancedChunk($xml);
+      }
+    }
+  }
+} 
 
 ### subs to print the source XML for properties.xml
 sub gen_gff {
