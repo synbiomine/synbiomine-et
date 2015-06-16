@@ -32,13 +32,14 @@ options:
 \t-v\tverbose mode - additional output for debugging
 ";
 
-my (%opts, $tabView, $gffconfig, $verbose);
+my (%opts, $tabView, $gffconfig, $insert, $verbose);
 
 getopts('htgvi:', \%opts);
 defined $opts{"h"} and die $usage;
 defined $opts{"t"} and $tabView++; # tab summary - maps assembly vers to org name & tax ID
 defined $opts{"g"} and $gffconfig++; # writes gff_config.txt file to run dir
 defined $opts{"v"} and $verbose++; # used for debugging
+defined $opts{"i"} and $insert++;
 my $insertPath = $opts{i};
 
 @ARGV > 0 or die "data_directory must be specified.\n";
@@ -62,7 +63,7 @@ say "taxID\torganism name\tsubdir\tfile prefix" if ($tabView);
 my ($projectXml, $sources_e);
 my $xmlParser = XML::LibXML->new();
 
-if (defined $insertPath) {
+if ($insert) {
   $projectXml = $xmlParser->parse_file($insertPath);
 
   my @nodes = $projectXml->getDocumentElement()->findnodes("/project/sources");
@@ -237,7 +238,7 @@ close (GFF_CONF_OUT) if ($gffconfig); # close the config file if using -g
 
 closedir(DIR); # close the genbank dir
 
-if (defined $insertPath) {
+if ($insert) {
   # say "XML [" . $projectXml->toString() . "]";
   
   # This will put the <?xml... declaration at the top of the file where previously there may have been none.
@@ -258,12 +259,12 @@ sub try_add_source {
     } else {
       my $xml = $genSub->($sourceName);
 
-      if (not defined $insertPath) {
-        print $xml;
-      } else {
+      if ($insert) {
         say "Adding source $sourceName";
         $sources_e->appendWellBalancedChunk($xml);
-      }
+      } else {
+        print $xml;
+      } 
     }
   }
 } 
