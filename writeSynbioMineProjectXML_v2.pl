@@ -224,7 +224,7 @@ while (my $subdir = readdir DIR) {
       if ($sources_e->findnodes("source[\@name='$sourceName']")) {
         say "Found existing source $sourceName.  Skipping.";
       } else {
-        my $xml = gen_gff($orgm, $taxID, $taxname, $subdir, $gbDir, $gffFile);
+        my $xml = gen_gff($sourceName, $taxID, $taxname, $subdir, $gbDir, $gffFile);
 
         if (not defined $insertPath) {
           print $xml;
@@ -243,7 +243,7 @@ while (my $subdir = readdir DIR) {
       if ($sources_e->findnodes("source[\@name='$sourceName']")) {
         say "Found existing source $sourceName.  Skipping.";
       } else {
-        my $xml = gen_chrm($orgm, $taxID, $taxname, $chrm, $gbDir);
+        my $xml = gen_chrm($sourceName, $taxID, $taxname, $chrm, $gbDir);
       
         if (not defined $insertPath) {
           print $xml;
@@ -284,13 +284,13 @@ exit 0;
 
 ### subs to print the source XML for properties.xml
 sub gen_gff {
-  my ($orgm, $taxID, $taxname, $subdir, $gbDir, $gffFile) = @_;
+  my ($sourceName, $taxID, $taxname, $subdir, $gbDir, $gffFile) = @_;
 
   # This is terribly messy but detecting the correct indent level automatically
   # in the project XML doc is not trivial
   return <<XML;
 
-    <source name="$orgm-gff" type="synbio-gff">
+    <source name="$sourceName" type="synbio-gff">
       <property name="gff3.taxonId" value="$taxID"/>
       <property name="gff3.seqDataSourceName" value="NCBI"/>
       <property name="gff3.dataSourceName" value="NCBI"/>
@@ -303,11 +303,11 @@ XML
 }
 
 sub gen_chrm {
-  my ($orgm, $taxID, $taxname, $chrm, $gbDir) = @_;
+  my ($sourceName, $taxID, $taxname, $chrm, $gbDir) = @_;
 
   return <<XML;
 
-    <source name="$orgm-chromosome-fasta" type="fasta">
+    <source name="$sourceName" type="fasta">
       <property name="fasta.taxonId" value="$taxID"/>
       <property name="fasta.className" value="org.intermine.model.bio.Chromosome"/>
       <property name="fasta.dataSourceName" value="GenBank"/>
