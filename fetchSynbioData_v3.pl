@@ -93,19 +93,6 @@ foreach my $source (@sources) {
 
   -d $source_date_dir and die "$source_date_dir already exists.  Aborting.\n";
   mkdir $source_date_dir, 0755 or die "Could not make $source_date_dir.  Aborting.\n";
-
-  my $source_current_symlink = catdir($source_dir, $current_symlink);
-
-  if (-e $source_current_symlink) {
-    if (-l $source_current_symlink) {
-      unlink $source_current_symlink or die "Failed to remove symlink $source_current_symlink: $!\n";
-    } else {
-      die "$source_current_symlink is unexpectedly not a symlink!  Aborting.\n";
-    }
-  }
-
-  #symlink $source_date_dir, $current_symlink or die "Failed to link $source_date_dir with $source_current_symlink: $!\n";
-  symlink $date_dir, $source_current_symlink or die "Failed to link $source_date_dir with $source_current_symlink: $!\n";
 }
 
 # email addr is required for NCBI FTP use
@@ -424,6 +411,24 @@ say TAXON_OUT join(" ", @taxa); # write tax IDs - needed for some data sources i
 close (KEGG_ORG_OUT);
 close (KEGG_TAXA_OUT);
 close (TAXON_OUT);
+
+# Only update the current symlink if we have been entirely successful
+foreach my $source (@sources) {
+
+  my $source_dir = catdir($base, $source);
+  my $source_date_dir = catdir($source_dir, $date_dir);
+  my $source_current_symlink = catdir($source_dir, $current_symlink);
+
+  if (-e $source_current_symlink) {
+    if (-l $source_current_symlink) {
+      unlink $source_current_symlink or die "Failed to remove symlink $source_current_symlink: $!\n";
+    } else {
+      die "$source_current_symlink is unexpectedly not a symlink!  Aborting.\n";
+    }
+  }
+
+  symlink $date_dir, $source_current_symlink or die "Failed to link $source_date_dir with $source_current_symlink: $!\n";
+}
 
 exit(1);
 
