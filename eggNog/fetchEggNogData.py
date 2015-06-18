@@ -13,6 +13,7 @@ eggNogFtpPath = 'eggNOG/4.0/'
 files = set(['eggnogv4.funccats.txt', 'description/bactNOG.description.txt.gz', 'funccat/bactNOG.funccat.txt.gz', 'members/bactNOG.members.txt.gz', 'id_conversion.tsv'])
 missingFiles = set()
 
+# TODO: If need be this can be more sophisticated to check things like file sizes local vs ftp
 for f in files:
   fbn = os.path.basename(f)
   if os.path.exists(fbn):
