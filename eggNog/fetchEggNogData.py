@@ -4,8 +4,19 @@ import argparse
 import ftplib
 import os.path
 
+#################
+### FUNCTIONS ###
+#################
+def logEyeCatcher(text):
+  print "~~~ %s ~~~" % text
+
+############
+### MAIN ###
+############
 parser = argparse.ArgumentParser('Retrieve required EggNOG files and filter required data by organism taxon IDs.')
 args = parser.parse_args()
+
+logEyeCatcher("Checking pre-requisite data files")
 
 eggNogFtpHost = 'eggnog.embl.de'
 eggNogFtpPath = 'eggNOG/4.0/'
@@ -17,7 +28,7 @@ missingFiles = set()
 for f in files:
   fbn = os.path.basename(f)
   if os.path.exists(fbn):
-    print "Found existing file %s" % fbn
+    print "Found %s" % fbn
   else:
     missingFiles.add(f)
 
