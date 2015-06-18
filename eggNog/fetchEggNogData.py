@@ -36,10 +36,9 @@ def assemblePrereqFiles():
 
     for f in missingFiles:
       fbn = os.path.basename(f)
-      fh = open(fbn, 'w')
-      print "Downloading %s" % f
-      ftp.retrbinary("RETR %s" % f, fh.write)
-      fh.close()
+      with open(fbn, 'w') as fh:
+        print "Downloading %s" % f
+        ftp.retrbinary("RETR %s" % f, fh.write)
 
     ftp.close()
 
@@ -53,7 +52,6 @@ def readTaxonIds(taxonsPath):
       taxonIds.update(line.split())
 
   return taxonIds
-      
 
 ############
 ### MAIN ###
