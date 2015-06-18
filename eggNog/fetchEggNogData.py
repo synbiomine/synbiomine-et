@@ -43,10 +43,25 @@ def assemblePrereqFiles():
 
     ftp.close()
 
+def readTaxonIds(taxonsPath):
+  logEyeCatcher("Reading taxon IDs")
+
+  taxonIds = set()
+
+  with open(taxonsPath) as f:
+    for line in f:
+      taxonIds.update(line.split())
+
+  return taxonIds
+      
+
 ############
 ### MAIN ###
 ############
 parser = argparse.ArgumentParser('Retrieve required EggNOG files and filter required data by organism taxon IDs.')
+parser.add_argument('taxonIdsPath', help = 'path to the taxon IDs file')
 args = parser.parse_args()
 
 assemblePrereqFiles()
+taxonIds = readTaxonIds(args.taxonIdsPath)
+# print "taxons [%s]" % (" ".join(taxonIds))
