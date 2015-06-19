@@ -49,11 +49,33 @@ def readTaxonIds(taxonsPath):
 
   return taxonIds
 
+def filterIdsMap(idsMapPath, filteredMapPath, taxonIds, verbose=False):
+  logEyeCatcher("Filtering ID mappings")
+
+  writeCount = 0
+
+  with open(filteredMapPath, 'w') as fmh:
+    with open(idsMapPath) as imh:
+      for line in imh:
+        parts = line.strip().split('\t')
+        for id in taxonIds:
+          # It looks like BLAST_KEGG_ID is always the 4th column but the source process for this script
+          # did not assume this
+          if parts[0] == id and "BLAST_KEGG_ID" in parts[1:]:
+            if verbose:
+              print "Found %s" % line,
+
+            fmh.write(line),
+            writeCount += 1
+
+  print "Wrote %s filtered mappings" % writeCount
+
 ############
 ### MAIN ###
 ############
 parser = argparse.ArgumentParser('Retrieve required EggNOG files and filter required data by organism taxon IDs.')
-parser.add_argument('taxonIdsPath', help = 'path to the taxon IDs file')
+parser.add_argument('taxonIdsPath', help='path to the taxon IDs file')
+parser.add_argument('-v', '--verbose', action="store_true", help="verbose output")
 args = parser.parse_args()
 
 eggNogFtpHost = 'eggnog.embl.de'
@@ -63,3 +85,4 @@ files = set(['eggnogv4.funccats.txt', 'description/bactNOG.description.txt.gz', 
 assemblePrereqFiles(eggNogFtpHost, eggNogFtpBase, files)
 taxonIds = readTaxonIds(args.taxonIdsPath)
 # print "taxons [%s]" % (" ".join(taxonIds))
+filterIdsMap('id_conversion.tsv', 'id_conversion_taxons.txt', taxonIds, args.verbose)
