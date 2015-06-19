@@ -2,6 +2,7 @@
 
 import argparse
 import ftplib
+import gzip
 import os.path
 
 #################
@@ -17,7 +18,12 @@ def assemblePrereqFiles(ftpHost, ftpBase, files):
 
   # TODO: If need be this can be more sophisticated to check things like file sizes local vs ftp
   for f in files:
+    # Although some of our files are not in the base FTP path, we are going to place them all in our base path
     fbn = os.path.basename(f)
+    # We will be decompressing any compressed files
+    if fbn.endswith(".gz"):
+      fbn = fbn[:-3]
+
     if os.path.exists(fbn):
       print "Found %s" % fbn
     else:
@@ -35,6 +41,16 @@ def assemblePrereqFiles(ftpHost, ftpBase, files):
       with open(fbn, 'w') as fh:
         print "Downloading %s" % f
         ftp.retrbinary("RETR %s" % f, fh.write)
+
+      # We could probably decompress on the fly but this is not trivial and files are not big
+      if fbn.endswith(".gz"):
+        print "Decompressing %s" % fbn
+        with gzip.open(fbn) as gh:
+          uncompressedBn = fbn[:-3]
+          with open(uncompressedBn, 'w') as fh:
+            fh.writelines(gh)
+
+        os.remove(fbn)
 
     ftp.close()
 
