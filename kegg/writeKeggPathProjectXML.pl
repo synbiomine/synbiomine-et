@@ -7,7 +7,7 @@ use Getopt::Std;
 use XML::LibXML;
 
 use lib '../modules/perl';
-use ImProjectXml qw(generateSource);
+require ImProjectXml;
 
 use feature ':5.12';
 
@@ -37,23 +37,10 @@ my $taxonIds = <TAXONS>;
 chomp($taxonIds);
 close TAXONS;
 
-my $pathwayXml = generateSource("kegg-pathway", $dataPath, "kegg.organisms", $taxonIds);
+my $sourceXml = ImProjectXml::generateSource("kegg-pathway", $dataPath, "kegg.organisms", $taxonIds);
 
 if ($insert) {
-  my $xmlParser = XML::LibXML->new();
-  my $projectXml = $xmlParser->parse_file($insertPath);
-  my @nodes = $projectXml->getDocumentElement()->findnodes("/project/sources");
-  not @nodes and die "Could not find node /project/sources in project XML at $projectXml";
-  my $sources_e = $nodes[0];
-  
-  say "Inserting kegg-pathway entry into $insertPath";
-  $sources_e->appendWellBalancedChunk($pathwayXml);
-
-  # For some reason, appendWellBalancedChunk() is destroying the indentation level of the </sources> end tag.
-  # This is a super bad way to restore it.
-  $sources_e->appendTextNode("  ");
-
-  $projectXml->toFile($insertPath);
+  ImProjectXml::insertSourceIntoProjectXml($insertPath, $sourceXml);
 } else {
-  say $pathwayXml;
+  say $sourceXml;
 }
