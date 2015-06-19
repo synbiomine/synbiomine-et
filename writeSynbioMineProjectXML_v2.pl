@@ -232,15 +232,15 @@ while (my $subdir = readdir DIR) {
   closedir(CURR); # close the assembly dir
 }
 
-# For some reason, appendWellBalancedChunk() is destroying the indentation level of the </sources> end tag.
-# This is a super bad way to restore it.
-$sources_e->appendTextNode("  ");
-
 close (GFF_CONF_OUT) if ($gffconfig); # close the config file if using -g
 
 closedir(DIR); # close the genbank dir
 
 if ($insert) {
+  # For some reason, appendWellBalancedChunk() is destroying the indentation level of the </sources> end tag.
+  # This is a super bad way to restore it.
+  $sources_e->appendTextNode("  ");
+
   # say "XML [" . $projectXml->toString() . "]";
   
   # This will put the <?xml... declaration at the top of the file where previously there may have been none.
