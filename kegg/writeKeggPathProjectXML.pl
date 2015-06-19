@@ -37,7 +37,13 @@ my $taxonIds = <TAXONS>;
 chomp($taxonIds);
 close TAXONS;
 
-my $sourceXml = ImProjectXml::generateSource("kegg-pathway", $dataPath, "kegg.organisms", $taxonIds);
+my $sourceXml 
+  = ImProjectXml::generateSource(
+    "kegg-pathway", 1, 
+    [
+      ['src.data.dir', $dataPath], 
+      ['kegg.organisms', $taxonIds]
+    ]);
 
 if ($insert) {
   ImProjectXml::insertSourceIntoProjectXml($insertPath, $sourceXml);

@@ -17,16 +17,25 @@ our @EXPORT = qw(generateSource insertSourceIntoProjectXml);
 use Exporter qw(import);
 our @EXPORT_OK = qw(generateSource insertSourceIntoProjectXml);
 
+=pod
+Generate a source XML entry
+$properties is an array reference so that we can preserve property ordering
+=cut
 sub generateSource {
-  my ($sourceName, $dataPath, $taxonIdsName, $taxonIds) = @_;
+  my ($sourceName, $dump, $properties) = @_;
 
-  return <<XML;
+  my $xml = qq[    <source name="$sourceName" type="$sourceName"];
+  if ($dump) { $xml .= qq[ dump="true"] }
+  $xml .= "/>\n";
 
-    <source name="$sourceName" type="$sourceName" dump="true">
-      <property name="src.data.dir" location="$dataPath/"/>
-      <property name="$taxonIdsName" value="$taxonIds"/>
-    </source>
-XML
+  foreach my $tuples (@$properties) {
+    $xml .= qq[      <property];
+    $xml .= " " . $$tuples[0] . "=\"" . $$tuples[1] . "\"";
+    $xml .= qq[/>\n];
+  }
+  $xml .=   qq[    </source>\n];
+
+  return $xml;
 }
 
 sub insertSourceIntoProjectXml {

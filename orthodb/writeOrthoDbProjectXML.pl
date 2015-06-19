@@ -37,7 +37,13 @@ my $taxonIds = <TAXONS>;
 chomp($taxonIds);
 close TAXONS;
 
-my $sourceXml = ImProjectXml::generateSource("orthodb", $dataPath, "orthodb.organisms", $taxonIds);
+my $sourceXml 
+  = ImProjectXml::generateSource(
+    "orthodb", 1,
+    [
+      [ 'src.data.dir', $dataPath],
+      [ 'orthodb.organisms', $taxonIds]
+    ]);
 
 if ($insert) {
   ImProjectXml::insertSourceIntoProjectXml($insertPath, $sourceXml);
