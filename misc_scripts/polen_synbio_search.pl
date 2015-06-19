@@ -11,7 +11,7 @@ require LWP::UserAgent;
 use Getopt::Std;
 
 # Tell @INC where to find the modules
-use lib "/SAN_synbiomine/data/SYNBIO_data/user_perl_modules";
+use lib "../modules/perl";
 
 # Load the modules
 use SynbioRegionSearch qw/regionSearch/;
