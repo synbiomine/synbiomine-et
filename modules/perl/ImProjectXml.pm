@@ -51,11 +51,9 @@ sub insertSourceIntoProjectXml {
   say "Inserting source into $insertPath";
   $sources_e->appendWellBalancedChunk($sourceXml);
 
-  # This no longer appears necessary though not sure why
-  # 
   # For some reason, appendWellBalancedChunk() is destroying the indentation level of the </sources> end tag.
   # This is a super bad way to restore it.
-  # $sources_e->appendTextNode("  ");
+  $sources_e->appendTextNode("  ");
 
   $projectXml->toFile($insertPath);
 }
