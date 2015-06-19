@@ -2,6 +2,7 @@
 
 use strict;
 use warnings;
+use File::Spec::Functions;
 use Getopt::Std;
 require LWP::UserAgent;
 
@@ -15,7 +16,7 @@ binmode(STDOUT, 'utf8');
 # Silence warnings when printing null fields
 no warnings ('uninitialized');
 
-my $usage = "usage: $0 intermine_model_file output_directory_path
+my $usage = "usage: $0 intermine_model_file output_path
 
 Script to retrieve KEGG reactions and associated pathways
 Writes an items XML with reaction/ pathway mappings
@@ -34,16 +35,16 @@ defined $opts{"v"} and $verbose++;
 
 unless ( $ARGV[0] ) { die $usage };
 
-my ($model_file, $out_dir) = @ARGV;
-$out_dir = ($out_dir) ? $out_dir : "\.";
+my ($model_file, $out_path) = @ARGV;
 
 my $data_source_name = "GenomeNet";
 my $kegg_url = "http://www.kegg.jp/";
 
 # instantiate the model
 my $model = new InterMine::Model(file => $model_file);
-my $doc = new InterMine::Item::Document(model => $model);
-
+my $doc = new InterMine::Item::Document(
+  model => $model,
+  output => catdir($out_path, "kegg_reaction2path_items.xml"));
 
 my $data_source_item = make_item(
     DataSource => (
