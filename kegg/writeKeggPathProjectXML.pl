@@ -6,6 +6,9 @@ use warnings;
 use Getopt::Std;
 use XML::LibXML;
 
+use lib '../modules/perl';
+use ImProjectXml qw(generateSource);
+
 use feature ':5.12';
 
 my $usage = "Usage:writeKeggPathProjectXML.pl [-h] [-i <project-xml-path>] <kegg-data-path> <taxon-id-path>
@@ -33,7 +36,7 @@ open TAXONS, $taxonIdPath or die "Could not open $taxonIdPath: $!";
 my $taxonIds = <TAXONS>;
 chomp($taxonIds);
 
-my $pathwayXml = genPathway($keggDataPath, $taxonIds);
+my $pathwayXml = generateSource("kegg-pathway", $keggDataPath, "kegg.organisms", $taxonIds);
 
 close TAXONS;
 
@@ -54,21 +57,4 @@ if ($insert) {
   $projectXml->toFile($insertPath);
 } else {
   say $pathwayXml;
-}
-
-#################
-### FUNCTIONS ###
-#################
-sub genPathway {
-
-  # my ($sourceName, $taxID, $taxname, $chrm, $gbDir) = @_;
-  my ($dataPath, $taxonIds) = @_;
-
-  return <<XML;
-
-    <source name="kegg-pathway" type="kegg-pathway" dump="true">
-      <property name="src.data.dir" location="$dataPath/"/>
-      <property name="kegg.organisms" value="$taxonIds"/>
-    </source>
-XML
 }
