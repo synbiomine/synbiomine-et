@@ -30,15 +30,14 @@ my $insertPath = $opts{i};
 
 @ARGV > 1 or die $usage;
 
-my ($keggDataPath, $taxonIdPath, $projectXmlPath) = @ARGV;
+my ($dataPath, $taxonIdPath, $projectXmlPath) = @ARGV;
 
 open TAXONS, $taxonIdPath or die "Could not open $taxonIdPath: $!";
 my $taxonIds = <TAXONS>;
 chomp($taxonIds);
-
-my $pathwayXml = generateSource("kegg-pathway", $keggDataPath, "kegg.organisms", $taxonIds);
-
 close TAXONS;
+
+my $pathwayXml = generateSource("kegg-pathway", $dataPath, "kegg.organisms", $taxonIds);
 
 if ($insert) {
   my $xmlParser = XML::LibXML->new();
