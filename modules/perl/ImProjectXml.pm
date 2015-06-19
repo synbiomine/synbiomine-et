@@ -38,7 +38,7 @@ sub insertSourceIntoProjectXml {
   not @nodes and die "Could not find node /project/sources in project XML at $projectXml";
   my $sources_e = $nodes[0];
   
-  say "Inserting kegg-pathway entry into $insertPath";
+  say "Inserting source into $insertPath";
   $sources_e->appendWellBalancedChunk($sourceXml);
 
   # For some reason, appendWellBalancedChunk() is destroying the indentation level of the </sources> end tag.
