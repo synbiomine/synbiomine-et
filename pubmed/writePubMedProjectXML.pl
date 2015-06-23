@@ -39,11 +39,11 @@ close TAXONS;
 
 my $sourceXml 
   = ImProjectXml::generateSource(
-    "pubmed-gene", 0, 
+    "pubmed-gene", "pubmed-gene", 0, 
     [
-      ['src.data.dir', $dataPath], 
+      ['src.data.dir', 'location', $dataPath], 
       ['pubmed.organisms', $taxonIds],
-      ['src.data.dir.inclues', "gene2pubmed"],
+      ['src.data.dir.includes', "gene2pubmed"],
       ['infoFile', $infoFilePath]
     ]);
 

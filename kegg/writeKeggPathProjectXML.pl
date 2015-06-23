@@ -39,9 +39,9 @@ close TAXONS;
 
 my $sourceXml 
   = ImProjectXml::generateSource(
-    "kegg-pathway", 1, 
+    "kegg-pathway", "kegg-pathway", 1, 
     [
-      ['src.data.dir', $dataPath], 
+      ['src.data.dir', 'location', $dataPath], 
       ['kegg.organisms', $taxonIds]
     ]);
 

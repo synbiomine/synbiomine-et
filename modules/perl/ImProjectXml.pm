@@ -22,16 +22,29 @@ Generate a source XML entry
 $properties is an array reference so that we can preserve property ordering
 =cut
 sub generateSource {
-  my ($sourceName, $dump, $properties) = @_;
+  my ($sourceName, $type, $dump, $properties) = @_;
 
   my $xml = "\n";
-  $xml .= qq[    <source name="$sourceName" type="$sourceName"];
+  $xml .= qq[    <source name="$sourceName" type="$type"];
   if ($dump) { $xml .= qq[ dump="true"] }
   $xml .= ">\n";
 
   foreach my $tuples (@$properties) {
     $xml .= qq[      <property];
-    $xml .= " " . $$tuples[0] . "=\"" . $$tuples[1] . "\"";
+    $xml .= " name=\"" . $$tuples[0] . "\"";
+    
+    # At the moment I'm only using an alternative value attribute name but this could be done for the key name in the future if necessary
+    my ($valueName, $valueValue);
+
+    if (@$tuples == 3) {
+      $valueName = $$tuples[1];
+      $valueValue = $$tuples[2];
+    } else {
+      $valueName = "value";
+      $valueValue = $$tuples[1];
+    }
+      
+    $xml .= qq[ $valueName="$valueValue"];
     $xml .= qq[/>\n];
   }
   $xml .=   qq[    </source>\n];
@@ -48,7 +61,6 @@ sub insertSourceIntoProjectXml {
   not @nodes and die "Could not find node /project/sources in project XML at $projectXml";
   my $sources_e = $nodes[0];
   
-  say "Inserting source into $insertPath";
   $sources_e->appendWellBalancedChunk($sourceXml);
 
   # For some reason, appendWellBalancedChunk() is destroying the indentation level of the </sources> end tag.
