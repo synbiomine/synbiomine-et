@@ -130,7 +130,7 @@ for my $cat (@cats) {
     $description =~ s/ $//;
     $major_funccat{$letter} = [ lc($description), lc($division) ];
     
-    &make_funccat_items($letter, lc($description), lc($division), $funccat_data_set_item);
+    make_funccat_items($letter, lc($description), lc($division), $funccat_data_set_item);
   }
 }
 close ($funccat_fh);
@@ -149,7 +149,7 @@ while (<$nogdesc_fh>) {
   $description = ($description) ? $description : "No description";
   $nog_descriptions{$nogID} = $description;
 
-  &make_nogDesc_item($nogID, $description, $ortholog_data_set_item);
+  make_nogDesc_item($nogID, $description, $ortholog_data_set_item);
 }
 
 close ($nogdesc_fh);
@@ -228,7 +228,7 @@ while (<$nog_fh>) {
   if ( exists $id_lookup{$member_nog_id} ) {
     my $gene_id = $id_lookup{$member_nog_id};
 
-    my $gene_item = &make_gene_item($gene_id, $taxon);
+    my $gene_item = make_gene_item($gene_id, $taxon);
 
     if ( exists $seen_nog_items{$nog_cat} ) {
       push( @{ $seen_nog_items{$nog_cat}->{'genes'} }, $gene_item );
@@ -311,7 +311,7 @@ sub make_gene_item {
   my $gene_item;
   my ($gene_id, $taxon) = @_;
 
-  my $org_item = &make_organism_item($taxon);
+  my $org_item = make_organism_item($taxon);
     
   if ( exists $seen_gene_items{$gene_id} ) {
        $gene_item = $seen_gene_items{$gene_id};
