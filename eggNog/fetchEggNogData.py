@@ -11,7 +11,7 @@ import os.path
 def logEyeCatcher(text):
   print "~~~ %s ~~~" % text
 
-def assemblePrereqFiles(ftpHost, ftpBase, files):
+def assemblePrereqFiles(localDir, ftpHost, ftpBase, files):
   logEyeCatcher("Checking pre-requisite data files")
 
   missingFiles = set()
@@ -19,13 +19,13 @@ def assemblePrereqFiles(ftpHost, ftpBase, files):
   # TODO: If need be this can be more sophisticated to check things like file sizes local vs ftp
   for f in files:
     # Although some of our files are not in the base FTP path, we are going to place them all in our base path
-    fbn = os.path.basename(f)
+    localPath = os.path.join(localDir, os.path.basename(f))
     # We will be decompressing any compressed files
-    if fbn.endswith(".gz"):
-      fbn = fbn[:-3]
+    if localPath.endswith(".gz"):
+      localPath = localPath[:-3]
 
-    if os.path.exists(fbn):
-      print "Found %s" % fbn
+    if os.path.exists(localPath):
+      print "Found %s" % localPath
     else:
       missingFiles.add(f)
 
@@ -37,20 +37,20 @@ def assemblePrereqFiles(ftpHost, ftpBase, files):
     ftp.cwd(ftpBase)
 
     for f in missingFiles:
-      fbn = os.path.basename(f)
-      with open(fbn, 'w') as fh:
+      localPath = os.path.join(localDir, os.path.basename(f))
+      with open(localPath, 'w') as fh:
         print "Downloading %s" % f
         ftp.retrbinary("RETR %s" % f, fh.write)
 
       # We could probably decompress on the fly but this is not trivial and files are not big
-      if fbn.endswith(".gz"):
-        print "Decompressing %s" % fbn
-        with gzip.open(fbn) as gh:
-          uncompressedBn = fbn[:-3]
-          with open(uncompressedBn, 'w') as fh:
+      if localPath.endswith(".gz"):
+        print "Decompressing %s" % localPath
+        with gzip.open(localPath) as gh:
+          uncompressedPath = localPath[:-3]
+          with open(uncompressedPath, 'w') as fh:
             fh.writelines(gh)
 
-        os.remove(fbn)
+        os.remove(localPath)
 
     ftp.close()
 
@@ -90,6 +90,7 @@ def filterIdsMap(idsMapPath, filteredMapPath, taxonIds, verbose=False):
 ### MAIN ###
 ############
 parser = argparse.ArgumentParser('Retrieve required EggNOG files and filter required data by organism taxon IDs.')
+parser.add_argument('eggNogFilesPath', help='path to eggNOG files location')
 parser.add_argument('taxonIdsPath', help='path to the taxon IDs file')
 parser.add_argument('-v', '--verbose', action="store_true", help="verbose output")
 args = parser.parse_args()
@@ -98,7 +99,7 @@ eggNogFtpHost = 'eggnog.embl.de'
 eggNogFtpBase = 'eggNOG/4.0/'
 files = set(['eggnogv4.funccats.txt', 'description/bactNOG.description.txt.gz', 'funccat/bactNOG.funccat.txt.gz', 'members/bactNOG.members.txt.gz', 'id_conversion.tsv'])
 
-assemblePrereqFiles(eggNogFtpHost, eggNogFtpBase, files)
+assemblePrereqFiles(args.eggNogFilesPath, eggNogFtpHost, eggNogFtpBase, files)
 taxonIds = readTaxonIds(args.taxonIdsPath)
 # print "taxons [%s]" % (" ".join(taxonIds))
-filterIdsMap('id_conversion.tsv', 'id_conversion_taxons.txt', taxonIds, args.verbose)
+filterIdsMap(os.path.join(args.eggNogFilesPath, 'id_conversion.tsv'), os.path.join(args.eggNogFilesPath, 'id_conversion_taxons.txt'), taxonIds, args.verbose)
