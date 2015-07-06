@@ -229,9 +229,12 @@ while (<$id_fh>) {
   my ($taxon_id, $nog_id, $kegg_id, undef) = split("\t", $_);
   my ($kegg_org, $org_id) = split(":", $kegg_id);
   my $taxon_nogID = $taxon_id . "\." . $nog_id;
-  $id_lookup{$taxon_nogID} = $org_id;
 
+  # say "Adding id mapping $taxon_nogID => $org_id";
+  $id_lookup{$taxon_nogID} = $org_id;
 }
+
+say "Added " . scalar(keys(%id_lookup)) . " mappings";
 
 close ($id_fh);
 
@@ -252,6 +255,8 @@ while (<$nog_fh>) {
   
   my ($nog_cat, $member_nog_id, $start, $end) = split("\t", $_);
   my ($taxon, $nog_id) = split('\.', $member_nog_id);
+
+#  say "Looking for id $member_nog_id";
 
   if ( exists $id_lookup{$member_nog_id} ) {
     my $gene_id = $id_lookup{$member_nog_id};
