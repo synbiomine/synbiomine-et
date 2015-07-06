@@ -296,10 +296,10 @@ sub make_funccat_items {
   my($letter, $description, $division, $funccat_data_set_item) = @_;
   my $funccat_item = make_item(
     FunctionalCategory => (
-	classifier => $letter,
-	name => $description,
-	category => $division,
-	dataSets => [$funccat_data_set_item], 
+      classifier => $letter,
+      name => $description,
+      category => $division,
+      dataSets => [$funccat_data_set_item], 
     ),
   );
 
@@ -312,9 +312,9 @@ sub make_nogDesc_item {
   my ($nogID, $description, $ortholog_data_set_item) = @_;
   my $nogDesc_item = make_item(
     EggNogCategory => (
-	primaryIdentifier => $nogID,
-	description => $description,
-	dataSets => [$ortholog_data_set_item], 
+      primaryIdentifier => $nogID,
+      description => $description,
+      dataSets => [$ortholog_data_set_item], 
     ),
   );
 
@@ -331,7 +331,7 @@ sub make_organism_item {
   } else {
     $org_item = make_item(
       Organism => (
-	taxonId => $taxon,
+        taxonId => $taxon,
       ),
     );
     $seen_organism_items{$taxon} = $org_item;
