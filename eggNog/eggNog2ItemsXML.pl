@@ -64,12 +64,16 @@ my $doc = new InterMine::Item::Document(
   output => $items_file
 );
 
+notify_new_activity("Adding DataSource XML");
+
 my $data_source_item = make_item(
     DataSource => (
         name => "EggNOG: evolutionary genealogy of genes",
 	url => "http://eggnog.embl.de/",
     ),
 );
+
+notify_new_activity("Adding DataSet XML");
 
 my $ortholog_data_set_item = make_item(
     DataSet => (
@@ -114,6 +118,8 @@ close ($taxons_fh);
 # 
 # split on empty line
 
+notify_new_activity("Adding FunctionalCategory XML");
+
 open my $funccat_fh, "$funccat_divisions" or die "can't open file: $funccat_divisions $!\n";
 
 my @cats = do { local $/ = ''; <$funccat_fh> }; # split filehandle on empty line into array
@@ -140,6 +146,8 @@ close ($funccat_fh);
 # File format
 # EggNogID \t category description
 
+notify_new_activity("Adding EggNogCategory XML");
+
 my %nog_descriptions;
 open my $nogdesc_fh, "$nog_description" or die "can't open file: $nog_description $!\n";
 
@@ -157,6 +165,8 @@ close ($nogdesc_fh);
 ### Process file which maps EggNogIDs to functional categories
 # File format
 # EggNogID \t AB    [joined_classifiers - belongs to categories A & B ]
+
+notify_new_activity("Reading EggNogID -> Functional Category mappings");
 
 my (%funccats);
 open my $nogCat_fh, "$nog_funccat" or die "can't open file: $nog_funccat $!\n";
@@ -196,6 +206,8 @@ for my $key (keys %funccats) {
 # 224308  Bsubs1_010100000080     bsu:BSU00160    BLAST_KEGG_ID
 # I've chosen BLAST_KEGG_ID as these correspond to genbank unique locus_tag identifiers
 
+notify_new_activity("Reading organism ID mappings");
+
 my (%id_lookup);
 open my $id_fh, "$id_file" or die "can't open file: $id_file $!\n";
 
@@ -216,6 +228,8 @@ close ($id_fh);
 # EggNogID \t taxon.eggNogOrgID \t prot_start \t prot_end
 # We use this with the ID conversion file above to resolve
 # orthologue group members to their stable gene IDs
+
+notify_new_activity("Adding Gene XML");
 
 open my $nog_fh, "$nog_members" or die "can't open file: $nog_members $!\n";
 
@@ -326,4 +340,13 @@ sub make_gene_item {
   }
 
   return $gene_item;
+}
+
+=pod
+Provide an eye-catching way of showing when we engage in different activities in this script
+=cut
+sub notify_new_activity {
+  my ($activity) = @_; 
+
+  say "~~~ $activity ~~~";
 }
