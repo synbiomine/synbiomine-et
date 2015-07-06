@@ -103,6 +103,10 @@ my(%seen_funccat_items, %seen_gene_items, %seen_nog_items, %seen_organism_items)
 # File format
 # id1 id2 id3 ... id(n)
 
+notify_new_activity("Loading taxon mappings");
+
+say "Processing file $taxon_file";
+
 open my $taxons_fh, "$taxon_file" or die "can't open file: $taxon_file $!\n";
 my @taxon_list = split(" ", <$taxons_fh>);
 close ($taxons_fh);
@@ -121,6 +125,8 @@ close ($taxons_fh);
 notify_new_activity("Adding FunctionalCategory XML");
 
 open my $funccat_fh, "$funccat_divisions" or die "can't open file: $funccat_divisions $!\n";
+
+say "Processing file $funccat_divisions";
 
 my @cats = do { local $/ = ''; <$funccat_fh> }; # split filehandle on empty line into array
 
@@ -151,6 +157,8 @@ notify_new_activity("Adding EggNogCategory XML");
 my %nog_descriptions;
 open my $nogdesc_fh, "$nog_description" or die "can't open file: $nog_description $!\n";
 
+say "Processing file $nog_description";
+
 while (<$nogdesc_fh>) {
   chomp;
   my ($nogID, $description) = split("\t", $_);
@@ -166,10 +174,12 @@ close ($nogdesc_fh);
 # File format
 # EggNogID \t AB    [joined_classifiers - belongs to categories A & B ]
 
-notify_new_activity("Reading EggNogID -> Functional Category mappings");
+notify_new_activity("Loading EggNogID -> Functional Category mappings");
 
 my (%funccats);
 open my $nogCat_fh, "$nog_funccat" or die "can't open file: $nog_funccat $!\n";
+
+say "Processing file $nog_funccat";
 
 while (<$nogCat_fh>) {
   chomp;
@@ -206,10 +216,12 @@ for my $key (keys %funccats) {
 # 224308  Bsubs1_010100000080     bsu:BSU00160    BLAST_KEGG_ID
 # I've chosen BLAST_KEGG_ID as these correspond to genbank unique locus_tag identifiers
 
-notify_new_activity("Reading organism ID mappings");
+notify_new_activity("Loading organism ID mappings");
 
 my (%id_lookup);
 open my $id_fh, "$id_file" or die "can't open file: $id_file $!\n";
+
+say "Processing file $id_file";
 
 while (<$id_fh>) {
   chomp $_;
@@ -232,6 +244,8 @@ close ($id_fh);
 notify_new_activity("Adding Gene XML");
 
 open my $nog_fh, "$nog_members" or die "can't open file: $nog_members $!\n";
+
+say "Processing file $nog_members";
 
 while (<$nog_fh>) {
   chomp $_;
