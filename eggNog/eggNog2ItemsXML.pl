@@ -318,8 +318,8 @@ sub make_gene_item {
   } else {
     $gene_item = make_item(
       Gene => (
-	primaryIdentifier => $gene_id,
-	organism => $org_item,
+        primaryIdentifier => $gene_id,
+        organism => $org_item,
       ),
     );
     $seen_gene_items{$gene_id} = $gene_item;
