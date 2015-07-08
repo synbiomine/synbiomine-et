@@ -69,7 +69,7 @@ my $tm = localtime;
 my ($DAY, $MONTH, $YEAR) = ($tm->mday, ($tm->mon)+1, ($tm->year)+1900);
 
 #my $base = "/SAN_synbiomine/data/";
-@ARGV > 0 or die "data_directory must be specified.\n";
+@ARGV > 0 or die $usage;
 my $base = $ARGV[0];
 
 notify_new_activity("Creating data directory structure at [$base]");
