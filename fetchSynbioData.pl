@@ -5,9 +5,9 @@ use warnings;
 use File::Spec::Functions;
 use Getopt::Std;
 use Net::FTP;
-#use Net::FTP::AutoReconnect;
 use LWP::UserAgent;
 use HTTP::Date;
+use Term::ANSIColor qw(:constants);
 use Time::localtime;
 
 use IO::Uncompress::Gunzip qw(:all);
@@ -60,6 +60,10 @@ options:
 
 ";
 
+my @errors = ();
+
+log_error("test");
+
 my (%opts, $verbose);
 
 getopts('hv', \%opts);
@@ -109,7 +113,7 @@ my $password = 'justincc@intermine.org'; # required
 my $hostname = 'ftp.ncbi.nlm.nih.gov';
 my $genbank_dir = catdir($base, "genbank", $current_symlink);
 
-notify_new_activity("Loading previously selected assembly summary data");
+log_new_activity("Loading previously selected assembly summary data");
 
 ###while (<$handle>) { ### if we want all the bacteria we'd probably use this loop
 
@@ -166,7 +170,7 @@ for my $key (sort {$a <=> $b} keys %org_taxon) {
 
 say "Found " . scalar(keys %org_taxon) . " selected assemblies";
 
-notify_new_activity("Downloading EBI taxon ID -> GOA map");
+log_new_activity("Downloading EBI taxon ID -> GOA map");
 
 my $ebi_hostname = 'ftp.ebi.ac.uk';
 
@@ -194,7 +198,7 @@ for my $go_proteome (@go_taxons) {
 
 # say join("\n", @go_taxons);
 
-notify_new_activity("Downloading GO annotation files for organisms");
+log_new_activity("Downloading GO annotation files for organisms");
 
 $ftp3->ascii or die "Cannot set ascii mode: " . $ftp3->message; # set ascii mode for non-binary otherwise you get errors 
 
@@ -212,7 +216,7 @@ for my $key (sort {$a <=> $b} keys %org_taxon) {
     say "Fetching: $key => $go_file";
 
     $ftp3->get($go_file, catdir($go_dir, $go_file))
-      or warn "Problem with $ebi_home, cannot retrieve $go_file: " . $ftp3->message . "\n";
+      or log_error("Problem with $ebi_home, cannot retrieve $go_file: " . $ftp3->message);
   } else {
     say "No GO annotation found for taxon ID $key";
   }
@@ -220,7 +224,7 @@ for my $key (sort {$a <=> $b} keys %org_taxon) {
 
 ##################
 
-notify_new_activity("Downloading UniProt summary files");
+log_new_activity("Downloading UniProt summary files");
 
 my $unip_dir = catdir($base, "uniprot", $date_dir);
 my $unip_kb_ftp_path = "/pub/databases/uniprot/current_release/knowledgebase/complete";
@@ -236,15 +240,15 @@ my $unip_xsd_path = catdir($unip_dir, $unip_xsd_bn);
 my $unip_kw_ftp_path = "$unip_kb_docs_ftp_path/keywlist.xml.gz";
 my $unip_kw_path = catdir($unip_dir, "keywlist.xml");
 
-# notify_new_activity("Fetching to $unip_splice_dest_path");
+# log_new_activity("Fetching to $unip_splice_dest_path");
 
 my $retr_spli_fh = fetch_fh($ftp3, $unip_splice_gz_ftp_path);
 gunzip_fh($retr_spli_fh, $unip_splice_dest_path);
 
-# notify_new_activity("Fetching to $unip_xsd_path");
+# log_new_activity("Fetching to $unip_xsd_path");
 fetch_file($ftp3, $unip_xsd_ftp_path, $unip_xsd_path);
 
-# notify_new_activity("Fetching to $unip_kw_path");
+# log_new_activity("Fetching to $unip_kw_path");
 my $retr_kw_fh = fetch_fh($ftp3, $unip_kw_ftp_path);
 gunzip_fh($retr_kw_fh, $unip_kw_path);
 
@@ -252,7 +256,7 @@ $ftp3->quit;
 
 ##################
 
-notify_new_activity("Downloading NCBI FASTA, GFF and assembly reports");
+log_new_activity("Downloading NCBI FASTA, GFF and assembly reports");
 
 # Now... FTP to NCBI genomes to get chromosome fasta (.fna) and refseq annotations (.gff)
 my $refseq = '/genomes/refseq/bacteria'; # used for path
@@ -291,11 +295,11 @@ for my $key (sort {$a <=> $b} keys %org_taxon) {
       $ftp2->binary or die "Cannot set binary mode: $!"; # binary mode for the zip file
       # say "Fetch and unzip: $gb_file --> $raw"; # fetch and unzip
 
-      my $retr_fh = $ftp2->retr($gb_file) or warn "Problem with $refseq_path\nCannot retrieve $gb_file\n";
+      my $retr_fh = $ftp2->retr($gb_file) or log_error("Problem with $refseq_path\nCannot retrieve $gb_file");
 
       if ($retr_fh) {
         gunzip $retr_fh => "$genbank_dir/$assembly_vers/$raw", AutoClose => 1
-          or warn "Zip error $refseq_path\nCannot uncompress '$gb_file': $GunzipError\n";
+          or log_error("Zip error $refseq_path\nCannot uncompress '$gb_file': $GunzipError");
         # say "Success - adding: $genbank_dir/$date_dir/$assembly_vers/$raw";
       }
       else {
@@ -308,20 +312,20 @@ for my $key (sort {$a <=> $b} keys %org_taxon) {
       # say "Fetching: $gb_file";
 
       $ftp2->get($gb_file, "$genbank_dir/$assembly_vers/$gb_file")
-	      or warn "Problem with $refseq_path\n\nCannot retrieve $gb_file\n";
+	      or log_error("Problem with $refseq_path\n\nCannot retrieve $gb_file");
     }
   }
 }
 
 $ftp2->quit;
 
-notify_new_activity("Adding reference proteomes");
+log_new_activity("Adding reference proteomes");
 
 # Add reference proteomes - not real strains so there's no genome sequence
 add_taxon(\%org_taxon, 1392, "reference model 1392 - no genome sequence"); # Bacillus anthracis
 add_taxon(\%org_taxon, 83333, "reference model 83333 - no genome sequence"); # E Coli strain K12
 
-notify_new_activity("Performing rest of work");
+log_new_activity("Performing rest of work");
 
 # process KEGG and fetch UniProt protein files
 my $kegg_dir = $base . "/kegg/$date_dir";
@@ -384,7 +388,9 @@ foreach my $source (@newSources) {
   symlink $date_dir, $source_current_symlink or die "Failed to link $source_date_dir with $source_current_symlink: $!\n";
 }
 
-exit(1);
+scalar(@errors) and print RED;
+say "Finished with " . scalar(@errors) . " errors";
+scalar(@errors) and print RESET;
 
 ##############################
 ######## SUBROUTINES #########
@@ -434,8 +440,8 @@ sub query_uniprot {
     say "File $file: up-to-date"; # if it's not newer, don't download
   }
   else {
-    warn 'Failed, got ' . $response_taxon->status_line .
-      ' for ' . $response_taxon->request->uri . "\n"; # report if errors generated
+    log_error('Failed, got ' . $response_taxon->status_line .
+      ' for ' . $response_taxon->request->uri);
   }
 }
 
@@ -592,10 +598,20 @@ sub set_ftp_transfer_mode {
 }
 
 =pod
-Provide an eye-catching way of showing when we engage in different activities in this script
+Provide an eye-catching way of showing when we engage in different activities in this script.
 =cut
-sub notify_new_activity {
+sub log_new_activity {
   my ($activity) = @_;
 
   say "~~~ $activity ~~~";
+}
+
+=pod
+Log a non-fatal error and record to a list of errors
+=cut
+sub log_error {
+  my ($error) = @_;
+
+  say STDERR RED, "ERROR: $error", RESET;
+  push (@errors, $error);
 }
