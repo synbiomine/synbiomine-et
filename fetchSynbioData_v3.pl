@@ -571,7 +571,16 @@ sub fetch_filtered_data {
   #my $handle = $ftp->retr($file) or die "get failed ", $ftp->message;
   $ftp->get($src, $dest) or die "Failed to get $src for $dest: $ftp->message";
 
-  open(my $handle, "<", $dest) or die "Could not open $dest for reading: $!";
+  return get_filtered_data_from_file($dest);
+}
+
+=pod
+Read a file and return lines that meet hard-coded criteria
+=cut
+sub get_filtered_data_from_file {
+  my ($src) = @_;
+
+  open(my $handle, "<", $src) or die "Could not open $src for reading: $!";
 
   # just grab the three Genera that we want
   my @entries = grep /Bacillus|Escherichia|Geobacillus/, <$handle>;
@@ -579,8 +588,6 @@ sub fetch_filtered_data {
   # justincc 20150612 Ignoring phages and viruses as these are unlikely to be useful but need to check
   @entries = grep !/phage|virus/, @entries;
 
-  # We need to signal the end of the retr() data transfer but can't use close since it stops future re-use of the connection
-  # $handle->abort();
   close ($handle);
 
   return \@entries;
