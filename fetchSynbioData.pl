@@ -211,12 +211,9 @@ for my $key (sort {$a <=> $b} keys %org_taxon) {
 # if yes, we're going to download the file
     my $go_file = $GO_proteomes{$key}; 
 
-    # say "Processing FILE: ", $go_file;
-
     say "Fetching: $key => $go_file";
 
-    $ftp3->get($go_file, catdir($go_dir, $go_file))
-      or log_error("Problem with $ebi_home, cannot retrieve $go_file: " . $ftp3->message);
+    fetch_file($ftp3, $go_file, catdir($go_dir, $go_file));
   } else {
     say "No GO annotation found for taxon ID $key";
   }
@@ -524,12 +521,16 @@ sub fetch_filtered_data {
 
   my ($ftp, $src, $dest) = @_;
 
-  #my @dir_list = grep /_uid/, $ftp->ls();
+  if (-e $dest) {
+    say "Using existing file $dest";
+  } else {
+    #my @dir_list = grep /_uid/, $ftp->ls();
 
-  # We're using a filehandle on the basis that it is more memory efficient as we can discard each
-  # retrieved line after processing instead of slurping in the whole file at once
-  #my $handle = $ftp->retr($file) or die "get failed ", $ftp->message;
-  $ftp->get($src, $dest) or die "Failed to get $src for $dest: $ftp->message";
+    # We're using a filehandle on the basis that it is more memory efficient as we can discard each
+    # retrieved line after processing instead of slurping in the whole file at once
+    #my $handle = $ftp->retr($file) or die "get failed ", $ftp->message;
+    $ftp->get($src, $dest) or die "Failed to get $src for $dest: $ftp->message";
+  }
 
   return get_filtered_data_from_file($dest);
 }
@@ -559,9 +560,14 @@ Fetch the given file
 sub fetch_file {
   my ($ftp, $ftp_path, $to_path, $use_ascii) = @_;
 
-  set_ftp_transfer_mode($ftp, $use_ascii);
+  if (-e $to_path) {
+    say "Using existing file $to_path";
+    return 1;
+  } else {
+    set_ftp_transfer_mode($ftp, $use_ascii);
 
-  return $ftp->get($ftp_path, $to_path)
+    return $ftp->get($ftp_path, $to_path)
+  }
 }
 
 =pod
