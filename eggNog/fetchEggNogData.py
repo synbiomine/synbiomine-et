@@ -97,8 +97,8 @@ def filterIdsMap(idsMapPath, filteredMapPath, taxonIds, verbose=False):
 ### MAIN ###
 ############
 parser = MyParser('Retrieve required EggNOG files and filter required data by organism taxon IDs.')
-parser.add_argument('eggNogFilesPath', help='path to eggNOG files location')
-parser.add_argument('taxonIdsPath', help='path to the taxon IDs file')
+parser.add_argument('eggNogFilesPath', help='path to eggNOG files location. This may be an already populated, partially populated or empty directory.')
+parser.add_argument('taxonIdsPath', help='path to the taxon IDs file.')
 parser.add_argument('-v', '--verbose', action="store_true", help="verbose output")
 args = parser.parse_args()
 
