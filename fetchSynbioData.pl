@@ -140,7 +140,7 @@ for (@assem) {
 
   # We're going to construct the directories used to download GFF & fna files
   my $assembly_vers = $assembly_id . "_" . $asm_name;
-  my $assembly_dir = "all_assembly_versions/" . $assembly_vers;
+  my $assembly_ftp_dir = "all_assembly_versions/" . $assembly_vers;
 
   my $species;
 
@@ -158,7 +158,7 @@ for (@assem) {
   $species =~ s/ /_/g; # replace spaces with underscore
 
   # store the data to use for FTP access later
-  $org_taxon{$taxid} = [$species, $assembly_vers, $refseq_category, $assembly_dir]; 
+  $org_taxon{$taxid} = [$species, $assembly_vers, $refseq_category, $assembly_ftp_dir]; 
 }
 
 # Do this in sorted order
@@ -263,11 +263,11 @@ $ftp2->login($username, $password) or die "Cannot login ", $ftp2->message;
 # Loop through the taxon IDs and download the GFF, chrm fasta and the report file
 for my $key (sort {$a <=> $b} keys %org_taxon) {
 
-# Make a directory for each genbank organism
-  my ($species, $assembly_vers, $refseq_category, $assembly_dir) = @{ $org_taxon{$key} };
+  # Make a directory for each genbank organism
+  my ($species, $assembly_vers, $refseq_category, $assembly_ftp_dir) = @{ $org_taxon{$key} };
   mkdir "$genbank_dir/$assembly_vers", 0755;
 
-  my $refseq_path = "$refseq/$species/$assembly_dir";
+  my $refseq_path = "$refseq/$species/$assembly_ftp_dir";
 
   if (not $ftp2->cwd($refseq_path)) {
     say "No FTP directory $key => $refseq_path.  Skipping";
