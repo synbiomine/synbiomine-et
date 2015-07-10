@@ -9,13 +9,12 @@ use Time::localtime;
 
 use feature ':5.12';
 
-my $current_symlink = "current";
 my $selected_genomes_fn = "synbiomine_selected_assembly_summary_refseq.txt";
 
-my $usage = "Usage: selectAssemblies.pl [-hv] [-p <pre_selected_genomes_path] <data_directory>
+my $usage = "Usage: selectAssemblies.pl [-hv] [-p <pre_selected_genomes_path] <dataset_path>
 
 Downloads assembly summaries from NCBI and selects genomes according to hard-coded criteria.
-Writes the selected summaries to <data_directory>/$current_symlink/$selected_genomes_fn
+Writes the selected summaries to <dataset_path>/genbank/$selected_genomes_fn
 
 options:
 \t-h\tthis usage
@@ -34,8 +33,6 @@ if (defined $opts{"p"}) {
 }
 defined $opts{"v"} and $verbose = 1;
 
-my @sources = qw(genbank);
-
 # date settings - used to make a new working folder
 my $tm = localtime;
 my ($DAY, $MONTH, $YEAR) = ($tm->mday, ($tm->mon) + 1, ($tm->year) + 1900);
@@ -50,23 +47,11 @@ if (not -d $base) {
   mkdir $base, 0755 or die "Could not create data_directory $base: $!\n";
 }
 
-my $date_dir  = $DAY . "_" . $MONTH . "_" . $YEAR;
+my $genbank_dir = catdir($base, "genbank");
 
-foreach my $source (@sources) {
-
-  my $source_dir = catdir($base, $source);
-
-  if (not -d $source_dir) {
-    mkdir "$source_dir", 0755 or die "Could not make $source_dir: $!\n";
-  }
-
-  my $source_date_dir = catdir($source_dir, $date_dir);
-
-  -d $source_date_dir and die "$source_date_dir already exists.  Aborting.\n";
-  mkdir $source_date_dir, 0755 or die "Could not make $source_date_dir.  Aborting.\n";
+if (not -d $genbank_dir) {
+  mkdir "$genbank_dir", 0755 or die "Could not make $genbank_dir: $!";
 }
-
-my $genbank_dir = catdir($base, "genbank", $date_dir);
 
 my $contact = 'justincc@intermine.org'; # Please set your email address here to help us debug in case of problems.
 
@@ -215,23 +200,6 @@ foreach my $assem (values(%selectedAssem)) {
 }
 
 close SELECTED_ASSEM;
-
-foreach my $source (@sources) {
-
-  my $source_dir = catdir($base, $source);
-  my $source_date_dir = catdir($source_dir, $date_dir);
-  my $source_current_symlink = catdir($source_dir, $current_symlink);
-
-  if (-e $source_current_symlink) {
-    if (-l $source_current_symlink) {
-      unlink $source_current_symlink or die "Failed to remove symlink $source_current_symlink: $!\n";
-    } else {
-      die "$source_current_symlink is unexpectedly not a symlink!  Aborting.\n";
-    }
-  }
-
-  symlink $date_dir, $source_current_symlink or die "Failed to link $source_date_dir with $source_current_symlink: $!\n";
-}
 
 ##############################
 ######## SUBROUTINES #########
