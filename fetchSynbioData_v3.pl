@@ -15,7 +15,9 @@ use IO::Uncompress::Gunzip qw(:all);
 use feature ':5.12';
 
 my $current_symlink = "current";
-my @sources = qw(genbank go-annotation kegg taxons uniprot);
+my $selected_genomes_fn = "synbiomine_selected_assembly_summary_refseq.txt";
+
+my @newSources = qw(go-annotation kegg taxons uniprot);
 
 my $usage = "Usage:fetchSynbioData.pl [-hv] data_directory
 
@@ -72,16 +74,10 @@ my ($DAY, $MONTH, $YEAR) = ($tm->mday, ($tm->mon)+1, ($tm->year)+1900);
 @ARGV > 0 or die $usage;
 my $base = $ARGV[0];
 
-notify_new_activity("Creating data directory structure at [$base]");
-
-if (not -d $base) {
-  mkdir $base, 0755 or die "Could not create data_directory $base: $!\n";
-}
-
 my $date_dir  = $DAY . "_" . $MONTH . "_" . $YEAR;
 
 # make a new date directory under each of the data directories
-foreach my $source (@sources) {
+foreach my $source (@newSources) {
 
   my $source_dir = catdir($base, $source);
 
@@ -91,8 +87,11 @@ foreach my $source (@sources) {
 
   my $source_date_dir = catdir($source_dir, $date_dir);
 
-  -d $source_date_dir and die "$source_date_dir already exists.  Aborting.\n";
-  mkdir $source_date_dir, 0755 or die "Could not make $source_date_dir.  Aborting.\n";
+  # -d $source_date_dir and die "$source_date_dir already exists.  Aborting.\n";
+
+  if (not -d $source_date_dir) {
+    mkdir $source_date_dir, 0755 or die "Could not make $source_date_dir.  Aborting.\n";
+  }
 }
 
 # email addr is required for NCBI FTP use
@@ -106,32 +105,20 @@ my $timeout      = 600;     # seconds, default is 120
 my $username = 'anonymous'; # allow anonymous FTPO with email addr as pwd
 my $password = 'justincc@intermine.org'; # required
 
-notify_new_activity("Downloading NCBI assembly summary");
-
 # set ftp address for ncbi
 my $hostname = 'ftp.ncbi.nlm.nih.gov';
-my $genbank_dir = catdir($base, "genbank", $date_dir);
+my $genbank_dir = catdir($base, "genbank", $current_symlink);
 
-# Hardcode the directory and filename we want to get
-my $home = '/genomes/ASSEMBLY_REPORTS'; 
-my $file = 'assembly_summary_refseq.txt'; # this is where we get the look-up file that maps assembly ID to organism
-
-my $ncbi_ftp = Net::FTP->new($hostname, BlockSize => 20480, Timeout => $timeout);
-
-$ncbi_ftp->login($username, $password) or die "Cannot login ", $ncbi_ftp->message; 
-$ncbi_ftp->cwd($home) or die "Cannot change working directory ", $ncbi_ftp->message;
-
-my $assem_ref = fetch_filtered_data($ncbi_ftp, $file, catdir($genbank_dir, $file));
-
-$ncbi_ftp->quit;
-
-my @assem = @{ $assem_ref };
-
-notify_new_activity("Selecting assemblies");
+notify_new_activity("Loading previously selected assembly summary data");
 
 ###while (<$handle>) { ### if we want all the bacteria we'd probably use this loop
 
 # We will populate this with data for ftp access later
+my $selectedAssemPath = catdir($genbank_dir, $selected_genomes_fn);
+open SELECTED_ASSEM, $selectedAssemPath or die "Could not open $selectedAssemPath for reading: $!";
+my @assem = <SELECTED_ASSEM>;
+close SELECTED_ASSEM;
+
 my %org_taxon;
 
 for (@assem) {
@@ -142,23 +129,7 @@ for (@assem) {
     $assembly_level, $release_type, $genome_rep, $seq_rel_date, $asm_name, 
     $submitter, $gbrs_paired_asm, $paired_asm_comp) = split("\t", $_);
 
-  say "Examining $taxid => $assembly_id, $organism_name" if ($verbose);
-
-# We're only interested in reference or representative genomes - complete and probably have refseq annotations
-# they used to use hyphen, now they use space so check for both in case they change back
-  if (not ($refseq_category && $refseq_category =~ /-genome| genome/)) {
-    say "Ignoring non-genome category $refseq_category" if ($verbose);
-    next;
-  }
-
-# We want the chromosome data
-  # if (not $assembly_level =~ /Chromosome/) {
-  if (not $assembly_level =~ /Chromosome|Complete Genome/) {
-    say "Ignoring non-chromosome assembly level $assembly_level" if ($verbose);
-    next;
-  }
-
-  # next unless (($refseq_category) && ($refseq_category =~ /-genome| genome/)); 
+#  say "Found selected $taxid => $assembly_id, $organism_name" if ($verbose);
 
   # There's a strange Bacillus species that has [] around its name!
   # [Bacillus] selenitireducens MLS10
@@ -184,33 +155,16 @@ for (@assem) {
 
   $species =~ s/ /_/g; # replace spaces with underscore
 
-  # there are some duplicate entries - check whether we've seen it before
-  if ( exists $org_taxon{$taxid} ) {
-  # For B. subtilis 168 we want the representative genome - the reference genome has odd IDs
-    if ( ($taxid eq '224308') and ($refseq_category =~ /reference-genome/) ) {
-      say "Specifically ignoring reference genome for this organism" if ($verbose);
-      next;
-    }
-    elsif ($refseq_category =~ /representative-genome/) {
-      say "Ignoring representative genome as we already have an assembly for this organism" if ($verbose);
-      next;
-    }
-
-    say "Replacing assembly $org_taxon{$taxid}[1] with later candidate $assembly_vers" if ($verbose);
-  }
-
   # store the data to use for FTP access later
   $org_taxon{$taxid} = [$species, $assembly_vers, $refseq_category, $assembly_dir]; 
 }
 
 # Do this in sorted order
 for my $key (sort {$a <=> $b} keys %org_taxon) {
-  say "Selected $key => " . join(", ", @{$org_taxon{$key}});
+  say "Found selected $key => " . join(", ", @{$org_taxon{$key}});
 }
 
-say "Selected " . scalar(keys %org_taxon) . " assemblies";
-
-###########
+say "Found " . scalar(keys %org_taxon) . " selected assemblies";
 
 notify_new_activity("Downloading EBI taxon ID -> GOA map");
 
@@ -413,7 +367,7 @@ close (KEGG_TAXA_OUT);
 close (TAXON_OUT);
 
 # Only update the current symlink if we have been entirely successful
-foreach my $source (@sources) {
+foreach my $source (@newSources) {
 
   my $source_dir = catdir($base, $source);
   my $source_date_dir = catdir($source_dir, $date_dir);
