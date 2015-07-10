@@ -4,6 +4,13 @@ import argparse
 import ftplib
 import gzip
 import os.path
+import sys
+
+class MyParser(argparse.ArgumentParser):
+    def error(self, message):
+        sys.stderr.write('error: %s\n' % message)
+        self.print_help()
+        sys.exit(2)
 
 #################
 ### FUNCTIONS ###
@@ -89,7 +96,7 @@ def filterIdsMap(idsMapPath, filteredMapPath, taxonIds, verbose=False):
 ############
 ### MAIN ###
 ############
-parser = argparse.ArgumentParser('Retrieve required EggNOG files and filter required data by organism taxon IDs.')
+parser = MyParser('Retrieve required EggNOG files and filter required data by organism taxon IDs.')
 parser.add_argument('eggNogFilesPath', help='path to eggNOG files location')
 parser.add_argument('taxonIdsPath', help='path to the taxon IDs file')
 parser.add_argument('-v', '--verbose', action="store_true", help="verbose output")
