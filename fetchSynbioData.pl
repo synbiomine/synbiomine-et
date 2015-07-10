@@ -68,15 +68,9 @@ getopts('hv', \%opts);
 defined $opts{"h"} and die $usage;
 defined $opts{"v"} and $verbose = 1;
 
-# date settings - used to make a new working folder
-my $tm = localtime;
-my ($DAY, $MONTH, $YEAR) = ($tm->mday, ($tm->mon)+1, ($tm->year)+1900);
-
 #my $base = "/SAN_synbiomine/data/";
 @ARGV > 0 or die $usage;
 my $base = $ARGV[0];
-
-my $date_dir  = $DAY . "_" . $MONTH . "_" . $YEAR;
 
 # make a new date directory under each of the data directories
 foreach my $source (@newSources) {
@@ -85,14 +79,6 @@ foreach my $source (@newSources) {
 
   if (not -d $source_dir) {
     mkdir "$source_dir", 0755 or die "Could not make $source_dir: $!\n";
-  }
-
-  my $source_date_dir = catdir($source_dir, $date_dir);
-
-  # -d $source_date_dir and die "$source_date_dir already exists.  Aborting.\n";
-
-  if (not -d $source_date_dir) {
-    mkdir $source_date_dir, 0755 or die "Could not make $source_date_dir.  Aborting.\n";
   }
 }
 
@@ -109,7 +95,7 @@ my $password = 'justincc@intermine.org'; # required
 
 # set ftp address for ncbi
 my $hostname = 'ftp.ncbi.nlm.nih.gov';
-my $genbank_dir = catdir($base, "genbank", $current_symlink);
+my $genbank_dir = catdir($base, "genbank");
 
 log_new_activity("Loading previously selected assembly summary data");
 
@@ -176,7 +162,7 @@ my $ebi_hostname = 'ftp.ebi.ac.uk';
 my $ebi_home = '/pub/databases/GO/goa/proteomes'; 
 my $ebi_file = 'proteome2taxid'; # this is where we get the look-up file that maps GO proteome to organism
 
-my $go_dir = catdir($base, "go-annotation", $date_dir);
+my $go_dir = catdir($base, "go-annotation");
 
 # say "Trying FTP for: $ebi_hostname";
 my $ftp3 = Net::FTP->new($ebi_hostname, BlockSize => 20480, Timeout => $timeout);
@@ -221,7 +207,7 @@ for my $key (sort {$a <=> $b} keys %org_taxon) {
 
 log_new_activity("Downloading UniProt summary files");
 
-my $unip_dir = catdir($base, "uniprot", $date_dir);
+my $unip_dir = catdir($base, "uniprot");
 my $unip_kb_ftp_path = "/pub/databases/uniprot/current_release/knowledgebase/complete";
 my $unip_kb_docs_ftp_path = "$unip_kb_ftp_path/docs";
 
@@ -336,14 +322,14 @@ add_taxon(\%org_taxon, 83333, "reference model 83333 - no genome sequence"); # E
 log_new_activity("Performing rest of work");
 
 # process KEGG and fetch UniProt protein files
-my $kegg_dir = $base . "/kegg/$date_dir";
+my $kegg_dir = $base . "/kegg";
 # kegg_org.txt is list of organism acronyms; kegg_taxa.txt is the kegg config file
 open (KEGG_ORG_OUT, ">$kegg_dir/kegg_org.txt") or die "Can't write file: $kegg_dir/kegg_org.txt: $!\n";
 open (KEGG_TAXA_OUT, ">$kegg_dir/kegg_taxa.txt") or die "Can't write file: $kegg_dir/kegg_taxa.txt: $!\n";
 
 # set up the taxons directory
-my $taxon_dir = $base . "/taxons/$date_dir";
-open (TAXON_OUT, ">$taxon_dir/taxons_$date_dir.txt") or die "Can't write file: $taxon_dir/taxons_$date_dir.txt: $!\n";
+my $taxon_dir = $base . "/taxons";
+open (TAXON_OUT, ">$taxon_dir/taxons.txt") or die "Can't write file: $taxon_dir/taxons.txt: $!\n";
 
 my $reference = 'reviewed:yes'; # proteomes which usually have some curation
 my $complete = 'reviewed:no'; # proteomes whith mostly automated annotation
@@ -378,24 +364,6 @@ close (KEGG_ORG_OUT);
 close (KEGG_TAXA_OUT);
 close (TAXON_OUT);
 
-# Only update the current symlink if we have been entirely successful
-foreach my $source (@newSources) {
-
-  my $source_dir = catdir($base, $source);
-  my $source_date_dir = catdir($source_dir, $date_dir);
-  my $source_current_symlink = catdir($source_dir, $current_symlink);
-
-  if (-e $source_current_symlink) {
-    if (-l $source_current_symlink) {
-      unlink $source_current_symlink or die "Failed to remove symlink $source_current_symlink: $!\n";
-    } else {
-      die "$source_current_symlink is unexpectedly not a symlink!  Aborting.\n";
-    }
-  }
-
-  symlink $date_dir, $source_current_symlink or die "Failed to link $source_date_dir with $source_current_symlink: $!\n";
-}
-
 scalar(@errors) and print RED;
 say "Finished with " . scalar(@errors) . " errors";
 scalar(@errors) and print RESET;
@@ -412,7 +380,7 @@ sub query_uniprot {
   my ($db, $taxon, $reference) = @_;
 
 # Alternative formats: html | tab | xls | fasta | gff | txt | xml | rdf | list | rss
-  my $file = $base . "/uniprot/$date_dir/". $taxon . "_" . $db . '.xml';
+  my $file = $base . "/uniprot/". $taxon . "_" . $db . '.xml';
   my $query_taxon = "http://www.uniprot.org/uniprot/?query=organism:$taxon+$reference&format=xml&include=yes";
 
   my $response_taxon = $agent->mirror($query_taxon, $file);
