@@ -12,21 +12,26 @@ use feature ':5.12';
 my $current_symlink = "current";
 my $selected_genomes_fn = "synbiomine_selected_assembly_summary_refseq.txt";
 
-my $usage = "Usage: selectAssemblies.pl [-hv] data_directory
+my $usage = "Usage: selectAssemblies.pl [-hv] [-p <pre_selected_genomes_path] <data_directory>
 
 Downloads assembly summaries from NCBI and selects genomes according to hard-coded criteria.
 Writes the selected summaries to <data_directory>/$current_symlink/$selected_genomes_fn
 
 options:
 \t-h\tthis usage
+\t-p\tpath to a file containing pre-selected genomes by NCBI assembly reference.  Normally we would expect to use etc/pre_selected_genomes.txt in this repository
 \t-v\tmore verbose logging
 
 ";
 
-my (%opts, $verbose);
+my (%opts, $verbose, $load_preselected_assemblies, $preselected_assemblies_path);
 
-getopts('hv', \%opts);
+getopts('hp:v', \%opts);
 defined $opts{"h"} and die $usage;
+if (defined $opts{"p"}) {
+  $load_preselected_assemblies = 1;
+  $preselected_assemblies_path = $opts{"p"};
+}
 defined $opts{"v"} and $verbose = 1;
 
 my @sources = qw(genbank);
@@ -94,6 +99,23 @@ my @assem = @{ $assem_ref };
 
 notify_new_activity("Selecting assemblies");
 
+my %preselectedAssemblies = ();
+
+if ($load_preselected_assemblies) {
+  open PRESELECTED, $preselected_assemblies_path or die "Could not open $preselected_assemblies_path for reading: $!";
+
+  while (<PRESELECTED>) {
+    /^#/ and next;
+    chomp;
+    $preselectedAssemblies{$_} = 1;
+  }
+
+  # @preselectedAssemblies = <PRESELECTED>;
+  close PRESELECTED;
+
+  say "Loaded " . keys(%preselectedAssemblies) . " pre-selected assemblies from $preselected_assemblies_path";
+}
+
 my %selectedAssem = ();
 
 for (@assem) {
@@ -105,6 +127,12 @@ for (@assem) {
     $submitter, $gbrs_paired_asm, $paired_asm_comp) = split("\t", $_);
 
   say "Examining $taxid => $assembly_id, $organism_name" if ($verbose);
+
+  if (exists($preselectedAssemblies{$assembly_id})) {
+    say "Adding $taxid => $assembly_id as preselected";
+    $selectedAssem{$taxid} = $_;
+    next;
+  }
 
 # We're only interested in reference or representative genomes - complete and probably have refseq annotations
 # they used to use hyphen, now they use space so check for both in case they change back

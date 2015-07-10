@@ -1,0 +1,27 @@
+# These are NCBI assembly IDs whose genomes we always want to select
+# These are selected by selectGenomes.pl in addition to those automatically selected from assembly_summary_refseq.txt
+
+# Bacillus amyloliquefaciens subsp. plantarum FZB42       strain=FZB42
+GCF_000015785.1
+# Bacillus weihenstephanensis KBAB4       strain=KBAB4
+GCF_000018825.1
+# Geobacillus sp. WCH70   strain=WCH70
+GCF_000023385.1
+# Geobacillus sp. Y412MC61        strain=Y412MC61
+GCF_000024705.1
+# Geobacillus sp. C56-T3  strain=C56-T3
+GCF_000092445.1
+# [Bacillus] selenitireducens MLS10       strain=MLS10
+GCF_000093085.1
+# Bacillus atrophaeus 1942        strain=1942
+GCF_000165925.1
+# Geobacillus sp. Y4.1MC1 strain=Y4.1MC1
+GCF_000166075.1
+# Geobacillus sp. Y412MC52        strain=Y412MC52
+GCF_000174795.2
+# Bacillus coagulans 2-6  strain=2-6
+GCF_000217835.1
+# Geobacillus thermoleovorans CCB_US3_UF5 strain=CCB_US3_UF5
+GCF_000236605.1
+# Bacillus sp. 1NLA3E     strain=1NLA3E
+GCF_000242895.2
