@@ -121,7 +121,7 @@ my $ncbi_ftp = Net::FTP->new($hostname, BlockSize => 20480, Timeout => $timeout)
 $ncbi_ftp->login($username, $password) or die "Cannot login ", $ncbi_ftp->message; 
 $ncbi_ftp->cwd($home) or die "Cannot change working directory ", $ncbi_ftp->message;
 
-my $assem_ref = &fetch_filtered_data($ncbi_ftp, $file, catdir($genbank_dir, $file));
+my $assem_ref = fetch_filtered_data($ncbi_ftp, $file, catdir($genbank_dir, $file));
 
 $ncbi_ftp->quit;
 
@@ -228,7 +228,7 @@ my $ftp3 = Net::FTP->new($ebi_hostname, BlockSize => 20480, Timeout => $timeout)
 $ftp3->login($username, $password) or die "Cannot login ", $ftp3->message; 
 $ftp3->cwd($ebi_home) or die "Cannot change working directory ", $ftp3->message;
 
-my $go_ref = &fetch_filtered_data($ftp3, $ebi_file, catdir($go_dir, $ebi_file));
+my $go_ref = fetch_filtered_data($ftp3, $ebi_file, catdir($go_dir, $ebi_file));
 my @go_taxons = @{ $go_ref };
 
 my %GO_proteomes; # Make a look-up of tax id to GO proteome
