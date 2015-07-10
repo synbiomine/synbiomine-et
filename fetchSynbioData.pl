@@ -266,6 +266,18 @@ for my $key (sort {$a <=> $b} keys %org_taxon) {
   # Make a directory for each genbank organism
   my ($species, $assembly_vers, $refseq_category, $assembly_ftp_dir) = @{ $org_taxon{$key} };
   my $assembly_dir = catdir($genbank_dir, $assembly_vers);
+
+  if (-d $assembly_dir) {
+    my $assemblyReportPath = catdir($assembly_dir, "${assembly_vers}_assembly_report.txt");
+    my $assemblyFastaPath = catdir($assembly_dir, "${assembly_vers}_genomic.fna");
+    my $assemblyGffPath = catdir($assembly_dir, "${assembly_vers}_genomic.gff");
+
+    if (-e $assemblyReportPath and -e $assemblyFastaPath and -e $assemblyGffPath) {
+      say "Using existing files for $key => $species";
+      next;
+    }
+  }
+
   mkdir $assembly_dir, 0755;
 
   my $refseq_path = "$refseq/$species/$assembly_ftp_dir";
