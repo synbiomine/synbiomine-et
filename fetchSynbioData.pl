@@ -62,8 +62,6 @@ options:
 
 my @errors = ();
 
-log_error("test");
-
 my (%opts, $verbose);
 
 getopts('hv', \%opts);
