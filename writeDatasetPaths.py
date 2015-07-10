@@ -31,7 +31,8 @@ if not os.path.exists(repoPath):
 
 os.chdir(repoPath)
 
-datasetDirName = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M")
+# datasetDirName = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M")
+datasetDirName = datetime.datetime.now().strftime("%Y-%m-%d")
 
 if os.path.exists(datasetDirName):
   raise Exception("Dataset path %s already exists!" % datasetDirName)
