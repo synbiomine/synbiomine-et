@@ -265,7 +265,8 @@ for my $key (sort {$a <=> $b} keys %org_taxon) {
 
   # Make a directory for each genbank organism
   my ($species, $assembly_vers, $refseq_category, $assembly_ftp_dir) = @{ $org_taxon{$key} };
-  mkdir "$genbank_dir/$assembly_vers", 0755;
+  my $assembly_dir = catdir($genbank_dir, $assembly_vers);
+  mkdir $assembly_dir, 0755;
 
   my $refseq_path = "$refseq/$species/$assembly_ftp_dir";
 
