@@ -4,6 +4,7 @@ import argparse
 import datetime
 import os
 import os.path
+import sys
 
 class MyParser(argparse.ArgumentParser):
     def error(self, message):
@@ -19,7 +20,7 @@ currentSymLinkName = "current";
 ############
 ### MAIN ###
 ############
-parser = MyParser('Prepare data repository structure.')
+parser = MyParser('Prepare a new dataset structure in the data repository.')
 parser.add_argument('repositoryPath', help='path to the repository.')
 args = parser.parse_args()
 
