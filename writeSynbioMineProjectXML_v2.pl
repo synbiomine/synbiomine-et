@@ -14,7 +14,7 @@ binmode(STDOUT, 'utf8');
 # Silence warnings when printing null fields
 no warnings ('uninitialized');
 
-my $usage = "Usage:writeSynbioMineProjectXML.pl [-tvgh] [-i <project-xml>] genbank_directory
+my $usage = "Usage: writeSynbioMineProjectXML.pl [-tvgh] [-i <project-xml>] genbank_directory
 
 synopsis: reads the genbank directory and writes associated data that's needed for the build.
 Default output writes the source XML needed for the project.xml.
@@ -25,11 +25,11 @@ options:
 \t-h\tthis usage
 \t-g\twrite gff_config file 
 \t-t\tprint details in tab view
-\ttaxID\torganism name\tsubdir\tfile prefix
+\t\ttaxID\torganism name\tsubdir\tfile prefix
 \t-i\tif neither -g or -t are specified then the generated XML entries are inserted directly into the given project.xml file and written back out
 \t  \totherwise the XML will be printed
-
 \t-v\tverbose mode - additional output for debugging
+
 ";
 
 my (%opts, $tabView, $gffconfig, $insert, $verbose);
@@ -42,7 +42,7 @@ defined $opts{"v"} and $verbose++; # used for debugging
 defined $opts{"i"} and $insert++;
 my $insertPath = $opts{i};
 
-@ARGV > 0 or die "data_directory must be specified.\n";
+@ARGV > 0 or die $usage;
 
 my $dir = $ARGV[0];
 # my $dir = ($ARGV[0]) ? "$ARGV[0]" : '/SAN_synbiomine/data/genbank/current';
