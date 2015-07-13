@@ -40,11 +40,15 @@ my ($model_file, $out_path) = @ARGV;
 my $data_source_name = "GenomeNet";
 my $kegg_url = "http://www.kegg.jp/";
 
+log_new_activity("Loading $model_file");
+
 # instantiate the model
 my $model = new InterMine::Model(file => $model_file);
 my $doc = new InterMine::Item::Document(
   model => $model,
   output => catdir($out_path, "kegg_reaction2path_items.xml"));
+
+log_new_activity("Creating items XML");
 
 my $data_source_item = make_item(
     DataSource => (
@@ -60,8 +64,6 @@ my $reactions_data_set_item = make_item(
     ),
 );
 
-say "Executing KEGG pathways script" if ($verbose);
-
 # Process reactions
 my (%seen_reaction_items);
 my $react_url = "http://rest.kegg.jp/list/reaction";
@@ -75,13 +77,13 @@ my $mappings = &kegg_ws($react2path_url);
 &process_mappings($mappings);
 
 $doc->close(); # writes the xml
-exit(0);
 
-say "All done - enjoy your results" if ($verbose);
-exit(0);
-
-## sub routines ##
-# set up the user agent and request - return the content
+###################
+### SUBROUTINES ###
+###################
+=pod
+set up the user agent and request - return the content
+=cut
 sub kegg_ws {
 
   my $url = shift;
@@ -98,7 +100,9 @@ sub kegg_ws {
 
 }
 
-# process the reaction content as a file handle
+=pod
+process the reaction content as a file handle
+=cut
 sub process_reactions {
 
   my ($content) = shift;
@@ -136,7 +140,9 @@ sub process_reactions {
   close ($str_fh); # close the reactions file handle
 }
 
-# process the reaction/ pathway mapping content as a file handle
+=pod
+process the reaction/ pathway mapping content as a file handle
+=cut
 sub process_mappings {
 
   my ($content) = shift;
@@ -167,8 +173,6 @@ sub process_mappings {
   close ($str_fh); # close the pathway/reactions file handle
 }
 
-######## helper subroutines:
-
 sub make_item {
     my @args = @_;
     my $item = $doc->add_item(@args);
@@ -180,7 +184,9 @@ sub make_item {
     return $item;
 }
 
-# check to see whether we've made a reaction items for that ID
+=pod
+check to see whether we've made a reaction items for that ID
+=cut
 sub fetch_reaction_item {
   my $id = shift;
 
@@ -193,7 +199,6 @@ sub fetch_reaction_item {
   }
   return $reaction_item; # return the reaction item
 }
-
 
 sub make_pathway_item {
   my ($id, $reaction_item) = @_;
@@ -219,4 +224,13 @@ sub make_pathway_item {
     $seen_pathway_items{$id} = $pathway_item;  #assign the new one
   }
   return $pathway_item; # return the pathway item
+}
+
+=pod
+Provide an eye-catching way of showing when we engage in different activities in this script.
+=cut
+sub log_new_activity {
+  my ($activity) = @_; 
+
+  say "~~~ $activity ~~~";
 }
