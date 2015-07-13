@@ -319,6 +319,16 @@ open (KEGG_TAXA_OUT, ">$kegg_dir/kegg_taxa.txt") or die "Can't write file: $kegg
 my $taxon_dir = $base . "/taxons";
 open (TAXON_OUT, ">$taxon_dir/taxons.txt") or die "Can't write file: $taxon_dir/taxons.txt: $!\n";
 
+my @taxa;
+for my $taxon (sort {$a <=> $b} keys %org_taxon) {
+  # say "$key: " . join(" * ", @{$org_taxon{$key}}); # for debug
+
+  push (@taxa, $taxon); # store the taxon IDs to write to file later
+}
+
+say TAXON_OUT join(" ", @taxa); # write tax IDs - needed for some data sources in project.xml
+close TAXON_OUT;
+
 my $reference = 'reviewed:yes'; # proteomes which usually have some curation
 my $complete = 'reviewed:no'; # proteomes whith mostly automated annotation
 
@@ -326,12 +336,8 @@ my $complete = 'reviewed:no'; # proteomes whith mostly automated annotation
 my $db_sp = "uniprot_sprot"; 
 my $db_tr = "uniprot_trembl";
 
-# Loop through the taxons again
-my @taxa;
-for my $taxon (sort {$a <=> $b} keys %org_taxon) {
+for my $taxon (@taxa) {
   # say "$key: " . join(" * ", @{$org_taxon{$key}}); # for debug
-
-  push (@taxa, $taxon); # store the taxon IDs to write to file later
 
   say "### Processing taxon: $taxon ###";
 
@@ -344,13 +350,9 @@ for my $taxon (sort {$a <=> $b} keys %org_taxon) {
   print "\n";
 }
 
-# Write the taxons to file
-say TAXON_OUT join(" ", @taxa); # write tax IDs - needed for some data sources in project.xml
-
 # Close the out files
 close (KEGG_ORG_OUT);
 close (KEGG_TAXA_OUT);
-close (TAXON_OUT);
 
 scalar(@errors) and print RED;
 say "Finished with " . scalar(@errors) . " errors";
