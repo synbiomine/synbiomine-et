@@ -16,6 +16,7 @@ class MyParser(argparse.ArgumentParser):
 ### CONSTANTS ###
 #################
 currentSymLinkName = "current";
+sources = [ "eggnog", "genbank", "go-annotation", "kegg", "taxons", "uniprot" ]
 
 ############
 ### MAIN ###
@@ -44,4 +45,9 @@ if os.path.exists(currentSymLinkName):
 
 os.symlink(datasetDirName, currentSymLinkName)
 
-print "Created dataset structure %s" % (os.path.join(repoPath, datasetDirName))
+os.chdir(currentSymLinkName)
+
+for source in sources:
+  os.mkdir(source)
+
+print "Created dataset structure at %s" % (os.path.join(repoPath, datasetDirName))

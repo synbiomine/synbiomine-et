@@ -17,8 +17,6 @@ use feature ':5.12';
 my $current_symlink = "current";
 my $selected_genomes_fn = "synbiomine_selected_assembly_summary_refseq.txt";
 
-my @newSources = qw(go-annotation kegg taxons uniprot);
-
 my $usage = "Usage:fetchSynbioData.pl [-hv] data_directory
 
 Data download script for SynBioMine.
@@ -71,16 +69,6 @@ defined $opts{"v"} and $verbose = 1;
 #my $base = "/SAN_synbiomine/data/";
 @ARGV > 0 or die $usage;
 my $base = $ARGV[0];
-
-# make a new date directory under each of the data directories
-foreach my $source (@newSources) {
-
-  my $source_dir = catdir($base, $source);
-
-  if (not -d $source_dir) {
-    mkdir "$source_dir", 0755 or die "Could not make $source_dir: $!\n";
-  }
-}
 
 # email addr is required for NCBI FTP use
 my $contact = 'justincc@intermine.org'; # Please set your email address here to help us debug in case of problems.

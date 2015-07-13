@@ -49,10 +49,6 @@ if (not -d $base) {
 
 my $genbank_dir = catdir($base, "genbank");
 
-if (not -d $genbank_dir) {
-  mkdir "$genbank_dir", 0755 or die "Could not make $genbank_dir: $!";
-}
-
 my $contact = 'justincc@intermine.org'; # Please set your email address here to help us debug in case of problems.
 
 # Global FTP params
