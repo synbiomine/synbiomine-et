@@ -16,7 +16,7 @@ class MyParser(argparse.ArgumentParser):
 ### CONSTANTS ###
 #################
 currentSymLinkName = "current";
-sources = [ "eggnog", "genbank", "go-annotation", "kegg", "taxons", "uniprot" ]
+sources = [ "eggnog", "genbank", "go-annotation", "kegg", "kegg-reaction", "taxons", "uniprot" ]
 
 ############
 ### MAIN ###
