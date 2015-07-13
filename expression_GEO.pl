@@ -4,7 +4,7 @@ use strict;
 use warnings;
 use Getopt::Std;
 
-my $usage = "Usage: parseGEOseries.pl organismID_file analysis_methods_file GEOseries_matrix_file
+my $usage = "Usage: $0 organismID_file analysis_methods_file GEOseries_matrix_file
 
 Options:
 -h\tthis help
