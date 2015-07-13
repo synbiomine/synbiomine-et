@@ -13,7 +13,8 @@ use feature ':5.12';
 
 my $usage = "Usage:writeKeggPathProjectXML.pl [-h] [-i <project-xml-path>] <kegg-data-path> <taxon-id-path>
 
-synopsis: read the taxon id file and creates an InterMine project XML <source> entry
+read the taxon id file and creates an InterMine project XML <source> entry
+<kegg-data-path> is the path relative to the InterMine project.xml file
 If a <project-xml-path> is given then this entry is inserted directly into the given project XML
 otherwise it is printed on stdout
 
