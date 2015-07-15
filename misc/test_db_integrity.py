@@ -14,10 +14,28 @@ class MyParser(argparse.ArgumentParser):
 
 parser = MyParser('Check the integrity of the given InterMine database.')
 parser.add_argument('dbName', help='name of the database to check.')
+parser.add_argument('--dbUser', help='db user if this is different from the current')
+parser.add_argument('--dbHost', help='db host if this is not localhost')
+parser.add_argument('--dbPort', help='db port if this is not localhost')
+parser.add_argument('--dbPass', help='db password if this is required')
 args = parser.parse_args()
 
 dbName = args.dbName
-conn = psycopg2.connect("dbname=%s" % dbName)
+connString = "dbname=%s" % dbName
+
+if args.dbUser:
+  connString += " user=%s" % args.dbUser
+
+if args.dbHost:
+  connString += " host=%s" % args.dbHost
+
+if args.dbPort:
+  connString + " port=%s" % args.dbPort
+
+if args.dbPass:
+  connString += " password=%s" % args.dbPass
+
+conn = psycopg2.connect(connString)
 
 warnings = 0
 
