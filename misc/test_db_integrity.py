@@ -2,9 +2,21 @@
 
 # An incomplete scripts which aims to test certain integrity aspects of a synbiomine InterMine database
 
+import argparse
 import psycopg2
+import sys
 
-dbName = "synbiomine2"
+class MyParser(argparse.ArgumentParser):
+    def error(self, message):
+        sys.stderr.write('error: %s\n' % message)
+        self.print_help()
+        sys.exit(2)
+
+parser = MyParser('Check the integrity of the given InterMine database.')
+parser.add_argument('dbName', help='name of the database to check.')
+args = parser.parse_args()
+
+dbName = args.dbName
 conn = psycopg2.connect("dbname=%s" % dbName)
 
 warnings = 0
