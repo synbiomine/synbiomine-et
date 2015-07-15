@@ -4,11 +4,12 @@
 
 import psycopg2
 
-conn = psycopg2.connect("dbname=synbiomine2")
+dbName = "synbiomine2"
+conn = psycopg2.connect("dbname=%s" % dbName)
 
 cur = conn.cursor()
 cur.execute("select count(*) from intermineobject;")
-print cur.fetchone()
+print "%s has %s InterMine objects" % (dbName, cur.fetchone()[0])
 
 cur.close()
 conn.close()
