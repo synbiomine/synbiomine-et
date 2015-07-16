@@ -41,7 +41,13 @@ warnings = 0
 
 cur = conn.cursor()
 cur.execute("select count(*) from intermineobject;")
-print "%s has %s InterMine objects" % (dbName, cur.fetchone()[0])
+print "%s has %s InterMine rows" % (dbName, cur.fetchone()[0])
+
+cur.execute("select count(*) from gene;")
+print "%s has %s gene rows" % (dbName, cur.fetchone()[0])
+
+cur.execute("select count(*) from chromosome;")
+print "%s has %s chromosome rows" % (dbName, cur.fetchone()[0])
 
 locatedonids = []
 cur.execute("select distinct locatedonid from location order by locatedonid;")
