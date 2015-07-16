@@ -25,31 +25,50 @@ def displayObjectCounts(dbCursor, objectClassesToCount):
     dbCursor.execute("select count(*) from %s;" % classToCount)
     print "%s has %s %s rows" % (dbName, cur.fetchone()[0], classToCount)
 
+def checkLocationLocatedonid(dbCursor):
+  locatedonids = []
+  dbCursor.execute("select distinct locatedonid from location order by locatedonid;")
+  for row in cur:
+    if row[0] != None:
+      locatedonids.append(row[0])
+
+  print "Found %d location.locatedonid entries.  Checking." % len(locatedonids)
+
+  for locatedonid in locatedonids:
+  #  print "Checking location.locatedonid %s" % locatedonid
+
+    data = (locatedonid,)
+    dbCursor.execute("select * from bioentity where id=%s;", data)
+    
+    if cur.rowcount <= 0:
+      warnings += 1
+      print "WARNING: No BioEntity entry found for location.locatedonid %s" % locatedonid
+
 ############
 ### MAIN ###
 ############
 parser = MyParser('Check the integrity of the given InterMine database.')
-parser.add_argument('dbName', help='name of the database to check.')
-parser.add_argument('--dbUser', help='db user if this is different from the current')
-parser.add_argument('--dbHost', help='db host if this is not localhost')
-parser.add_argument('--dbPort', help='db port if this is not localhost')
-parser.add_argument('--dbPass', help='db password if this is required')
+parser.add_argument('dbname', help='name of the database to check.')
+parser.add_argument('--dbuser', help='db user if this is different from the current')
+parser.add_argument('--dbhost', help='db host if this is not localhost')
+parser.add_argument('--dbport', help='db port if this is not localhost')
+parser.add_argument('--dbpass', help='db password if this is required')
 args = parser.parse_args()
 
-dbName = args.dbName
+dbName = args.dbname
 connString = "dbname=%s" % dbName
 
-if args.dbUser:
-  connString += " user=%s" % args.dbUser
+if args.dbuser:
+  connString += " user=%s" % args.dbuser
 
-if args.dbHost:
-  connString += " host=%s" % args.dbHost
+if args.dbhost:
+  connString += " host=%s" % args.dbhost
 
-if args.dbPort:
-  connString + " port=%s" % args.dbPort
+if args.dbport:
+  connString + " port=%s" % args.dbport
 
-if args.dbPass:
-  connString += " password=%s" % args.dbPass
+if args.dbpass:
+  connString += " password=%s" % args.dbpass
 
 conn = psycopg2.connect(connString)
 
@@ -58,29 +77,7 @@ warnings = 0
 cur = conn.cursor()
 
 displayObjectCounts(cur, objectClassesToCount)
-
-locatedonids = []
-cur.execute("select distinct locatedonid from location order by locatedonid;")
-for row in cur:
-  if row[0] != None:
-    locatedonids.append(row[0])
-
-print "Found %d location.locatedonid entries.  Checking." % len(locatedonids)
-
-for locatedonid in locatedonids:
-#  print "Checking location.locatedonid %s" % locatedonid
-
-  data = (locatedonid,)
-  cur.execute("select * from bioentity where id=%s;", data)
-  
-  if cur.rowcount <= 0:
-    warnings += 1
-    print "WARNING: No BioEntity entry found for location.locatedonid %s" % locatedonid
-"""
-  else:
-    for row in cur:
-      print row
-"""
+checkLocationLocatedonid(cur);
 
 cur.close()
 conn.close()
