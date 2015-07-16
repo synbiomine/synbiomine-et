@@ -8,6 +8,8 @@ import sys
 
 objectClassesToCount = [ "intermineobject", "gene", "chromosome", "publication" ]
 
+warnings = 0
+
 ###############
 ### CLASSES ###
 ###############
@@ -26,7 +28,9 @@ def displayObjectCounts(dbCursor, objectClassesToCount):
     print "%s has %s %s rows" % (dbName, cur.fetchone()[0], classToCount)
 
 def checkLocationLocatedonid(dbCursor):
+  warnings = 0
   locatedonids = []
+
   dbCursor.execute("select distinct locatedonid from location order by locatedonid;")
   for row in cur:
     if row[0] != None:
@@ -37,12 +41,27 @@ def checkLocationLocatedonid(dbCursor):
   for locatedonid in locatedonids:
   #  print "Checking location.locatedonid %s" % locatedonid
 
-    data = (locatedonid,)
+    data = (locatedonid, )
     dbCursor.execute("select * from bioentity where id=%s;", data)
     
     if cur.rowcount <= 0:
       warnings += 1
       print "WARNING: No BioEntity entry found for location.locatedonid %s" % locatedonid
+
+  return warnings
+
+def checkPublications(dbCursor):
+  warnings = 0
+
+  print "Checking publications"
+
+  dbCursor.execute("select count(*) from publication where title is null;");
+  
+  if cur.rowcount > 0:
+    warnings += 1
+    print "WARNING: Found %s publications with null title field" % cur.fetchone()[0];
+
+  return warnings
 
 ############
 ### MAIN ###
@@ -72,12 +91,11 @@ if args.dbpass:
 
 conn = psycopg2.connect(connString)
 
-warnings = 0
-
 cur = conn.cursor()
 
 displayObjectCounts(cur, objectClassesToCount)
-checkLocationLocatedonid(cur);
+warnings += checkLocationLocatedonid(cur)
+warnings += checkPublications(cur)
 
 cur.close()
 conn.close()
