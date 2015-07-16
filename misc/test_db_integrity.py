@@ -6,7 +6,7 @@ import argparse
 import psycopg2
 import sys
 
-objectClassesToCount = [ "intermineobject", "gene", "chromosome" ]
+objectClassesToCount = [ "intermineobject", "gene", "chromosome", "publication" ]
 
 ###############
 ### CLASSES ###
