@@ -56,10 +56,11 @@ def checkPublications(dbCursor):
   print "Checking publications"
 
   dbCursor.execute("select count(*) from publication where title is null;");
+  count = cur.fetchone()[0]
   
-  if cur.rowcount > 0:
+  if count > 0:
     warnings += 1
-    print "WARNING: Found %s publications with null title field" % cur.fetchone()[0];
+    print "WARNING: Found %s publications with null title field" % count
 
   return warnings
 
