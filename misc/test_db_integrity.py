@@ -8,12 +8,26 @@ import sys
 
 objectClassesToCount = [ "intermineobject", "gene", "chromosome" ]
 
+###############
+### CLASSES ###
+###############
 class MyParser(argparse.ArgumentParser):
     def error(self, message):
         sys.stderr.write('error: %s\n' % message)
         self.print_help()
         sys.exit(2)
 
+###################
+### SUBROUTINES ###
+###################
+def displayObjectCounts(dbCursor, objectClassesToCount):
+  for classToCount in objectClassesToCount:
+    dbCursor.execute("select count(*) from %s;" % classToCount)
+    print "%s has %s %s rows" % (dbName, cur.fetchone()[0], classToCount)
+
+############
+### MAIN ###
+############
 parser = MyParser('Check the integrity of the given InterMine database.')
 parser.add_argument('dbName', help='name of the database to check.')
 parser.add_argument('--dbUser', help='db user if this is different from the current')
@@ -43,9 +57,7 @@ warnings = 0
 
 cur = conn.cursor()
 
-for classToCount in objectClassesToCount:
-  cur.execute("select count(*) from %s;" % classToCount)
-  print "%s has %s %s rows" % (dbName, cur.fetchone()[0], classToCount)
+displayObjectCounts(cur, objectClassesToCount)
 
 locatedonids = []
 cur.execute("select distinct locatedonid from location order by locatedonid;")
