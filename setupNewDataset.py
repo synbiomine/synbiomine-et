@@ -16,7 +16,7 @@ class MyParser(argparse.ArgumentParser):
 ### CONSTANTS ###
 #################
 currentSymLinkName = "current";
-sources = [ "eggnog", "genbank", "go-annotation", "kegg", "kegg-reaction", "taxons", "uniprot" ]
+sections = [ "eggnog", "genbank", "go-annotation", "kegg", "kegg-reaction", "taxons", "uniprot" ]
 
 ############
 ### MAIN ###
@@ -47,7 +47,7 @@ os.symlink(datasetDirName, currentSymLinkName)
 
 os.chdir(currentSymLinkName)
 
-for source in sources:
-  os.mkdir(source)
+for section in sections:
+  os.mkdir(section)
 
 print "Created dataset structure at %s" % (os.path.join(repoPath, datasetDirName))
