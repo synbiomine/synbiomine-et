@@ -2,6 +2,8 @@
 
 use strict;
 use warnings;
+use File::Copy;
+use File::Spec::Functions;
 use Getopt::Std;
 require LWP::UserAgent;
 
@@ -19,20 +21,21 @@ from the KEGG PATHWAY database using the KEGG's web service
 
 =head1 SYNOPSIS
 
-  usage: kegg_org_pathway [-v|-h] file_of_organism_codes [optional: output_directory_path]
+  usage: kegg_org_pathway [-v|-h] <map_title_tab_file> <organism_codes_file> <output_dir>
 
   options: 
     -v (verbose) : helpful messaging for debug purposes
     -h (help)    : shows usage
 
-  input: file_of_organism_codes (plain text - one code per line): 
+  input: 
+    map_title_tab_file:
+      map_title.tab file to use for kegg data
 
+    organism_codes_file (plain text - one code per line): 
       KEGG organism_codes: 3-4 letter organism codes used by KEGG e.g. 
       eco
       bsu
       hsa
-
-  [optional: output dir    If not specified, defaults to current dir]
 
   output: writes a file of gene to pathway mappings for each organism
   specified in the input file. Filename is [code]_gene_map.tab.
@@ -70,7 +73,7 @@ under the same terms as Perl itself.
 
 =cut
 
-my $usage = "usage: $0 file_of_organism_codes output_directory_path
+my $usage = "usage: $0 <map_title_tab_file> <organism_codes_file> <output_dir>
 
 writes a file of gene to pathway mappings for each organism
 specified in the input file. Filename is [code]_gene_map.tab.
@@ -97,9 +100,14 @@ defined $opts{"v"} and $verbose++; # debugging mode
 
 unless ( $ARGV[0] ) { die $usage }; # check for input file
 
-@ARGV < 2 and die $usage;
+@ARGV < 3 and die $usage;
 
-my ($org_file, $out_dir) = @ARGV;
+my ($map_file_in, $org_file, $out_dir) = @ARGV;
+my $map_file_out_name = "map_title.tab";
+
+my $map_file_out = catdir($out_dir, $map_file_out_name);
+say "Copying $map_file_in to $map_file_out";
+copy($map_file_in, $map_file_out) or die "Could not copy $map_file_in to $map_file_out: $!";
 
 my $processed_count = 0;
 
