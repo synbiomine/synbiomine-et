@@ -72,6 +72,12 @@ under the same terms as Perl itself.
 
 my $usage = "usage: $0 file_of_organism_codes output_directory_path
 
+writes a file of gene to pathway mappings for each organism
+specified in the input file. Filename is [code]_gene_map.tab.
+
+File format is:
+  gene_id\tpathway1, p2, p3 etc.
+
 organism_codes:\t3-4 letter organism codes used by KEGG
 e.g.
   eco
