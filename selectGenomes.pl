@@ -11,7 +11,7 @@ use feature ':5.12';
 
 my $selected_genomes_fn = "synbiomine_selected_assembly_summary_refseq.txt";
 
-my $usage = "Usage: selectAssemblies.pl [-hv] [-p <pre_selected_genomes_path] <dataset_path>
+my $usage = "Usage: selectAssemblies.pl [-hv] [-p <pre_selected_genomes_path>] <dataset_path>
 
 Downloads assembly summaries from NCBI and selects genomes according to hard-coded criteria.
 Writes the selected summaries to <dataset_path>/genbank/$selected_genomes_fn
