@@ -97,8 +97,9 @@ defined $opts{"v"} and $verbose++; # debugging mode
 
 unless ( $ARGV[0] ) { die $usage }; # check for input file
 
+@ARGV < 2 and die $usage;
+
 my ($org_file, $out_dir) = @ARGV;
-$out_dir = ($out_dir) ? $out_dir : "\."; # set output dir - or use current by default
 
 open(ORG_FILE, "< $org_file") || die "cannot open $org_file: $!\n"; # open kegg org file
 
