@@ -101,22 +101,23 @@ unless ( $ARGV[0] ) { die $usage }; # check for input file
 
 my ($org_file, $out_dir) = @ARGV;
 
+my $processed_count = 0;
+
 open(ORG_FILE, "< $org_file") || die "cannot open $org_file: $!\n"; # open kegg org file
 
 # process the organism file
 while (<ORG_FILE>) {
   chomp; # new lines off
   my $org = $_;
-  say "Processing organism: $org";
+  say "Processing organism $org";
 
   my $content = &kegg_ws($org); # query KEGG WS sub routine with org ID
   sleep(3); # be nice and sleep between requests
   &process_kegg($org, $out_dir, $content); # process the results
-
+  $processed_count++;
 }
 
-say "All done - enjoy your results";
-exit(1);
+say "Processed $processed_count organisms";
 
 ## sub routines ##
 # get pathways per organism
