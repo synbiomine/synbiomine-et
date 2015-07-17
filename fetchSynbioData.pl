@@ -76,7 +76,7 @@ my $agent = LWP::UserAgent->new(agent => "libwww-perl $contact");
 
 # Global FTP params
 $ENV{FTP_PASSIVE} = 1;
-my $timeout      = 600;     # seconds, default is 120
+my $timeout      = 15;
 #my $retries      = 5;
 my $username = 'anonymous'; # allow anonymous FTPO with email addr as pwd
 my $password = 'justincc@intermine.org'; # required
