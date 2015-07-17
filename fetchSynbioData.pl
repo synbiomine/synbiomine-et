@@ -159,7 +159,10 @@ defined($ftp3) or die "Could not connect to $ebi_hostname: $!";
 $ftp3->login($username, $password) or die "Cannot login ", $ftp3->message; 
 $ftp3->cwd($ebi_home) or die "Cannot change working directory ", $ftp3->message;
 
-my $go_ref = fetch_filtered_data($ftp3, $ebi_file, catdir($go_dir, $ebi_file));
+my $ebiFileDestPath = catdir($go_dir, $ebi_file);
+fetch_file($ftp3, $ebi_file, $ebiFileDestPath);
+
+my $go_ref = get_filtered_data_from_file($ebiFileDestPath);
 my @go_taxons = @{ $go_ref };
 
 my %GO_proteomes; # Make a look-up of tax id to GO proteome
@@ -486,27 +489,6 @@ sub add_taxon {
 }
 
 =pod
-Return FTP data where lines have t omatch Bacillus|Escherichia|Geobacillus
-=cut
-sub fetch_filtered_data {
-
-  my ($ftp, $src, $dest) = @_;
-
-  if (-e $dest) {
-    say "Using existing file $dest";
-  } else {
-    #my @dir_list = grep /_uid/, $ftp->ls();
-
-    # We're using a filehandle on the basis that it is more memory efficient as we can discard each
-    # retrieved line after processing instead of slurping in the whole file at once
-    #my $handle = $ftp->retr($file) or die "get failed ", $ftp->message;
-    $ftp->get($src, $dest) or die "Failed to get $src for $dest: $ftp->message";
-  }
-
-  return get_filtered_data_from_file($dest);
-}
-
-=pod
 Read a file and return lines that meet hard-coded criteria
 =cut
 sub get_filtered_data_from_file {
@@ -526,7 +508,7 @@ sub get_filtered_data_from_file {
 }
 
 =pod
-Fetch the given file
+Fetch the given file via FTP if we do not already have a local copy
 =cut
 sub fetch_file {
   my ($ftp, $ftp_path, $to_path, $use_ascii) = @_;
