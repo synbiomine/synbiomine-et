@@ -154,8 +154,7 @@ my $go_dir = catdir($base, "go-annotation");
 
 # say "Trying FTP for: $ebi_hostname";
 my $ftp3 = Net::FTP->new($ebi_hostname, BlockSize => 20480, Timeout => $timeout);
-# I would look at $@ but it doesn't appear to contain anything useful
-defined($ftp3) or die "Could not connect to $ebi_hostname, possible timeout\n";
+defined($ftp3) or die "Could not connect to $ebi_hostname: $!";
 
 $ftp3->login($username, $password) or die "Cannot login ", $ftp3->message; 
 $ftp3->cwd($ebi_home) or die "Cannot change working directory ", $ftp3->message;
@@ -233,8 +232,7 @@ log_new_activity("Downloading NCBI FASTA, GFF and assembly reports");
 my $refseq = '/genomes/refseq/bacteria'; # used for path
 
 my $ftp2 = Net::FTP->new($hostname, BlockSize => 20480, Timeout => $timeout);
-# I would look at $@ but it doesn't appear to contain anything useful
-defined($ftp2) or die "Could not connect to $hostname, possible timeout\n";
+defined($ftp2) or die "Could not connect to $hostname: $!";
 
 $ftp2->login($username, $password) or die "Cannot login ", $ftp2->message;
 
