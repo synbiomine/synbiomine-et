@@ -27,6 +27,20 @@ def displayObjectCounts(dbCursor, objectClassesToCount):
     dbCursor.execute("select count(*) from %s;" % classToCount)
     print "%s has %s %s rows" % (dbName, cur.fetchone()[0], classToCount)
 
+def checkGenes(dbCursor):
+  warnings = 0
+
+  # print "Checking genes"
+
+  dbCursor.execute("select count(*) from gene where length is null;");
+  count = cur.fetchone()[0]
+  
+  if count > 0:
+    warnings += 1
+    print "WARNING: Found %s genes with null length" % count
+
+  return warnings
+
 def checkLocationLocatedonid(dbCursor):
   warnings = 0
   locatedonids = []
@@ -36,7 +50,7 @@ def checkLocationLocatedonid(dbCursor):
     if row[0] != None:
       locatedonids.append(row[0])
 
-  print "Found %d location.locatedonid entries.  Checking." % len(locatedonids)
+  print "Found %d location.locatedonid entries." % len(locatedonids)
 
   for locatedonid in locatedonids:
   #  print "Checking location.locatedonid %s" % locatedonid
@@ -53,14 +67,14 @@ def checkLocationLocatedonid(dbCursor):
 def checkPublications(dbCursor):
   warnings = 0
 
-  print "Checking publications"
+  # print "Checking publications"
 
   dbCursor.execute("select count(*) from publication where title is null;");
   count = cur.fetchone()[0]
   
   if count > 0:
     warnings += 1
-    print "WARNING: Found %s publications with null title field" % count
+    print "WARNING: Found %s publications with null title" % count
 
   return warnings
 
@@ -95,6 +109,7 @@ conn = psycopg2.connect(connString)
 cur = conn.cursor()
 
 displayObjectCounts(cur, objectClassesToCount)
+warnings += checkGenes(cur)
 warnings += checkLocationLocatedonid(cur)
 warnings += checkPublications(cur)
 
