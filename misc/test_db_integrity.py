@@ -41,7 +41,7 @@ def checkGenes(dbCursor):
 
   return warnings
 
-def checkLocationLocatedonid(dbCursor):
+def checkLocations(dbCursor):
   warnings = 0
   locatedonids = []
 
@@ -110,7 +110,7 @@ cur = conn.cursor()
 
 displayObjectCounts(cur, objectClassesToCount)
 warnings += checkGenes(cur)
-warnings += checkLocationLocatedonid(cur)
+warnings += checkLocations(cur)
 warnings += checkPublications(cur)
 
 cur.close()
