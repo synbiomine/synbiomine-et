@@ -38,6 +38,7 @@ strsB = map(str, rowsB)
 countInAOnly = 0
 countInBOnly = 0
 
+"""
 for rowA in rowsA:
   if rowA['Gene.symbol'] == 'acoR':
     print rowA
@@ -45,8 +46,8 @@ for rowA in rowsA:
 for rowB in rowsB:
   if rowB['Gene.symbol'] == 'acoR':
     print rowB
-
 """
+
 # Very crude comparion
 for strA in strsA:
   print strA
@@ -59,4 +60,3 @@ for strB in strsB:
 
 print "Results found in A only: %d" % countInAOnly
 print "Results found in B only: %d" % countInBOnly
-"""
