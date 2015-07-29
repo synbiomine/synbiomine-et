@@ -352,6 +352,7 @@ sub make_gene_item {
     $gene_item = make_item(
       Gene => (
         primaryIdentifier => $gene_id,
+        secondaryIdentifier => $gene_id,
         organism => $org_item,
       ),
     );
