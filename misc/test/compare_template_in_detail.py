@@ -54,7 +54,7 @@ print '### RESULTS FOUND IN SERVICE A ONLY ###'
 for strA in strsA:
   if strA not in strsB:
     print strA
-    countInBOnly += 1
+    countInAOnly += 1
   else:
     countInBoth += 1
 
@@ -62,7 +62,7 @@ print '### RESULTS FOUND IN SERVICE B ONLY ###'
 for strB in strsB:
   if strB not in strsA:
     print strB
-    countInAOnly += 1
+    countInBOnly += 1
 
 print "Results found in service A only: %d" % countInAOnly
 print "Results found in service B only: %d" % countInBOnly
