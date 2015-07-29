@@ -16,7 +16,7 @@ class MyParser(argparse.ArgumentParser):
 ###################
 ### SUBROUTINES ###
 ###################
-def compareCrude(rowsA, rowsB):
+def compareCrude(rowsA, rowsB, verbose):
   strsA = map(str, rowsA)
   strsB = map(str, rowsB)
 
@@ -36,6 +36,7 @@ def compareCrude(rowsA, rowsB):
 
   # Very crude comparison
   print '### RESULTS FOUND IN SERVICE A ONLY ###'
+
   for strA in strsA:
     if strA not in strsB:
       print strA
@@ -44,9 +45,64 @@ def compareCrude(rowsA, rowsB):
       countInBoth += 1
 
   print '### RESULTS FOUND IN SERVICE B ONLY ###'
+
   for strB in strsB:
     if strB not in strsA:
       print strB
+      countInBOnly += 1
+
+  print "Results found in service A only: %d" % countInAOnly
+  print "Results found in service B only: %d" % countInBOnly
+  print "Results found in both: %d" % countInBoth
+
+def indexItemsByKey(rows, keyName, verbose):
+  items = {}
+  itemsErrorCount = 0
+  for row in rows:
+    key = row[keyName]
+
+    if key in items:
+      itemsErrorCount += 1
+      if verbose:
+        print "ERROR %d\n%s\nalready found as\n%s\n" % (itemsErrorCount, str(row), str(items[key]))
+    else:
+      items[key] = row
+
+  print "Removed %d of %d as duplicated items" % (len(rows) - len(items), len(rows))
+
+  return items
+
+def compareWithKey(rowsA, rowsB, keyName, verbose):
+#  print len(rowsA)
+#  print len(rowsB)
+
+  print "Analyzing service A items"
+  itemsA = indexItemsByKey(rowsA, keyName, verbose)
+
+  print "Analyzing service B items"
+  itemsB = indexItemsByKey(rowsB, keyName, verbose)
+  print 
+
+  countInAOnly = 0
+  countInBOnly = 0
+  countInBoth = 0
+
+  print '### RESULTS FOUND IN SERVICE A ONLY ###'
+
+  for keyA in itemsA.keys():
+    if keyA not in itemsB:
+      # if verbose:
+      print str(itemsA[keyA])
+      countInAOnly += 1
+    else:
+      countInBoth += 1
+  
+  print '### RESULTS FOUND IN SERVICE B ONLY ###'
+
+  for keyB in itemsB.keys():
+    if keyB not in itemsA:
+      # if verbose:
+      print str(itemsB[keyB])
       countInBOnly += 1
 
   print "Results found in service A only: %d" % countInAOnly
@@ -57,6 +113,8 @@ def compareCrude(rowsA, rowsB):
 ### MAIN ###
 ############
 parser = MyParser('Compare a template between two versions of the same webservice in detail.')
+parser.add_argument('-v', '--verbose')
+parser.add_argument('-k', '--key')
 parser.add_argument('template_name')
 parser.add_argument('service_version_a')
 parser.add_argument('service_version_b')
@@ -70,4 +128,7 @@ serviceB = Service(args.service_version_b)
 templateB = serviceB.get_template(args.template_name)
 rowsB = templateB.get_row_list()
 
-compareCrude(rowsA, rowsB)
+if args.key:
+  compareWithKey(rowsA, rowsB, args.key, args.verbose)
+else:
+  compareCrude(rowsA, rowsB, args.verbose)
