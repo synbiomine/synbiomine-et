@@ -48,15 +48,18 @@ for rowB in rowsB:
     print rowB
 """
 
-# Very crude comparion
+# Very crude comparison
+print '### RESULTS FOUND IN SERVICE A ONLY ###'
 for strA in strsA:
   print strA
   if strA in strsB:
     countInBOnly += 1
 
+print '### RESULTS FOUND IN SERVICE B ONLY ###'
 for strB in strsB:
+  print strB
   if strB not in strsA:
     countInAOnly += 1
 
-print "Results found in A only: %d" % countInAOnly
-print "Results found in B only: %d" % countInBOnly
+print "Results found in service A only: %d" % countInAOnly
+print "Results found in service B only: %d" % countInBOnly
