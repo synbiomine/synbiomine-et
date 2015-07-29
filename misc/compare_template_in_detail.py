@@ -37,6 +37,7 @@ strsB = map(str, rowsB)
 
 countInAOnly = 0
 countInBOnly = 0
+countInBoth = 0
 
 """
 for rowA in rowsA:
@@ -54,6 +55,8 @@ for strA in strsA:
   if strA not in strsB:
     print strA
     countInBOnly += 1
+  else:
+    countInBoth += 1
 
 print '### RESULTS FOUND IN SERVICE B ONLY ###'
 for strB in strsB:
@@ -63,3 +66,4 @@ for strB in strsB:
 
 print "Results found in service A only: %d" % countInAOnly
 print "Results found in service B only: %d" % countInBOnly
+print "Results found in both: %d" % countInBoth
