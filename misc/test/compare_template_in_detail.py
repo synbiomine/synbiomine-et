@@ -35,7 +35,9 @@ def compareCrude(rowsA, rowsB, verbose):
   """
 
   # Very crude comparison
+  print '#######################################'
   print '### RESULTS FOUND IN SERVICE A ONLY ###'
+  print '#######################################'
 
   for strA in strsA:
     if strA not in strsB:
@@ -44,7 +46,9 @@ def compareCrude(rowsA, rowsB, verbose):
     else:
       countInBoth += 1
 
+  print '#######################################'
   print '### RESULTS FOUND IN SERVICE B ONLY ###'
+  print '#######################################'
 
   for strB in strsB:
     if strB not in strsA:
@@ -87,7 +91,9 @@ def compareWithKey(rowsA, rowsB, keyName, verbose):
   countInBOnly = 0
   countInBoth = 0
 
+  print '#######################################'
   print '### RESULTS FOUND IN SERVICE A ONLY ###'
+  print '#######################################'
 
   for keyA in itemsA.keys():
     if keyA not in itemsB:
@@ -97,7 +103,9 @@ def compareWithKey(rowsA, rowsB, keyName, verbose):
     else:
       countInBoth += 1
   
+  print '#######################################'
   print '### RESULTS FOUND IN SERVICE B ONLY ###'
+  print '#######################################'
 
   for keyB in itemsB.keys():
     if keyB not in itemsA:
