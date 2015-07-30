@@ -20,44 +20,21 @@ def compareCrude(rowsA, rowsB, verbose):
   strsA = map(str, rowsA)
   strsB = map(str, rowsB)
 
-  countInAOnly = 0
-  countInBOnly = 0
-  countInBoth = 0
-
-  """
-  for rowA in rowsA:
-    if rowA['Gene.symbol'] == 'acoR':
-      print rowA
-
-  for rowB in rowsB:
-    if rowB['Gene.symbol'] == 'acoR':
-      print rowB
-  """
-
-  # Very crude comparison
-  print '#######################################'
-  print '### RESULTS FOUND IN SERVICE A ONLY ###'
-  print '#######################################'
+  strsAOnly = []
+  strsBOnly = []
+  strsBoth = []
 
   for strA in strsA:
     if strA not in strsB:
-      print strA
-      countInAOnly += 1
+      strsAOnly.append(strA)
     else:
-      countInBoth += 1
-
-  print '#######################################'
-  print '### RESULTS FOUND IN SERVICE B ONLY ###'
-  print '#######################################'
+      strsBoth.append(strA)
 
   for strB in strsB:
     if strB not in strsA:
-      print strB
-      countInBOnly += 1
+      strsBOnly.append(strB)
 
-  print "Results found in service A only: %d" % countInAOnly
-  print "Results found in service B only: %d" % countInBOnly
-  print "Results found in both: %d" % countInBoth
+  return {'strsAOnly':strsAOnly, 'strsBOnly':strsBOnly, 'strsBoth':strsBoth}
 
 def indexItemsByKey(rows, keyName, verbose):
   items = {}
@@ -77,8 +54,6 @@ def indexItemsByKey(rows, keyName, verbose):
   return items
 
 def compareWithKey(rowsA, rowsB, keyName, verbose):
-#  print len(rowsA)
-#  print len(rowsB)
 
   print "Analyzing service A items"
   itemsA = indexItemsByKey(rowsA, keyName, verbose)
@@ -87,35 +62,21 @@ def compareWithKey(rowsA, rowsB, keyName, verbose):
   itemsB = indexItemsByKey(rowsB, keyName, verbose)
   print 
 
-  countInAOnly = 0
-  countInBOnly = 0
-  countInBoth = 0
-
-  print '#######################################'
-  print '### RESULTS FOUND IN SERVICE A ONLY ###'
-  print '#######################################'
+  strsAOnly = []
+  strsBOnly = []
+  strsBoth = []
 
   for keyA in itemsA.keys():
     if keyA not in itemsB:
-      # if verbose:
-      print str(itemsA[keyA])
-      countInAOnly += 1
+      strsAOnly.append(itemsA[keyA])
     else:
-      countInBoth += 1
-  
-  print '#######################################'
-  print '### RESULTS FOUND IN SERVICE B ONLY ###'
-  print '#######################################'
+      strsBOnly.append(itemsA[keyA])
 
   for keyB in itemsB.keys():
     if keyB not in itemsA:
-      # if verbose:
-      print str(itemsB[keyB])
-      countInBOnly += 1
+      strsBOnly.append(strB)
 
-  print "Results found in service A only: %d" % countInAOnly
-  print "Results found in service B only: %d" % countInBOnly
-  print "Results found in both: %d" % countInBoth
+  return {'strsAOnly':strsAOnly, 'strsBOnly':strsBOnly, 'strsBoth':strsBoth}
 
 ############
 ### MAIN ###
@@ -136,7 +97,27 @@ serviceB = Service(args.service_version_b)
 templateB = serviceB.get_template(args.template_name)
 rowsB = templateB.get_row_list()
 
+results = None
+
 if args.key:
-  compareWithKey(rowsA, rowsB, args.key, args.verbose)
+  res = compareWithKey(rowsA, rowsB, args.key, args.verbose)
 else:
-  compareCrude(rowsA, rowsB, args.verbose)
+  res = compareCrude(rowsA, rowsB, args.verbose)
+
+print '#######################################'
+print '### RESULTS FOUND IN SERVICE A ONLY ###'
+print '#######################################'
+
+for s in res['strsAOnly']:
+  print s
+
+print '#######################################'
+print '### RESULTS FOUND IN SERVICE B ONLY ###'
+print '#######################################'
+
+for s in res['strsBOnly']:
+  print s
+
+print "Results found in service A only: %d" % len(res['strsAOnly'])
+print "Results found in service B only: %d" % len(res['strsBOnly'])
+print "Results found in both: %d" % len(res['strsBoth'])
