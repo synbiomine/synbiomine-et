@@ -42,5 +42,14 @@ conn = httplib.HTTPConnection("websvc.biocyc.org")
 conn.request("GET", "/getxml?id=ECOLI:%s&detail=full" % pathways[0])
 resp = conn.getresponse()
 print resp.status, resp.reason
+print "PATHWAY %s" % pathways[0]
 print resp.read()
+
+# Retrieve genes for first pathway as a test
+conn.request("GET", "/apixml?fn=genes-of-pathway&id=ECOLI:%s&detail=full" % pathways[0])
+resp = conn.getresponse()
+print resp.status, resp.reason
+print "GENES for %s:" % pathways[0]
+print resp.read()
+
 conn.close()
