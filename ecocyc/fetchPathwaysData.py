@@ -36,3 +36,11 @@ for p in pathways:
   print p
 
 print "Got %d pathways" % (len(pathways))
+
+# Retrieve first pathway as a test
+conn = httplib.HTTPConnection("websvc.biocyc.org")
+conn.request("GET", "/getxml?id=ECOLI:%s&detail=full" % pathways[0])
+resp = conn.getresponse()
+print resp.status, resp.reason
+print resp.read()
+conn.close()
