@@ -28,4 +28,11 @@ for tag in soup.find_all(href=re.compile("type=PATHWAY")):
   m = pathwayRe.search(uhref)
   pathways.add(m.group(1))
 
+pathways = sorted(pathways)
+
+print "PATHWAYS:"
+
+for p in pathways:
+  print p
+
 print "Got %d pathways" % (len(pathways))
