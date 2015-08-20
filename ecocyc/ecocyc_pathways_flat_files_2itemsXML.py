@@ -4,6 +4,7 @@ import argparse
 import os
 import os.path
 import sys
+import urllib
 
 ###############
 ### CLASSES ###
@@ -13,6 +14,10 @@ class MyParser(argparse.ArgumentParser):
         sys.stderr.write('error: %s\n' % message)
         self.print_help()
         sys.exit(2)
+
+###################
+### SUBROUTINES ###
+###################
 
 ############
 ### MAIN ###
@@ -59,6 +64,7 @@ with open("%s/pathways.dat" % inputPath) as f:
       continue
 
     (key, value) = line.split(' - ', 1)
+    value = urllib.unquote(value)
     # print "%s:%s" % (key, value)
 
     if key == 'UNIQUE-ID':
