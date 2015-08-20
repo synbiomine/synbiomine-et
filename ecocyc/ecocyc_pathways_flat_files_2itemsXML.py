@@ -19,19 +19,19 @@ class MyParser(argparse.ArgumentParser):
 ### MAIN ###
 ############
 parser = MyParser('Tranform ecocyc pathways flat files to InterMine items import xml.')
-parser.add_argument('inputPath', help='the directory containing the input flat files.')
+parser.add_argument('inputDirname', help='the directory containing the input flat files.')
 args = parser.parse_args()
 
 pathwaysDatFn = "pathways.dat"
 
-if not os.path.isdir(args.inputPath):
-  print >> sys.stderr, "Path [%s] is not a directory" % args.inputPath
+if not os.path.isdir(args.inputDirname):
+  print >> sys.stderr, "Path [%s] is not a directory" % args.inputDirname
   sys.exit(1)
 
-inputPath = args.inputPath
+inputDirname = args.inputDirname
 pathways = {}
 
-with open("%s/%s" % (inputPath, pathwaysDatFn)) as f:
+with open("%s/%s" % (inputDirname, pathwaysDatFn)) as f:
   # Used to add continued lines
   lastKey = None
 
@@ -103,3 +103,6 @@ if pathway != None:
   sys.exit(1)
 
 print "Processed %d pathways" % len(pathways)
+
+# Yeah, we should write the python equivalent for the perl api here but for now let's be lazy
+
