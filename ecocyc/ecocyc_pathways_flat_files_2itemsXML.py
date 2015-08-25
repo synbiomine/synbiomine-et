@@ -23,15 +23,9 @@ class MyParser(argparse.ArgumentParser):
 ### SUBROUTINES ###
 ###################
 """
-Add an InterMine attribute from a pathway to the item XML tag
+Add an attribute to an InterMine model item
 """
-def addImAttribute(itemTag, imName, value):
-  if isinstance(value, list):
-    value = value[0]
-
-  return ET.SubElement(itemTag, "attribute", attrib = { "name" : imName, "value" : value })
-
-def addImAttribute2(item, imName, value):
+def addImAttribute(item, imName, value):
   if isinstance(value, list):
     value = value[0]
 
@@ -223,14 +217,10 @@ for pathway in pathwaysToGenes.itervalues():
 
     if not symbol in genesWritten:
       # print "Processing symbol %s" % symbol
-      itemTag = ET.SubElement(itemsTag, "item", attrib = { "id" : "0_%d" % (i), "class" : "Gene", "implements" : "" })
-      addImAttribute(itemTag, 'symbol', symbol)
-      genesWritten.add(symbol)
-
-      # Temporary for IM model
       geneItem = IM.Item(model, "Gene")
-      addImAttribute2(geneItem, 'symbol', symbol)
+      addImAttribute(geneItem, 'symbol', symbol)
       doc.addItem(geneItem)
+      genesWritten.add(symbol)
       
       i += 1
 
@@ -238,32 +228,22 @@ geneItemsCount = i - 1
 
 for pathway in pathways.itervalues():
   # print "Writing pathway %s" % (pathway['UNIQUE-ID'][0])
-
-  itemTag = ET.SubElement(itemsTag, "item", attrib = { "id" : "0_%d" % (i), "class" : "Pathway", "implements" : "" })
-  addImAttribute(itemTag, 'identifier', pathway['UNIQUE-ID'])
-  addImAttribute(itemTag, 'name', pathway['COMMON-NAME'])
+  pathwayItem = IM.Item(model, "Pathway")
+  addImAttribute(pathwayItem, 'identifier', pathway['UNIQUE-ID'])
+  addImAttribute(pathwayItem, 'name', pathway['COMMON-NAME'])
 
   if 'COMMENT' in pathway:
     comment = pathway['COMMENT']
   else:
     comment = ''
 
-  addImAttribute(itemTag, 'description', comment)
-
-  # Temporary for IM model
-  pathwayItem = IM.Item(model, "Pathway")
-  addImAttribute2(pathwayItem, 'identifier', pathway['UNIQUE-ID'])
-  addImAttribute2(pathwayItem, 'name', pathway['COMMON-NAME'])
-  addImAttribute2(pathwayItem, 'description', comment)
+  addImAttribute(pathwayItem, 'description', comment)
   doc.addItem(pathwayItem)
 
   i += 1
 
 pathwayItemsCount = i - geneItemsCount - 1
 
-tree = ET.ElementTree(itemsTag)
-tree.write(outputFn, pretty_print=True)
-
-doc.write("items2.xml")
+doc.write(outputFn)
 
 print "Wrote %d genes in %d pathways" % (geneItemsCount, pathwayItemsCount)
