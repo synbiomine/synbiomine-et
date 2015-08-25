@@ -69,7 +69,7 @@ def processPathwaysColFile(fn):
 
         # Setup new pathway record
         if name == 'UNIQUE-ID':
-          print "Processing genes for pathway %s" % value
+          # print "Processing genes for pathway %s" % value
           pathways[value] = pathway
 
         # Add value to key entry
@@ -151,7 +151,7 @@ def processPathwaysDatFile(fn):
           print >> sys.stderr, "Found new UNIQUE-ID %s but still have unfinished pathway %s" % (value, pathway['UNIQUE-ID'])
           sys.exit(1)
 
-        print "Processing pathway %s" % value
+        # print "Processing pathway %s" % value
 
         pathway = {}
 
@@ -206,14 +206,16 @@ for pathway in pathwaysToGenes.itervalues():
     if symbol == '':
       continue
 
-    print "Processing symbol %s" % symbol
+    # print "Processing symbol %s" % symbol
     itemTag = ET.SubElement(itemsTag, "item", attrib = { "id" : "0_%d" % (i), "class" : "Gene", "implements" : "" })
     addImAttribute(itemTag, 'symbol', symbol)
     
     i += 1
 
+geneItemsCount = i - 1
+
 for pathway in pathways.itervalues():
-  print "Writing pathway %s" % (pathway['UNIQUE-ID'][0])
+  # print "Writing pathway %s" % (pathway['UNIQUE-ID'][0])
 
   itemTag = ET.SubElement(itemsTag, "item", attrib = { "id" : "0_%d" % (i), "class" : "Pathway", "implements" : "" })
   addImAttribute(itemTag, 'identifier', pathway['UNIQUE-ID'])
@@ -228,5 +230,9 @@ for pathway in pathways.itervalues():
 
   i += 1
 
+pathwayItemsCount = i - geneItemsCount - 1
+
 tree = ET.ElementTree(itemsTag)
 tree.write(outputFn, pretty_print=True)
+
+print "Wrote %d genes in %d pathways" % (geneItemsCount, pathwayItemsCount)
