@@ -16,6 +16,12 @@ class MyParser(argparse.ArgumentParser):
         self.print_help()
         sys.exit(2)
 
+###################
+### SUBROUTINES ###
+###################
+def addImAttribute(itemTag, name, value):
+  return ET.SubElement(itemTag, "attribute", attrib = { "name" : name, "value" : value })
+
 ############
 ### MAIN ###
 ############
@@ -112,9 +118,9 @@ pathway = pathways.itervalues().next()
 
 itemsTag = ET.Element("items")
 itemTag = ET.SubElement(itemsTag, "item", attrib = { "id" : "0_1", "class" : "Pathway", "implements" : "" })
-idTag = ET.SubElement(itemTag, "attribute", attrib = { "name" : "indentifier", "value" : pathway["UNIQUE-ID"][0] })
-nameTag = ET.SubElement(itemTag, "attribute", attrib = { "name" : "name", "value" : pathway["COMMON-NAME"][0] })
-descriptionTag = ET.SubElement(itemTag, "attribute", attrib = { "name" : "description", "value" : pathway["COMMENT"][0] })
+addImAttribute(itemTag, 'identifier', pathway['UNIQUE-ID'][0])
+addImAttribute(itemTag, 'name', pathway['COMMON-NAME'][0])
+addImAttribute(itemTag, 'description', pathway['COMMENT'][0])
 
 tree = ET.ElementTree(itemsTag)
 tree.write(outputFilename)
