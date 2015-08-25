@@ -20,6 +20,10 @@ class Document:
     
     for item in self._items:
       itemTag = etree.SubElement(itemsTag, "item", attrib = { "id" : "0_%d" % (i), "class" : item._className, "implements" : "" })
+
+      for name, value in item._attrs.iteritems():
+        etree.SubElement(itemTag, "attribute", attrib = { "name" : name, "value" : value })
+
       i += 1
 
     tree = etree.ElementTree(itemsTag)
