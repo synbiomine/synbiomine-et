@@ -32,6 +32,56 @@ def addImAttribute(itemTag, pathway, ecoName, imName):
 
   return ET.SubElement(itemTag, "attribute", attrib = { "name" : imName, "value" : value })
 
+"""
+Process the file linking pathways to genes
+
+Returns a data structure with the format:
+{ 
+  'UNIQUE-ID' : 
+    'NAME' : [ <name> ]
+    'GENE-NAME' : [ <gene-name>* ]
+    'GENE-ID' : [ <gene-id>* ]
+}
+"""
+def processPathwaysColFile(fn):
+  pathways = {}
+
+  # We need to ignore the first line which is column headers
+  seenHeaders = False
+
+  with open(fn) as f:
+    for line in f:
+      line = line.strip(os.linesep)
+
+      # Ignore comments
+      if line.startswith('#'):
+        continue
+
+      values = line.split('\t')
+
+      if not seenHeaders:
+        seenHeaders = True
+        headers = values
+        continue
+
+      pathway = {}
+
+      for i, v in enumerate(values):
+        n = headers[i]
+
+        # Setup new pathway record
+        if n == 'UNIQUE-ID':
+          print "Processing pathway %s" % v
+          pathways[v] = pathway
+
+        # Add value to key entry
+        if not n in pathway:
+          pathway[n] = []
+
+        pathway[n].append(v)
+
+  return pathways
+
 ############
 ### MAIN ###
 ############
@@ -40,17 +90,25 @@ parser.add_argument('inputDirname', help='the directory containing the input fla
 parser.add_argument('outputFilename', help='the output location for the generated items XML.')
 args = parser.parse_args()
 
+# This contains pathway details
 pathwaysDatFn = "pathways.dat"
+
+# This links gene ids to pathways
+pathwaysColFn = "pathways.col"
 
 if not os.path.isdir(args.inputDirname):
   print >> sys.stderr, "[%s] is not a directory" % args.inputDirname
   sys.exit(1)
 
-inputDirname = args.inputDirname
-outputFilename = args.outputFilename
+inputDn = args.inputDirname
+outputFn = args.outputFilename
+
+# We're going to resolve by symbol for now.  Organism name will always be the same
+processPathwaysColFile("%s/%s" % (inputDn, pathwaysColFn))
+
 pathways = {}
 
-with open("%s/%s" % (inputDirname, pathwaysDatFn)) as f:
+with open("%s/%s" % (inputDn, pathwaysDatFn)) as f:
   # Used to add continued lines
   lastKey = None
 
@@ -138,4 +196,4 @@ for pathway in pathways.itervalues():
   i += 1
 
 tree = ET.ElementTree(itemsTag)
-tree.write(outputFilename, pretty_print=True)
+tree.write(outputFn, pretty_print=True)
