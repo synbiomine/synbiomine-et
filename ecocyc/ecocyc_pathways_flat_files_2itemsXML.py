@@ -20,13 +20,17 @@ class MyParser(argparse.ArgumentParser):
 ### SUBROUTINES ###
 ###################
 """
-Add an InterMine attribute to the item XML tag
+Add an InterMine attribute from a pathway to the item XML tag
 """
-def addImAttribute(itemTag, name, value):
-  if isinstance(value, list):
-    value = value[0]
+def addImAttribute(itemTag, pathway, ecoName, imName):
+  if ecoName in pathway:
+    value = pathway[ecoName]
+    if isinstance(value, list):
+      value = value[0]
+  else:
+    value = ''
 
-  return ET.SubElement(itemTag, "attribute", attrib = { "name" : name, "value" : value })
+  return ET.SubElement(itemTag, "attribute", attrib = { "name" : imName, "value" : value })
 
 ############
 ### MAIN ###
@@ -121,13 +125,17 @@ if pathway != None:
 print "Processed %d pathways" % len(pathways)
 
 # Yeah, we should write the python equivalent for the perl api here but for now let's be lazy
-pathway = pathways.itervalues().next()
-
 itemsTag = ET.Element("items")
-itemTag = ET.SubElement(itemsTag, "item", attrib = { "id" : "0_1", "class" : "Pathway", "implements" : "" })
-addImAttribute(itemTag, 'identifier', pathway['UNIQUE-ID'])
-addImAttribute(itemTag, 'name', pathway['COMMON-NAME'])
-addImAttribute(itemTag, 'description', pathway['COMMENT'])
+i = 1
+
+for pathway in pathways.itervalues():
+  print "Writing pathway %s" % (pathway['UNIQUE-ID'][0])
+
+  itemTag = ET.SubElement(itemsTag, "item", attrib = { "id" : "0_%d" % (i), "class" : "Pathway", "implements" : "" })
+  addImAttribute(itemTag, pathway, 'UNIQUE-ID', 'identifier')
+  addImAttribute(itemTag, pathway, 'COMMON-NAME', 'name')
+  addImAttribute(itemTag, pathway, 'COMMENT', 'description')
+  i += 1
 
 tree = ET.ElementTree(itemsTag)
 tree.write(outputFilename, pretty_print=True)
