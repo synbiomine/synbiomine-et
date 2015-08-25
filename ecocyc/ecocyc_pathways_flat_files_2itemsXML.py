@@ -76,7 +76,8 @@ with open("%s/%s" % (inputDirname, pathwaysDatFn)) as f:
         print >> sys.stderr, "Found continued line for pathway %s but with no last key." % pathway['UNIQUE-ID']
         sys.exit(1)
       else:
-        pathway[lastKey][-1] += value
+        line = " " + line[1:]
+        pathway[lastKey][-1] += line
         continue
 
     # Complain if we now have a line not containing '-'
@@ -120,6 +121,8 @@ itemsTag = ET.Element("items")
 itemTag = ET.SubElement(itemsTag, "item", attrib = { "id" : "0_1", "class" : "Pathway", "implements" : "" })
 addImAttribute(itemTag, 'identifier', pathway['UNIQUE-ID'][0])
 addImAttribute(itemTag, 'name', pathway['COMMON-NAME'][0])
+
+
 addImAttribute(itemTag, 'description', pathway['COMMENT'][0])
 
 tree = ET.ElementTree(itemsTag)
