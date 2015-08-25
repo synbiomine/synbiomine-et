@@ -5,6 +5,7 @@ import os
 import os.path
 import sys
 import urllib
+import xml.etree.ElementTree as ET
 
 ###############
 ### CLASSES ###
@@ -18,17 +19,19 @@ class MyParser(argparse.ArgumentParser):
 ############
 ### MAIN ###
 ############
-parser = MyParser('Tranform ecocyc pathways flat files to InterMine items import xml.')
+parser = MyParser('Tranform ecocyc pathways flat files to InterMine items import XML.')
 parser.add_argument('inputDirname', help='the directory containing the input flat files.')
+parser.add_argument('outputFilename', help='the output location for the generated items XML.')
 args = parser.parse_args()
 
 pathwaysDatFn = "pathways.dat"
 
 if not os.path.isdir(args.inputDirname):
-  print >> sys.stderr, "Path [%s] is not a directory" % args.inputDirname
+  print >> sys.stderr, "[%s] is not a directory" % args.inputDirname
   sys.exit(1)
 
 inputDirname = args.inputDirname
+outputFilename = args.outputFilename
 pathways = {}
 
 with open("%s/%s" % (inputDirname, pathwaysDatFn)) as f:
@@ -105,4 +108,13 @@ if pathway != None:
 print "Processed %d pathways" % len(pathways)
 
 # Yeah, we should write the python equivalent for the perl api here but for now let's be lazy
+pathway = pathways.itervalues().next()
 
+itemsTag = ET.Element("items")
+itemTag = ET.SubElement(itemsTag, "item", attrib = { "id" : "0_1", "class" : "Pathway", "implements" : "" })
+idTag = ET.SubElement(itemTag, "attribute", attrib = { "name" : "indentifier", "value" : pathway["UNIQUE-ID"][0] })
+nameTag = ET.SubElement(itemTag, "attribute", attrib = { "name" : "name", "value" : pathway["COMMON-NAME"][0] })
+descriptionTag = ET.SubElement(itemTag, "attribute", attrib = { "name" : "description", "value" : pathway["COMMENT"][0] })
+
+tree = ET.ElementTree(itemsTag)
+tree.write(outputFilename)
