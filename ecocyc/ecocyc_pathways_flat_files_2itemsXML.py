@@ -184,16 +184,14 @@ print "Processed %d pathways" % len(pathways)
 
 # Yeah, we should write the python equivalent for the perl api here but for now let's be lazy
 itemsTag = ET.Element("items")
-i = 1
 
-for pathway in pathways.itervalues():
+for i, pathway in enumerate(pathways.itervalues(), start=1):
   print "Writing pathway %s" % (pathway['UNIQUE-ID'][0])
 
   itemTag = ET.SubElement(itemsTag, "item", attrib = { "id" : "0_%d" % (i), "class" : "Pathway", "implements" : "" })
   addImAttribute(itemTag, pathway, 'UNIQUE-ID', 'identifier')
   addImAttribute(itemTag, pathway, 'COMMON-NAME', 'name')
   addImAttribute(itemTag, pathway, 'COMMENT', 'description')
-  i += 1
 
 tree = ET.ElementTree(itemsTag)
 tree.write(outputFn, pretty_print=True)
