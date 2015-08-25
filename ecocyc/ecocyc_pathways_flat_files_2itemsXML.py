@@ -198,7 +198,7 @@ if not os.path.isdir(args.inputDirname):
   sys.exit(1)
 
 model = IM.Model(args.imModelFilename)
-doc = IM.Document(model, "items2.xml")
+doc = IM.Document(model)
 
 inputDn = args.inputDirname
 outputFn = args.outputFilename
@@ -228,7 +228,7 @@ for pathway in pathwaysToGenes.itervalues():
       genesWritten.add(symbol)
 
       # Temporary for IM model
-      geneItem = IM.Item(model)
+      geneItem = IM.Item(model, "Gene")
       addImAttribute2(geneItem, 'symbol', symbol)
       doc.addItem(geneItem)
       
@@ -256,5 +256,7 @@ pathwayItemsCount = i - geneItemsCount - 1
 
 tree = ET.ElementTree(itemsTag)
 tree.write(outputFn, pretty_print=True)
+
+doc.write("items2.xml")
 
 print "Wrote %d genes in %d pathways" % (geneItemsCount, pathwayItemsCount)
