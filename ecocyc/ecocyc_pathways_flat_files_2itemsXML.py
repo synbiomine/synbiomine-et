@@ -230,6 +230,7 @@ for pathway in pathwaysToGenes.itervalues():
       # Temporary for IM model
       geneItem = IM.Item(model)
       addImAttribute2(geneItem, 'symbol', symbol)
+      doc.addItem(geneItem)
       
       i += 1
 
