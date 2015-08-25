@@ -19,7 +19,13 @@ class MyParser(argparse.ArgumentParser):
 ###################
 ### SUBROUTINES ###
 ###################
+"""
+Add an InterMine attribute to the item XML tag
+"""
 def addImAttribute(itemTag, name, value):
+  if isinstance(value, list):
+    value = value[0]
+
   return ET.SubElement(itemTag, "attribute", attrib = { "name" : name, "value" : value })
 
 ############
@@ -119,11 +125,9 @@ pathway = pathways.itervalues().next()
 
 itemsTag = ET.Element("items")
 itemTag = ET.SubElement(itemsTag, "item", attrib = { "id" : "0_1", "class" : "Pathway", "implements" : "" })
-addImAttribute(itemTag, 'identifier', pathway['UNIQUE-ID'][0])
-addImAttribute(itemTag, 'name', pathway['COMMON-NAME'][0])
-
-
-addImAttribute(itemTag, 'description', pathway['COMMENT'][0])
+addImAttribute(itemTag, 'identifier', pathway['UNIQUE-ID'])
+addImAttribute(itemTag, 'name', pathway['COMMON-NAME'])
+addImAttribute(itemTag, 'description', pathway['COMMENT'])
 
 tree = ET.ElementTree(itemsTag)
 tree.write(outputFilename, pretty_print=True)
