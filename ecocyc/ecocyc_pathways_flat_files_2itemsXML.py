@@ -8,7 +8,7 @@ import sys
 import urllib
 
 sys.path.insert(1, os.path.dirname(os.path.abspath(__file__)) + '/../modules/python')
-import intermine.model as im
+import intermine.model as IM
 
 ###############
 ### CLASSES ###
@@ -30,6 +30,12 @@ def addImAttribute(itemTag, imName, value):
     value = value[0]
 
   return ET.SubElement(itemTag, "attribute", attrib = { "name" : imName, "value" : value })
+
+def addImAttribute2(item, imName, value):
+  if isinstance(value, list):
+    value = value[0]
+
+  item.addAttribute(imName, value)
 
 """
 Process the file linking pathways to genes
@@ -191,8 +197,8 @@ if not os.path.isdir(args.inputDirname):
   print >> sys.stderr, "[%s] is not a directory" % args.inputDirname
   sys.exit(1)
 
-model = im.Model(args.imModelFilename)
-doc = im.Document(model, "items2.xml")
+model = IM.Model(args.imModelFilename)
+doc = IM.Document(model, "items2.xml")
 
 inputDn = args.inputDirname
 outputFn = args.outputFilename
@@ -220,6 +226,10 @@ for pathway in pathwaysToGenes.itervalues():
       itemTag = ET.SubElement(itemsTag, "item", attrib = { "id" : "0_%d" % (i), "class" : "Gene", "implements" : "" })
       addImAttribute(itemTag, 'symbol', symbol)
       genesWritten.add(symbol)
+
+      # Temporary for IM model
+      geneItem = IM.Item(model)
+      addImAttribute2(geneItem, 'symbol', symbol)
       
       i += 1
 
