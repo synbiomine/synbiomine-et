@@ -8,7 +8,7 @@ import sys
 import urllib
 
 sys.path.insert(1, os.path.dirname(os.path.abspath(__file__)) + '/../modules/python')
-from intermine import model
+import intermine.model as im
 
 ###############
 ### CLASSES ###
@@ -190,7 +190,8 @@ if not os.path.isdir(args.inputDirname):
   print >> sys.stderr, "[%s] is not a directory" % args.inputDirname
   sys.exit(1)
 
-model = model.Model("../etc/intermine_model.xml")
+model = im.Model("../etc/intermine_model.xml")
+doc = im.Document(model, "items2.xml")
 
 inputDn = args.inputDirname
 outputFn = args.outputFilename
