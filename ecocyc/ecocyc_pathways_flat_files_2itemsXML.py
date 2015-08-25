@@ -250,6 +250,13 @@ for pathway in pathways.itervalues():
 
   addImAttribute(itemTag, 'description', comment)
 
+  # Temporary for IM model
+  pathwayItem = IM.Item(model, "Pathway")
+  addImAttribute2(pathwayItem, 'identifier', pathway['UNIQUE-ID'])
+  addImAttribute2(pathwayItem, 'name', pathway['COMMON-NAME'])
+  addImAttribute2(pathwayItem, 'description', comment)
+  doc.addItem(pathwayItem)
+
   i += 1
 
 pathwayItemsCount = i - geneItemsCount - 1
