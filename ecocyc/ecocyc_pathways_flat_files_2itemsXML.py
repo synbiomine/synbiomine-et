@@ -195,6 +195,8 @@ pathwaysToGenes = processPathwaysColFile("%s/%s" % (inputDn, pathwaysColFn))
 
 print "Processed %d pathways" % len(pathways)
 
+genesWritten = set()
+
 # Yeah, we should write the python equivalent for the perl api here but for now let's be lazy
 itemsTag = ET.Element("items")
 
@@ -206,11 +208,13 @@ for pathway in pathwaysToGenes.itervalues():
     if symbol == '':
       continue
 
-    # print "Processing symbol %s" % symbol
-    itemTag = ET.SubElement(itemsTag, "item", attrib = { "id" : "0_%d" % (i), "class" : "Gene", "implements" : "" })
-    addImAttribute(itemTag, 'symbol', symbol)
-    
-    i += 1
+    if not symbol in genesWritten:
+      # print "Processing symbol %s" % symbol
+      itemTag = ET.SubElement(itemsTag, "item", attrib = { "id" : "0_%d" % (i), "class" : "Gene", "implements" : "" })
+      addImAttribute(itemTag, 'symbol', symbol)
+      genesWritten.add(symbol)
+      
+      i += 1
 
 geneItemsCount = i - 1
 
