@@ -22,13 +22,9 @@ class MyParser(argparse.ArgumentParser):
 """
 Add an InterMine attribute from a pathway to the item XML tag
 """
-def addImAttribute(itemTag, pathway, ecoName, imName):
-  if ecoName in pathway:
-    value = pathway[ecoName]
-    if isinstance(value, list):
-      value = value[0]
-  else:
-    value = ''
+def addImAttribute(itemTag, imName, value):
+  if isinstance(value, list):
+    value = value[0]
 
   return ET.SubElement(itemTag, "attribute", attrib = { "name" : imName, "value" : value })
 
@@ -67,19 +63,20 @@ def processPathwaysColFile(fn):
 
       pathway = {}
 
-      for i, v in enumerate(values):
-        n = headers[i]
+      for i, value in enumerate(values):
+        name = headers[i]
+        # print "Got %s:%s" % (name, value)
 
         # Setup new pathway record
-        if n == 'UNIQUE-ID':
-          print "Processing pathway %s" % v
-          pathways[v] = pathway
+        if name == 'UNIQUE-ID':
+          print "Processing genes for pathway %s" % value
+          pathways[value] = pathway
 
         # Add value to key entry
-        if not n in pathway:
-          pathway[n] = []
+        if not name in pathway:
+          pathway[name] = []
 
-        pathway[n].append(v)
+        pathway[name].append(value)
 
   return pathways
 
@@ -201,13 +198,35 @@ print "Processed %d pathways" % len(pathways)
 # Yeah, we should write the python equivalent for the perl api here but for now let's be lazy
 itemsTag = ET.Element("items")
 
-for i, pathway in enumerate(pathways.itervalues(), start=1):
+i = 1
+for pathway in pathwaysToGenes.itervalues():
+  # print "Writing %d genes for pathway %s" % (len(pathway['GENE-NAME']), pathway['UNIQUE-ID'][0])
+
+  for symbol in pathway['GENE-NAME']:
+    if symbol == '':
+      continue
+
+    print "Processing symbol %s" % symbol
+    itemTag = ET.SubElement(itemsTag, "item", attrib = { "id" : "0_%d" % (i), "class" : "Gene", "implements" : "" })
+    addImAttribute(itemTag, 'symbol', symbol)
+    
+    i += 1
+
+for pathway in pathways.itervalues():
   print "Writing pathway %s" % (pathway['UNIQUE-ID'][0])
 
   itemTag = ET.SubElement(itemsTag, "item", attrib = { "id" : "0_%d" % (i), "class" : "Pathway", "implements" : "" })
-  addImAttribute(itemTag, pathway, 'UNIQUE-ID', 'identifier')
-  addImAttribute(itemTag, pathway, 'COMMON-NAME', 'name')
-  addImAttribute(itemTag, pathway, 'COMMENT', 'description')
+  addImAttribute(itemTag, 'identifier', pathway['UNIQUE-ID'])
+  addImAttribute(itemTag, 'name', pathway['COMMON-NAME'])
+
+  if 'COMMENT' in pathway:
+    comment = pathway['COMMENT']
+  else:
+    comment = ''
+
+  addImAttribute(itemTag, 'description', comment)
+
+  i += 1
 
 tree = ET.ElementTree(itemsTag)
 tree.write(outputFn, pretty_print=True)
