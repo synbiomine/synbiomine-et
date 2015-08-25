@@ -176,6 +176,7 @@ def processPathwaysDatFile(fn):
 ### MAIN ###
 ############
 parser = MyParser('Tranform ecocyc pathways flat files to InterMine items import XML.')
+parser.add_argument('imModelFilename', help='the file containing the InterMine data model.')
 parser.add_argument('inputDirname', help='the directory containing the input flat files.')
 parser.add_argument('outputFilename', help='the output location for the generated items XML.')
 args = parser.parse_args()
@@ -190,7 +191,7 @@ if not os.path.isdir(args.inputDirname):
   print >> sys.stderr, "[%s] is not a directory" % args.inputDirname
   sys.exit(1)
 
-model = im.Model("../etc/intermine_model.xml")
+model = im.Model(args.imModelFilename)
 doc = im.Document(model, "items2.xml")
 
 inputDn = args.inputDirname
