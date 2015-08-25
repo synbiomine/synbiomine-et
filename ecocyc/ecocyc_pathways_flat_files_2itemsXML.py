@@ -1,11 +1,11 @@
 #!/usr/bin/python
 
 import argparse
+from lxml import etree as ET
 import os
 import os.path
 import sys
 import urllib
-import xml.etree.ElementTree as ET
 
 ###############
 ### CLASSES ###
@@ -123,4 +123,4 @@ addImAttribute(itemTag, 'name', pathway['COMMON-NAME'][0])
 addImAttribute(itemTag, 'description', pathway['COMMENT'][0])
 
 tree = ET.ElementTree(itemsTag)
-tree.write(outputFilename)
+tree.write(outputFilename, pretty_print=True)
