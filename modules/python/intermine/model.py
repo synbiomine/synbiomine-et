@@ -21,7 +21,7 @@ class Document:
   """
   def createItem(self, className):
     item = Item(self._model, className)
-    item._number = self._nextItemNumber
+    item._id = "0_%d" % self._nextItemNumber
     self._nextItemNumber += 1
 
     return item
@@ -33,10 +33,15 @@ class Document:
     itemsTag = etree.Element("items")   
     
     for item in self._items:
-      itemTag = etree.SubElement(itemsTag, "item", attrib = { "id" : "0_%d" % (item._number), "class" : item._className, "implements" : "" })
+      itemTag = etree.SubElement(itemsTag, "item", attrib = { "id" : item._id, "class" : item._className, "implements" : "" })
 
       for name, value in item._attrs.iteritems():
-        etree.SubElement(itemTag, "attribute", attrib = { "name" : name, "value" : value })
+        if isinstance(value, list):
+          collectionTag = etree.SubElement(itemTag, "collection", attrib = { "name" : name })
+          for referencedItem in value:
+            etree.SubElement(collectionTag, "reference", attrib = { "ref_id" : referencedItem._id })
+        else:
+          etree.SubElement(itemTag, "attribute", attrib = { "name" : name, "value" : value })
 
     tree = etree.ElementTree(itemsTag)
     tree.write(outFn, pretty_print=True)
@@ -50,5 +55,18 @@ class Item:
 
     self._attrs = {}
 
+  """
+  Add an attribute to this item.
+  """
   def addAttribute(self, name, value):
     self._attrs[name] = value
+
+  """
+  Add a value to an attribute.  If the attribute then has more than one value it becomes a collection.
+  An attribute that doesn't already exist becomes a collection with a single value.
+  """
+  def addToAttribute(self, name, value):
+    if name in self._attrs:
+      self._attrs[name].append(value)
+    else:
+      self._attrs[name] = [ value ]

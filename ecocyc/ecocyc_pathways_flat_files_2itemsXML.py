@@ -193,25 +193,31 @@ pathwaysToGenes = processPathwaysColFile("%s/%s" % (inputDn, pathwaysColFn))
 
 print "Processed %d pathways" % len(pathways)
 
-genesWritten = set()
+# We need to track pathway IM items so we can later associate these with genes
+pathwayItems = {}
 
-# Yeah, we should write the python equivalent for the perl api here but for now let's be lazy
 itemsTag = ET.Element("items")
 
 for pathway in pathways.itervalues():
   # print "Writing pathway %s" % (pathway['UNIQUE-ID'][0])
+  pathwayId = pathway['UNIQUE-ID'][0]
+  pathwayName = pathway['COMMON-NAME'][0]
+
   pathwayItem = doc.createItem("Pathway")
-  pathwayItem.addAttribute('identifier', pathway['UNIQUE-ID'][0])
-  pathwayItem.addAttribute('name', pathway['COMMON-NAME'][0])
+  pathwayItem.addAttribute('identifier', pathwayId)
+  pathwayItem.addAttribute('name', pathwayName)
 
   if 'COMMENT' in pathway:
-    comment = pathway['COMMENT'][0]
+    pathwayComment = pathway['COMMENT'][0]
   else:
-    comment = ''
+    pathwayComment = ''
 
-  pathwayItem.addAttribute('description', comment)
+  pathwayItem.addAttribute('description', pathwayComment)
 
   doc.addItem(pathwayItem)
+  pathwayItems[pathwayId] = pathwayItem
+
+geneItems = {}
 
 for pathway in pathwaysToGenes.itervalues():
   # print "Writing %d genes for pathway %s" % (len(pathway['GENE-NAME']), pathway['UNIQUE-ID'][0])
@@ -220,13 +226,24 @@ for pathway in pathwaysToGenes.itervalues():
     if symbol == '':
       continue
 
-    if not symbol in genesWritten:
+    if not symbol in geneItems:
       # print "Processing symbol %s" % symbol
       geneItem = doc.createItem("Gene")
       geneItem.addAttribute('symbol', symbol)
+
       doc.addItem(geneItem)
-      genesWritten.add(symbol)
+      geneItems[symbol] = geneItem
+    else:
+      geneItem = geneItems[symbol]
+    
+    pathwayId = pathway['UNIQUE-ID'][0]
+
+    if pathwayId in pathwayItems:
+      geneItem.addToAttribute('pathways', pathwayItems[pathwayId])
+    else:
+      print >> sys.stderr, "Gene %s has pathway %s but not such pathway found in %s" % (symbol, pathwayId, pathwaysDatFn)
+      sys.exit(1)
 
 doc.write(outputFn)
 
-print "Wrote %d genes in %d pathways" % (len(genesWritten), len(pathways))
+print "Wrote %d genes in %d pathways" % (len(geneItems), len(pathwayItems))
