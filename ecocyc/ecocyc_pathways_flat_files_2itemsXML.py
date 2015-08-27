@@ -196,7 +196,7 @@ print "Processed %d pathways" % len(pathways)
 organismItem = doc.createItem("Organism")
 
 # NCBI Taxon id for Escherichia coli K-12 substr. MG1655
-organismItem.addAttribute('taxonid', "511145")
+organismItem.addAttribute('taxonid', 511145)
 doc.addItem(organismItem)
 
 # We need to track pathway IM items so we can later associate these with genes
