@@ -23,15 +23,6 @@ class MyParser(argparse.ArgumentParser):
 ### SUBROUTINES ###
 ###################
 """
-Add an attribute to an InterMine model item
-"""
-def addImAttribute(item, imName, value):
-  if isinstance(value, list):
-    value = value[0]
-
-  item.addAttribute(imName, value)
-
-"""
 Process the file linking pathways to genes
 
 Returns a data structure with the format:
@@ -211,15 +202,16 @@ i = 1
 for pathway in pathways.itervalues():
   # print "Writing pathway %s" % (pathway['UNIQUE-ID'][0])
   pathwayItem = IM.Item(model, "Pathway")
-  addImAttribute(pathwayItem, 'identifier', pathway['UNIQUE-ID'])
-  addImAttribute(pathwayItem, 'name', pathway['COMMON-NAME'])
+  pathwayItem.addAttribute('identifier', pathway['UNIQUE-ID'][0])
+  pathwayItem.addAttribute('name', pathway['COMMON-NAME'][0])
 
   if 'COMMENT' in pathway:
-    comment = pathway['COMMENT']
+    comment = pathway['COMMENT'][0]
   else:
     comment = ''
 
-  addImAttribute(pathwayItem, 'description', comment)
+  pathwayItem.addAttribute('description', comment)
+
   doc.addItem(pathwayItem)
 
   i += 1
@@ -236,7 +228,7 @@ for pathway in pathwaysToGenes.itervalues():
     if not symbol in genesWritten:
       # print "Processing symbol %s" % symbol
       geneItem = IM.Item(model, "Gene")
-      addImAttribute(geneItem, 'symbol', symbol)
+      geneItem.addAttribute('symbol', symbol)
       doc.addItem(geneItem)
       genesWritten.add(symbol)
       
