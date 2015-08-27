@@ -201,7 +201,7 @@ itemsTag = ET.Element("items")
 i = 1
 for pathway in pathways.itervalues():
   # print "Writing pathway %s" % (pathway['UNIQUE-ID'][0])
-  pathwayItem = IM.Item(model, "Pathway")
+  pathwayItem = doc.createItem("Pathway")
   pathwayItem.addAttribute('identifier', pathway['UNIQUE-ID'][0])
   pathwayItem.addAttribute('name', pathway['COMMON-NAME'][0])
 
@@ -227,7 +227,7 @@ for pathway in pathwaysToGenes.itervalues():
 
     if not symbol in genesWritten:
       # print "Processing symbol %s" % symbol
-      geneItem = IM.Item(model, "Gene")
+      geneItem = doc.createItem("Gene")
       geneItem.addAttribute('symbol', symbol)
       doc.addItem(geneItem)
       genesWritten.add(symbol)
