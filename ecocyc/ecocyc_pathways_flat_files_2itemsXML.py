@@ -208,24 +208,6 @@ genesWritten = set()
 itemsTag = ET.Element("items")
 
 i = 1
-for pathway in pathwaysToGenes.itervalues():
-  # print "Writing %d genes for pathway %s" % (len(pathway['GENE-NAME']), pathway['UNIQUE-ID'][0])
-
-  for symbol in pathway['GENE-NAME']:
-    if symbol == '':
-      continue
-
-    if not symbol in genesWritten:
-      # print "Processing symbol %s" % symbol
-      geneItem = IM.Item(model, "Gene")
-      addImAttribute(geneItem, 'symbol', symbol)
-      doc.addItem(geneItem)
-      genesWritten.add(symbol)
-      
-      i += 1
-
-geneItemsCount = i - 1
-
 for pathway in pathways.itervalues():
   # print "Writing pathway %s" % (pathway['UNIQUE-ID'][0])
   pathwayItem = IM.Item(model, "Pathway")
@@ -242,7 +224,25 @@ for pathway in pathways.itervalues():
 
   i += 1
 
-pathwayItemsCount = i - geneItemsCount - 1
+pathwayItemsCount = i - 1
+
+for pathway in pathwaysToGenes.itervalues():
+  # print "Writing %d genes for pathway %s" % (len(pathway['GENE-NAME']), pathway['UNIQUE-ID'][0])
+
+  for symbol in pathway['GENE-NAME']:
+    if symbol == '':
+      continue
+
+    if not symbol in genesWritten:
+      # print "Processing symbol %s" % symbol
+      geneItem = IM.Item(model, "Gene")
+      addImAttribute(geneItem, 'symbol', symbol)
+      doc.addItem(geneItem)
+      genesWritten.add(symbol)
+      
+      i += 1
+
+geneItemsCount = i - pathwayItemsCount - 1
 
 doc.write(outputFn)
 
