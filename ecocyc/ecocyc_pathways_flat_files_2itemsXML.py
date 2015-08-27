@@ -196,8 +196,6 @@ print "Processed %d pathways" % len(pathways)
 # We need to track pathway IM items so we can later associate these with genes
 pathwayItems = {}
 
-itemsTag = ET.Element("items")
-
 for pathway in pathways.itervalues():
   # print "Writing pathway %s" % (pathway['UNIQUE-ID'][0])
   pathwayId = pathway['UNIQUE-ID'][0]
