@@ -198,7 +198,6 @@ genesWritten = set()
 # Yeah, we should write the python equivalent for the perl api here but for now let's be lazy
 itemsTag = ET.Element("items")
 
-i = 1
 for pathway in pathways.itervalues():
   # print "Writing pathway %s" % (pathway['UNIQUE-ID'][0])
   pathwayItem = doc.createItem("Pathway")
@@ -214,10 +213,6 @@ for pathway in pathways.itervalues():
 
   doc.addItem(pathwayItem)
 
-  i += 1
-
-pathwayItemsCount = i - 1
-
 for pathway in pathwaysToGenes.itervalues():
   # print "Writing %d genes for pathway %s" % (len(pathway['GENE-NAME']), pathway['UNIQUE-ID'][0])
 
@@ -231,11 +226,7 @@ for pathway in pathwaysToGenes.itervalues():
       geneItem.addAttribute('symbol', symbol)
       doc.addItem(geneItem)
       genesWritten.add(symbol)
-      
-      i += 1
-
-geneItemsCount = i - pathwayItemsCount - 1
 
 doc.write(outputFn)
 
-print "Wrote %d genes in %d pathways" % (geneItemsCount, pathwayItemsCount)
+print "Wrote %d genes in %d pathways" % (len(genesWritten), len(pathways))
