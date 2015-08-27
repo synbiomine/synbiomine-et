@@ -239,7 +239,9 @@ for pathway in pathwaysToGenes.itervalues():
     pathwayId = pathway['UNIQUE-ID'][0]
 
     if pathwayId in pathwayItems:
-      geneItem.addToAttribute('pathways', pathwayItems[pathwayId])
+      pathwayItem = pathwayItems[pathwayId]
+      geneItem.addToAttribute('pathways', pathwayItem)
+      pathwayItem.addToAttribute('genes', geneItem)
     else:
       print >> sys.stderr, "Gene %s has pathway %s but not such pathway found in %s" % (symbol, pathwayId, pathwaysDatFn)
       sys.exit(1)
