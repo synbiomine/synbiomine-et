@@ -40,6 +40,8 @@ class Document:
           collectionTag = etree.SubElement(itemTag, "collection", attrib = { "name" : name })
           for referencedItem in value:
             etree.SubElement(collectionTag, "reference", attrib = { "ref_id" : referencedItem._id })
+        elif isinstance(value, Item):
+          etree.SubElement(itemTag, "reference", attrib = { "name" : name, "ref_id" : value._id })
         else:
           etree.SubElement(itemTag, "attribute", attrib = { "name" : name, "value" : value })
 
