@@ -22,12 +22,13 @@ class MyParser(argparse.ArgumentParser):
 ############
 ### MAIN ###
 ############
-parser = MyParser('Display statistical information about the given InterMine database.')
+parser = MyParser('Display statistical information about the given InterMine database.  By default does not show tables with zero rows.')
 parser.add_argument('dbname', help='name of the database.')
 parser.add_argument('--dbuser', help='db user if this is different from the current')
 parser.add_argument('--dbhost', help='db host if this is not localhost')
 parser.add_argument('--dbport', help='db port if this is not localhost')
 parser.add_argument('--dbpass', help='db password if this is required')
+parser.add_argument('-a', '--all', action="store_true", help='show tables with zero rows')
 args = parser.parse_args()
 
 dbName = args.dbname
@@ -56,7 +57,10 @@ for table in tables:
   table = table[0]
   
   cur.execute("select count(*) from %s" % table)
-  print "%s: %s" % (table, cur.fetchone()[0])
+  count = cur.fetchone()[0]
+
+  if args.all or count > 0:
+    print "%s: %s" % (table, count)
 
 cur.close()
 conn.close()
