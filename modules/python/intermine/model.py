@@ -59,9 +59,11 @@ class Item:
 
   """
   Add an attribute to this item.
+  If the value is empty then nothing is added since InterMine doesn't like this behaviour.
   """
   def addAttribute(self, name, value):
-    self._attrs[name] = value
+    if value != "":
+      self._attrs[name] = value
 
   """
   Add a value to an attribute.  If the attribute then has more than one value it becomes a collection.
