@@ -18,5 +18,15 @@ parser.add_argument('service', help = "service URL")
 args = parser.parse_args()
 
 service = Service(args.service)
-for name in sorted(service.templates.keys()):
+templates = service.templates
+for name in sorted(templates.keys()):
   print name
+
+  template = service.get_template(name)
+  params = template.to_query_params()
+
+  for paramName in sorted(params.keys()):
+    if paramName != 'name':
+      print "  %s:%s" % (paramName, params[paramName])
+
+  print
