@@ -18,5 +18,5 @@ parser.add_argument('service', help = "service URL")
 args = parser.parse_args()
 
 service = Service(args.service)
-for name in service.templates.keys():
+for name in sorted(service.templates.keys()):
   print name
