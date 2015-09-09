@@ -13,8 +13,14 @@ class MyParser(argparse.ArgumentParser):
 ############
 ### MAIN ###
 ############
-parser = MyParser('Run an arbitrary xml query on a service.')
-parser.add_argument('query')
+parser = MyParser(
+  'Run an arbitrary xml query on a service.', 
+  formatter_class=argparse.RawDescriptionHelpFormatter,
+  epilog='''QUERY EXAMPLE:
+<query view="Gene.primaryIdentifier Gene.symbol" sortOrder="Gene.primaryIdentifier asc">
+  <constraint path="Gene.organism.name" code="A" editable="true" op="=" value="Escherichia coli str. K-12 substr. MG1655"/>
+</query>''')
+parser.add_argument('query', help='query XML')
 parser.add_argument('service')
 args = parser.parse_args()
 
