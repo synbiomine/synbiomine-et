@@ -1,9 +1,13 @@
 #!/usr/bin/python
 
+# requires
+# pip install prettytable
+
 import argparse
 import json
 import sys
 import urllib
+from prettytable import PrettyTable
 
 class MyParser(argparse.ArgumentParser):
     def error(self, message):
@@ -23,5 +27,9 @@ o = json.load(f)
 
 # print json.dumps(o, indent=4)
 
+t = PrettyTable(['id', 'url'])
+
 for ep in sorted(o['endpoints'], key=lambda ep: ep['identifier']):
-  print ep['identifier']
+  t.add_row([ep['identifier'], ep['URI']])
+
+print t
