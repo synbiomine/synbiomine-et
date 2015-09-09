@@ -28,6 +28,7 @@ o = json.load(f)
 # print json.dumps(o, indent=4)
 
 t = PrettyTable(['id', 'url'])
+t.align = 'l'
 
 for ep in sorted(o['endpoints'], key=lambda ep: ep['identifier']):
   t.add_row([ep['identifier'], ep['URI']])
