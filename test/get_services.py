@@ -20,4 +20,8 @@ args = parser.parse_args()
 
 f = urllib.urlopen("%s/service" % args.mineURL)
 o = json.load(f)
-print json.dumps(o, indent=4)
+
+# print json.dumps(o, indent=4)
+
+for ep in sorted(o['endpoints'], key=lambda ep: ep['identifier']):
+  print ep['identifier']
