@@ -21,7 +21,7 @@ parser = MyParser(
   <constraint path="Gene.organism.name" code="A" editable="true" op="=" value="Escherichia coli str. K-12 substr. MG1655"/>
 </query>''')
 parser.add_argument('query', help='query XML')
-parser.add_argument('service')
+parser.add_argument('service', help='InterMine service URL.  e.g. http://synbiomine.org/synbiomine')
 args = parser.parse_args()
 
 service = Service(args.service)
