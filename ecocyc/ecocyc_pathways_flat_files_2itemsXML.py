@@ -184,7 +184,6 @@ if not os.path.isdir(args.inputDirname):
 
 model = IM.Model(args.imModelFilename)
 doc = IM.Document(model)
-
 inputDn = args.inputDirname
 outputFn = args.outputFilename
 
@@ -192,6 +191,16 @@ pathways = processPathwaysDatFile("%s/%s" % (inputDn, pathwaysDatFn))
 pathwaysToGenes = processPathwaysColFile("%s/%s" % (inputDn, pathwaysColFn))
 
 print "Processed %d pathways" % len(pathways)
+
+dataSourceItem = doc.createItem("DataSource")
+dataSourceItem.addAttribute('name', 'Ecocyc')
+dataSourceItem.addAttribute('url', 'http://ecocyc.org')
+doc.addItem(dataSourceItem)
+
+dataSetItem = doc.createItem("DataSet")
+dataSetItem.addAttribute('name', 'Ecocyc pathways')
+dataSetItem.addAttribute('dataSource', dataSourceItem)
+doc.addItem(dataSetItem)
 
 organismItem = doc.createItem("Organism")
 
@@ -217,6 +226,7 @@ for pathway in pathways.itervalues():
     pathwayComment = ''
 
   pathwayItem.addAttribute('description', pathwayComment)
+  pathwayItem.addToAttribute('dataSets', dataSetItem)
 
   doc.addItem(pathwayItem)
   pathwayItems[pathwayId] = pathwayItem
