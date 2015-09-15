@@ -1,5 +1,7 @@
 #!/usr/bin/perl
 
+# requires apt-get install ncbi-blast+
+
 #use strict;
 use warnings;
 
