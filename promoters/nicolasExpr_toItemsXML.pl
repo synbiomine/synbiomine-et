@@ -99,13 +99,15 @@ close (EXP_FILE);
 #my $info = shift(@matrix);
 my $headers = shift(@matrix); # extract headers
 
-# splite headers and assign each to a variable
+# split headers and assign each to a variable
 my ($id_h, $strand_h, $posV3_h, $posV3min_h, $posV3max_h, 
   + $multdbtbs_h, $comp_h, $sig_h, $pcomp_h, $psig_h, 
   + $xcortree_h, $SigmaFactorBS_h, $chipUnb_h, $chipMnb_h, 
   + $clcortreeUC_h, $clcortreeUB_h, $clcortreeUA_h, $VarExp_h, 
   + $VarExpPropUnexpl_h, $beginTU_h, $endTUshort_h, $endTUlong_h, 
   + $listShort_h, $listLong_h)  = split("\t", $headers);
+
+say "Got headers[$headers]" if ($debug);
 
 # hard code parameters needed for data set/ source
 my $taxon_id = "224308";
@@ -216,6 +218,8 @@ for my $entry (@matrix) {
   + $VarExpPropUnexpl, $beginTU, $endTUshort, $endTUlong, $listShort, $listLong) = split("\t", $entry);
 
   $id = uc($id); # lowercase the entries
+
+  say "Processing $id" if ($debug);
 
 # BLAST seqs and process blast results - uses SynbioBlast.pm
   my ($regionRef);
