@@ -250,13 +250,13 @@ for my $entry (@matrix) {
     my ($prefix, $chars, @chars, @pred_sig_factors);
     if ($pred_sig_factor) {
       if ($pred_sig_factor =~ /^(Sig)([A-Z]+)/) { 
-# split multipart identifier eg SigABC into Sig ABC
-	$prefix = $1;
-	$chars = $2;
-	@chars = split(//, $chars); # split ABC part
-	@pred_sig_factors = map { "Sig$_" } @chars; # add 'Sig' prefix to each eg. SigA
+        # split multipart identifier eg SigABC into Sig ABC
+        $prefix = $1;
+        $chars = $2;
+        @chars = split(//, $chars); # split ABC part
+        @pred_sig_factors = map { "Sig$_" } @chars; # add 'Sig' prefix to each eg. SigA
       } else {
-	push (@pred_sig_factors, $pred_sig_factor); # if it's not multipart, add it to our array
+        push (@pred_sig_factors, $pred_sig_factor); # if it's not multipart, add it to our array
       } 
     }
 
@@ -272,17 +272,17 @@ for my $entry (@matrix) {
     my $geneDBidentifier = &resolver($first_gene_id, $region); # try to get a unique gene ID
     next unless ($geneDBidentifier); # skip if we can't get a unique ID
 
-  # we don't have promoter IDs so we'll form a unique one from the first gene etc.
+    # we don't have promoter IDs so we'll form a unique one from the first gene etc.
     my $promoter_id = $id . "_" . $first_gene_id . "_" . $geneDBidentifier . "_" . $taxon_id;
 
     say "Operon symbols - post: ", join("-", @operon_symbols) if ($debug);
 
-  ############################################
-  # Set info for gene - first, check if we've seen it before
+    ############################################
+    # Set info for gene - first, check if we've seen it before
     my $gene_item = &make_gene_item($geneDBidentifier);
 
-# resolve symbols and process predicted sigma factors
-# Predictions are based on the expression clusters that they're assigned to
+    # resolve symbols and process predicted sigma factors
+    # Predictions are based on the expression clusters that they're assigned to
     my ($sigmaDBidentifier, $pred_sig_item, @pred_sig_items);
     for my $factor (@pred_sig_factors) {
       my $factor_id = lcfirst($factor);
