@@ -24,7 +24,7 @@ binmode(STDOUT, 'utf8');
 # Silence warnings when printing null fields
 no warnings ('uninitialized');
 
-my $usage = "usage: $0 [-v|-h] nicolas_expression_tab bsub_synonyms_tables blast_database_dir IM_model_file.xml
+my $usage = "usage: $0 [-v|-h] nicolas_expression_tab bsub_synonyms_tables blast_database_dir IM_model_file.xml output_items_xml_file
 
 \t-v\tverbose mode - for debugging
 \t-h\tthis usage
@@ -44,7 +44,7 @@ unless ( $ARGV[1] ) { die $usage };
 # allocate 
 # We need a look-up file to convert synonym [old] symbols to  B. sub unique identifiers
 # synonyms file was downloaded from bacilluscope: ids, symbols and synonyms extracted
-my ($expr_file, $synonyms_file, $blast_db_dir, $model_file) = @ARGV;
+my ($expr_file, $synonyms_file, $blast_db_dir, $model_file, $output_items_xml_file) = @ARGV;
 
 # open up the synonyms file
 open(SYN_FILE, "< $synonyms_file") || die "cannot open $synonyms_file: $!\n";
@@ -120,7 +120,10 @@ my $chromosome = "NC_000964.3";
 
 # set up the model
 my $model = new InterMine::Model(file => $model_file);
-my $doc = new InterMine::Item::Document(model => $model);
+my $doc = new InterMine::Item::Document(
+  model => $model,
+  output => $output_items_xml_file
+);
 
 # organism item
 my $org_item = make_item(
@@ -218,7 +221,7 @@ for my $entry (@matrix) {
 
   $id = uc($id); # lowercase the entries
 
-  say "Processing $id" if ($debug);
+  say "Processing $id";
 
 # BLAST seqs and process blast results - uses SynbioBlast.pm
   my ($regionRef);
