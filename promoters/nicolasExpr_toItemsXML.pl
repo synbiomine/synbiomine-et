@@ -65,17 +65,17 @@ while (<SYN_FILE>) {
       @synonyms = split(", ", $syn_line); # if we have synonyms, split to array
     } else {
       if ( exists $id2synonym{$syn_line} ) {
-	say "DUPLICATE: $syn_line $identifier" if ($debug);
-	push(@{ $id2synonym{$syn_line} }, $identifier);
+        say "DUPLICATE synonym line identifier: $syn_line $identifier" if ($debug);
+        push(@{ $id2synonym{$syn_line} }, $identifier);
       } else {
-	$id2synonym{$syn_line} = [$identifier];
+        $id2synonym{$syn_line} = [$identifier];
       }
     }
   }
 
   foreach my $synonym (@synonyms) {
     if ( exists $id2synonym{$synonym} ) {
-      say "DUPLICATE: $synonym $identifier" if ($debug);
+      say "DUPLICATE synonym: $synonym $identifier" if ($debug);
       push(@{ $id2synonym{$synonym} }, $identifier);
     } else {
       $id2synonym{$synonym} = [$identifier];
@@ -84,11 +84,13 @@ while (<SYN_FILE>) {
 }
 close SYN_FILE;
 
+=pod
 if ($debug) {
   foreach my $key (keys %id2synonym) {
     say $key, " : ", join("; ", @{ $id2synonym{$key} });
   }
 }
+=cut
 
 open(EXP_FILE, "< $expr_file") || die "cannot open $expr_file: $!\n";
 
