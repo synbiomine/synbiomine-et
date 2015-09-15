@@ -26,7 +26,7 @@ no warnings ('uninitialized');
 
 my $usage = "usage: $0 [-v|-h] nicolas_expression_tab bsub_synonyms_tables IM_model_file.xml
 
-\t-d\tverbose mode - for debugging
+\t-v\tverbose mode - for debugging
 \t-h\tthis usage
 
 \n";
@@ -34,7 +34,7 @@ my $usage = "usage: $0 [-v|-h] nicolas_expression_tab bsub_synonyms_tables IM_mo
 ### command line options - debugging and help ###
 my (%opts, $debug);
 
-getopts('hd', \%opts);
+getopts('hv', \%opts);
 defined $opts{"h"} and die $usage;
 defined $opts{"v"} and $debug++;
 
@@ -571,6 +571,8 @@ sub make_gene_item {
   if (exists $seen_gene_items{$id}) {
     $gene_item = $seen_gene_items{$id};
   } else {
+    say "Making item for gene $id" if ($debug);
+
     $gene_item = make_item(
       Gene => (
           primaryIdentifier => $id,
