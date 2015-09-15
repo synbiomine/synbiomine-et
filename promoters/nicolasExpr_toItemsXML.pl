@@ -572,13 +572,14 @@ sub make_gene_item {
     $gene_item = $seen_gene_items{$id};
   } else {
     $gene_item = make_item(
-	Gene => (
-	    primaryIdentifier => $id,
-	),
+      Gene => (
+          primaryIdentifier => $id,
+      ),
     );
 
     $seen_gene_items{$id} = $gene_item;
   }
+
   return $gene_item;
 }
 
