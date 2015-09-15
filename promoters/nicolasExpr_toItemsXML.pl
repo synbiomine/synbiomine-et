@@ -24,8 +24,7 @@ binmode(STDOUT, 'utf8');
 # Silence warnings when printing null fields
 no warnings ('uninitialized');
 
-# usage - also returned by -h
-my $usage = "usage: $0 [-d|-h] nicolas_expression_tab bsub_synonyms_tables IM_model_file.xml
+my $usage = "usage: $0 [-v|-h] nicolas_expression_tab bsub_synonyms_tables IM_model_file.xml
 
 \t-d\tverbose mode - for debugging
 \t-h\tthis usage
@@ -37,7 +36,7 @@ my (%opts, $debug);
 
 getopts('hd', \%opts);
 defined $opts{"h"} and die $usage;
-defined $opts{"d"} and $debug++;
+defined $opts{"v"} and $debug++;
 
 # test we have input files
 unless ( $ARGV[1] ) { die $usage };
