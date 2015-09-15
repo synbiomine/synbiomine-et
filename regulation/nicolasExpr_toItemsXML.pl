@@ -8,7 +8,7 @@ use Getopt::Std;
 use feature ':5.12';
 
 # need to tell it where to find the modules
-use lib "perl/modules";
+use lib "../modules/perl";
 
 # Load module dependencies
 use BlastSynbio qw/run_BLAST/;
