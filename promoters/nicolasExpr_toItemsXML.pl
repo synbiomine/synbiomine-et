@@ -25,10 +25,9 @@ binmode(STDOUT, 'utf8');
 no warnings ('uninitialized');
 
 # usage - also returned by -h
-my $usage = "usage: $0 [-d|-h] nicolas_expression_tab IM_model_file.xml
+my $usage = "usage: $0 [-d|-h] nicolas_expression_tab bsub_synonyms_tables IM_model_file.xml
 
 \t-d\tverbose mode - for debugging
-
 \t-h\tthis usage
 
 \n";
@@ -44,11 +43,9 @@ defined $opts{"d"} and $debug++;
 unless ( $ARGV[1] ) { die $usage };
 
 # allocate 
-my ($expr_file, $model_file) = @ARGV;
-
 # We need a look-up file to convert synonym [old] symbols to  B. sub unique identifiers
 # synonyms file was downloaded from bacilluscope: ids, symbols and synonyms extracted
-my $synonyms_file = "/SAN_synbiomine/data/SYNBIO_data/promoters/Bsub/Bsub_synonyms/bsub_id_symbol_synonyms_May2014.txt";
+my ($expr_file, $synonyms_file, $model_file) = @ARGV;
 
 # open up the synonyms file
 open(SYN_FILE, "< $synonyms_file") || die "cannot open $synonyms_file: $!\n";
