@@ -24,7 +24,7 @@ binmode(STDOUT, 'utf8');
 # Silence warnings when printing null fields
 no warnings ('uninitialized');
 
-my $usage = "usage: $0 [-v|-h] nicolas_expression_tab bsub_synonyms_tables IM_model_file.xml
+my $usage = "usage: $0 [-v|-h] nicolas_expression_tab bsub_synonyms_tables blast_database_dir IM_model_file.xml
 
 \t-v\tverbose mode - for debugging
 \t-h\tthis usage
@@ -44,7 +44,7 @@ unless ( $ARGV[1] ) { die $usage };
 # allocate 
 # We need a look-up file to convert synonym [old] symbols to  B. sub unique identifiers
 # synonyms file was downloaded from bacilluscope: ids, symbols and synonyms extracted
-my ($expr_file, $synonyms_file, $model_file) = @ARGV;
+my ($expr_file, $synonyms_file, $blast_db_dir, $model_file) = @ARGV;
 
 # open up the synonyms file
 open(SYN_FILE, "< $synonyms_file") || die "cannot open $synonyms_file: $!\n";
@@ -117,7 +117,6 @@ my $accession = "GSE27219";
 my $seq_length = 101;
 
 my $chromosome = "NC_000964.3";
-my $work_dir = "/SAN_synbiomine/data/SYNBIO_data/BLAST/Bsub168"; # our blast database
 
 # set up the model
 my $model = new InterMine::Model(file => $model_file);
@@ -227,7 +226,7 @@ for my $entry (@matrix) {
 # if we have a sigma binding site - we can balst the sequence to get the co-ords
   if ($SigmaFactorBS) {
     my $query = ">$id\n$SigmaFactorBS";
-    $regionRef = &run_BLAST($query, $seq_length, $work_dir, $debug);
+    $regionRef = &run_BLAST($query, $seq_length, $blast_db_dir, $debug);
   }
 
 # if we have blast results [$regionRef] we have a region
