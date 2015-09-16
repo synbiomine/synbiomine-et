@@ -314,6 +314,7 @@
 	<collection name="evidence" referenced-type="GOEvidence"/>
 </class>
 <class name="OperonEvidence" is-interface="true">
+	<collection name="publications" referenced-type="Publication"/>
 	<collection name="evidenceCodes" referenced-type="OperonEvidenceCode"/>
 </class>
 <class name="Gene" extends="Region" is-interface="true">
@@ -456,6 +457,7 @@
 	<collection name="genes" referenced-type="Gene" reverse-reference="introns"/>
 </class>
 <class name="PromoterEvidence" is-interface="true">
+	<collection name="publications" referenced-type="Publication"/>
 	<collection name="evidenceCodes" referenced-type="PromoterEvidenceCode"/>
 </class>
 <class name="ChromosomalTransposition" extends="ChromosomeStructureVariation" is-interface="true"></class>
