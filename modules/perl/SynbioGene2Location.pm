@@ -1,5 +1,8 @@
 #!/usr/bin/perl
 
+# requires
+# cpan -i Webservice::InterMine
+
 #use strict;
 use warnings;
 
