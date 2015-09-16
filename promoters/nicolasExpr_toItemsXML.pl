@@ -358,39 +358,39 @@ for my $entry (@matrix) {
 
   ############################################
   # Set info for sigma binding factor sequence 
-    my $seq_item = make_item(
-	Sequence => (
+  my $seq_item = make_item(
+	  Sequence => (
 	    'length' => $seq_length,
 	    residues => $SigmaFactorBS,
-	),
-    );
+	  ),
+  );
 
-# and location
-    my $location_item = make_item(
-	Location => (
+  # and location
+  my $location_item = make_item(
+	  Location => (
 	    start => $start_found,
 	    end => $end_found,
 	    strand => $strand_found,
 	    dataSets => [$promoter_data_set_item],
-	),
-    );
+	  ),
+  );
 
-# start to put together the promoter item
-   my $promoter_item = make_item(
-       Promoter => (
-	  primaryIdentifier => $promoter_id,
-	  gene => $seen_gene_items{$geneDBidentifier},
-	  predictedCluster => $comp,
-	  clusterProbability => $pcomp,
-	  chromosome => $chromosome_item,
-	  chromosomeLocation => $location_item,
-	  sequence => $seq_item,
-	  evidence => [$promoter_evidence_item],
-	  dataSets => [$promoter_data_set_item],
-       ),
-   );
+  # start to put together the promoter item
+  my $promoter_item = make_item(
+    Promoter => (
+      primaryIdentifier => $promoter_id,
+      gene => $seen_gene_items{$geneDBidentifier},
+      predictedCluster => $comp,
+      clusterProbability => $pcomp,
+      chromosome => $chromosome_item,
+      chromosomeLocation => $location_item,
+      sequence => $seq_item,
+      evidence => [$promoter_evidence_item],
+      dataSets => [$promoter_data_set_item],
+    ),
+  );
 
-# verbose output for debugging
+  # verbose output for debugging
   if ($debug) {
     say "Promoter:
 	  primaryIdentifier: $promoter_id,
@@ -404,11 +404,11 @@ for my $entry (@matrix) {
 	  dataSets: [$promoter_data_set_item]"
   }
 
-# process operons
+  # process operons
   my $operon_item = &make_operon_items(\@operon_symbols);
   say "Operon item for ", join("-", @operon_symbols), " is $operon_item" if ($debug);
 
-# add our collections and references to the promoter item
+  # add our collections and references to the promoter item
   $promoter_item->set( predictedSigmaFactors => \@pred_sig_items ) if @pred_sig_items;
   $promoter_item->set( sigmaBindingFactors => \@sig_BF_items ) if @sig_BF_items;
   $promoter_item->set( operon => $operon_item );
