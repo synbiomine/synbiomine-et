@@ -39,7 +39,7 @@ defined $opts{"h"} and die $usage;
 defined $opts{"v"} and $debug++;
 
 # test we have input files
-unless ( $ARGV[1] ) { die $usage };
+unless ( scalar(@ARGV) == 5 ) { die $usage };
 
 # allocate 
 # We need a look-up file to convert synonym [old] symbols to  B. sub unique identifiers
