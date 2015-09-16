@@ -127,80 +127,78 @@ my $doc = new InterMine::Item::Document(
 
 # organism item
 my $org_item = make_item(
-    Organism => (
-        taxonId => $taxon_id,
-    )
+  Organism => (
+    taxonId => $taxon_id,
+  )
 );
 
 # data_source_item
 my $data_source_item = make_item(
-    DataSource => (
-        name => $title,
-    ),
+  DataSource => (
+    name => $title,
+  ),
 );
 
 # publication_item
 my $publication_item = make_item(
-    Publication => (
-        pubMedId => $pmid,
-    ),
+  Publication => (
+    pubMedId => $pmid,
+  ),
 );
 
 # promoter evidence code item
 my $promoter_evidenceCode_item = &make_item(
-    PromoterEvidenceCode => (
-	name => "Promoters generated from around the start of detected transcriptional up-shifts - 101 bp spanning -60 bp to +40 bp",
-    ),
+  PromoterEvidenceCode => (
+    name => "Promoters generated from around the start of detected transcriptional up-shifts - 101 bp spanning -60 bp to +40 bp",
+  ),
 );
 
 # promoter_evidence_item
 # promoter_evidence has a collection of evidence codes and publications
 my $promoter_evidence_item = &make_item(
-    PromoterEvidence => (
-	evidenceCodes => [ $promoter_evidenceCode_item ],
-	publications => [ $publication_item ],
-    ),
+  PromoterEvidence => (
+    evidenceCodes => [ $promoter_evidenceCode_item ],
+  ),
 );
 
 # operon_evidenceCode_item
 my $operon_evidenceCode_item = &make_item(
-    OperonEvidenceCode => (
-	name => "Based on Transcriptional Units (TUs) predicted from RNA hybridisation to 22bp resolution tiled microarrays",
-    ),
+  OperonEvidenceCode => (
+    name => "Based on Transcriptional Units (TUs) predicted from RNA hybridisation to 22bp resolution tiled microarrays",
+  ),
 );
 
 # operon_evidence_item
 # operon_evidence has a collection of evidence codes and publications
 my $operon_evidence_item = &make_item(
-    OperonEvidence => (
-	evidenceCodes => [ $operon_evidenceCode_item ],
-	publications => [ $publication_item ],
-    ),
+  OperonEvidence => (
+    evidenceCodes => [ $operon_evidenceCode_item ],
+  ),
 );
 
 # promoter_data_set_item
 my $promoter_data_set_item = make_item(
-    DataSet => (
-        name => "Promoters ($accession) for taxon id: $taxon_id",
-	publication => $publication_item,
-	dataSource => $data_source_item,
-    ),
+  DataSet => (
+    name => "Promoters ($accession) for taxon id: $taxon_id",
+    publication => $publication_item,
+    dataSource => $data_source_item,
+  ),
 );
 
 # operon_data_set_item
 my $operon_data_set_item = make_item(
-    DataSet => (
-        name => "Operons ($accession) for taxon id: $taxon_id",
-	publication => $publication_item,
-	dataSource => $data_source_item,
-    ),
+  DataSet => (
+    name => "Operons ($accession) for taxon id: $taxon_id",
+    publication => $publication_item,
+    dataSource => $data_source_item,
+  ),
 );
 
 # chromosome_item
 my $chromosome_item = make_item(
-    Chromosome => (
-        primaryIdentifier => $chromosome,
-    ),
+  Chromosome => (
+    primaryIdentifier => $chromosome,
+  ),
 );
 
 # set up some hashes for tracking ids and items
@@ -583,7 +581,7 @@ sub make_gene_item {
 
     $gene_item = make_item(
       Gene => (
-          primaryIdentifier => $id,
+        primaryIdentifier => $id,
       ),
     );
 
@@ -609,9 +607,9 @@ sub make_operon_items {
       # if it's new, set info for Operon
     $operon_item = &make_item(
       Operon => (
-	primaryIdentifier => $operon_uid,
-	evidence => [ $operon_evidence_item ],
-	dataSets => [$operon_data_set_item],
+        primaryIdentifier => $operon_uid,
+        evidence => [ $operon_evidence_item ],
+        dataSets => [$operon_data_set_item],
       ),
     );
 
