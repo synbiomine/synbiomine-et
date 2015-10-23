@@ -2,7 +2,7 @@
 
 # requires
 #   pip install beautifulsoup4
-# NOTE: This script was not completely because we gained access to the ftp download for the equivalent flat files
+# NOTE: This script was not completed because we gained access to the ftp download for the equivalent flat files
 
 import argparse
 import httplib
