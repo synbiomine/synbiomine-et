@@ -33,6 +33,7 @@ url = "/Protein_coding_sequences/Transcriptional_regulators"
 ### MAIN ###
 ############
 parser = MyParser('Scrape iGEM part metadata.')
+parser.add_argument('-v', '--verbose', action='store_true')
 args = parser.parse_args()
 
 conn = httplib.HTTPConnection(host)
@@ -49,18 +50,27 @@ conn.close()
 tables = soup.find_all('table', id='assembly_plasmid_table')
 
 summaryTable = texttable.Texttable()
-summaryTable.add_row(['Part', 'Protein', 'Uniprot'])
+summaryTable.add_row(['Part', 'Protein', 'Uniprot', 'Description'])
 
 for table in tables:
   # print '### TABLE ###'
 
   for row in table.tbody.find_all('tr')[1:-1]:
     cols = row.find_all('td')
-    # for col in cols:
-    partName = cols[0].a.contents[0].strip().encode('ascii')
-    proteinName = cols[1].contents[0].strip().encode('ascii')
-    uniprotName = cols[5].contents[0].strip().encode('ascii')
-    # print "COL %s %s" % (partName, proteinName)
-    summaryTable.add_row([partName, proteinName, uniprotName])
+
+    if args.verbose:
+      print 'Processing row',
+
+    partName = cols[0].a.contents[0].strip()
+
+    if args.verbose:
+      print partName
+
+    proteinName = cols[1].contents[0].strip()
+    description = cols[2].contents[0].strip()
+    uniprotName = cols[5].contents[0].strip()
+
+    # We need to strip out uniccode for texttable - might need to loko for another module
+    summaryTable.add_row([partName.encode('ascii', 'ignore'), proteinName.encode('ascii', 'ignore'), uniprotName.encode('ascii', 'ignore'), description.encode('ascii', 'ignore')])
 
 print summaryTable.draw()
