@@ -26,12 +26,15 @@ class MyParser(argparse.ArgumentParser):
         self.print_help()
         sys.exit(2)
 
-host = "parts.igem.org"
-url = "/Protein_coding_sequences/Transcriptional_regulators"
+class Part(object):
+  pass
 
 ############
 ### MAIN ###
 ############
+host = "parts.igem.org"
+url = "/Protein_coding_sequences/Transcriptional_regulators"
+
 parser = MyParser('Scrape iGEM part metadata.')
 parser.add_argument('-v', '--verbose', action='store_true')
 args = parser.parse_args()
@@ -48,10 +51,7 @@ conn.close()
 
 # Multiple tables with this id on a page
 tables = soup.find_all('table', id='assembly_plasmid_table')
-
-summaryTable = texttable.Texttable()
-summaryTable.set_cols_width([16, 16, 16, 64])
-summaryTable.add_row(['Part', 'Protein', 'Uniprot', 'Description'])
+parts = []
 
 for table in tables:
   # print '### TABLE ###'
@@ -62,16 +62,24 @@ for table in tables:
     if args.verbose:
       print 'Processing row',
 
-    partName = cols[0].a.contents[0].strip()
+    part = Part()
+    part.name = cols[0].a.contents[0].strip()
 
     if args.verbose:
-      print partName
+      print part.name
 
-    proteinName = cols[1].contents[0].strip()
-    description = cols[2].contents[0].strip()
-    uniprotName = cols[5].contents[0].strip()
+    part.proteinName = cols[1].contents[0].strip()
+    part.description = cols[2].contents[0].strip()
+    part.uniprotName = cols[5].contents[0].strip()
 
-    # We need to strip out uniccode for texttable - might need to loko for another module
-    summaryTable.add_row([partName.encode('ascii', 'ignore'), proteinName.encode('ascii', 'ignore'), uniprotName.encode('ascii', 'ignore'), description.encode('ascii', 'ignore')])
+    parts.append(part)
+
+summaryTable = texttable.Texttable()
+summaryTable.set_cols_width([16, 16, 16, 64])
+summaryTable.add_row(['Part', 'Protein', 'Uniprot', 'Description'])
+
+for part in parts:
+  # We need to strip out uniccode for texttable - might need to loko for another module
+  summaryTable.add_row([part.name.encode('ascii', 'ignore'), part.proteinName.encode('ascii', 'ignore'), part.uniprotName.encode('ascii', 'ignore'), part.description.encode('ascii', 'ignore')])
 
 print summaryTable.draw()
