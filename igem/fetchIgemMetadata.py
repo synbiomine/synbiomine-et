@@ -15,6 +15,7 @@
 import argparse
 import httplib
 import json
+import sys
 import texttable
 from bs4 import BeautifulSoup
 
@@ -55,7 +56,7 @@ def writeJson(parts, outFile):
     jsonPart = { 'description' : part.description, 'proteinName' : part.proteinName, 'uniprotName' : part.uniprotName }
     jsonParts.append({ part.name : jsonPart})
 
-  print json.dumps(jsonParts, indent=4)
+  print >> outFile, json.dumps(jsonParts, indent=4)
 
 # Scrape part information out of an IGEM summary page
 def scrapeParts(host, url):
@@ -103,13 +104,14 @@ host = "parts.igem.org"
 url = "/Protein_coding_sequences/Transcriptional_regulators"
 
 parser = MyParser('Scrape iGEM part metadata.')
-parser.add_argument('-p', '--pretty', action='store_true', help="If set, print part information in table format to terminal rather than to a file")
+parser.add_argument('outFile', nargs='?', type=argparse.FileType('w'), default=sys.stdout, help='Parts output file.  If not given then output is printed to STDOUT')
+parser.add_argument('-p', '--pretty', action='store_true', help="If set, output part information in table format, otherwise output is JSON")
 parser.add_argument('-v', '--verbose', action='store_true')
 args = parser.parse_args()
 
 parts = scrapeParts(host, url)
 
 if args.pretty:
-  writePretty(parts, None)
+  writePretty(parts, args.outFile)
 else:
-  writeJson(parts, None)
+  writeJson(parts, args.outFile)
