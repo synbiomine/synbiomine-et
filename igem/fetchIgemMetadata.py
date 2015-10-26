@@ -50,11 +50,11 @@ def writePretty(parts, outFile):
   print summaryTable.draw()
 
 def writeJson(parts, outFile):
-  jsonParts = []
+  jsonParts = {}
 
   for part in parts:
     jsonPart = { 'description' : part.description, 'proteinName' : part.proteinName, 'uniprotName' : part.uniprotName }
-    jsonParts.append({ part.name : jsonPart})
+    jsonParts[part.name] = jsonPart
 
   print >> outFile, json.dumps(jsonParts, indent=4)
 
