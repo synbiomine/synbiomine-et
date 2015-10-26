@@ -62,7 +62,9 @@ def writeJson(parts, outFile):
 def scrapeParts(host, url):
   conn = httplib.HTTPConnection(host)
 
-  print "Fetching http://%s%s" % (host, url)
+  if args.verbose:
+    print "Fetching http://%s%s" % (host, url)
+
   conn.request("GET", url)
   resp = conn.getresponse()
 
