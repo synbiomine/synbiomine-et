@@ -50,6 +50,7 @@ conn.close()
 tables = soup.find_all('table', id='assembly_plasmid_table')
 
 summaryTable = texttable.Texttable()
+summaryTable.set_cols_width([16, 16, 16, 64])
 summaryTable.add_row(['Part', 'Protein', 'Uniprot', 'Description'])
 
 for table in tables:
