@@ -14,6 +14,7 @@
 
 import argparse
 import httplib
+import json
 import texttable
 from bs4 import BeautifulSoup
 
@@ -27,12 +28,16 @@ class MyParser(argparse.ArgumentParser):
         sys.exit(2)
 
 class Part(object):
-  pass
+  def __init__(self):
+    self.name = 'UNSET'
+    self.description = ''
+    self.proteinName = ''
+    self.uniprotName = ''
 
 #################
 ### FUNCTIONS ###
 #################
-def prettyPrint(parts):
+def writePretty(parts, outFile):
   summaryTable = texttable.Texttable()
   summaryTable.set_cols_width([16, 16, 16, 64])
   summaryTable.add_row(['Part', 'Protein', 'Uniprot', 'Description'])
@@ -43,6 +48,16 @@ def prettyPrint(parts):
 
   print summaryTable.draw()
 
+def writeJson(parts, outFile):
+  jsonParts = []
+
+  for part in parts:
+    jsonPart = { 'description' : part.description, 'proteinName' : part.proteinName, 'uniprotName' : part.uniprotName }
+    jsonParts.append({ part.name : jsonPart})
+
+  print json.dumps(jsonParts, indent=4)
+
+# Scrape part information out of an IGEM summary page
 def scrapeParts(host, url):
   conn = httplib.HTTPConnection(host)
 
@@ -88,8 +103,13 @@ host = "parts.igem.org"
 url = "/Protein_coding_sequences/Transcriptional_regulators"
 
 parser = MyParser('Scrape iGEM part metadata.')
+parser.add_argument('-p', '--pretty', action='store_true', help="If set, print part information in table format to terminal rather than to a file")
 parser.add_argument('-v', '--verbose', action='store_true')
 args = parser.parse_args()
 
 parts = scrapeParts(host, url)
-prettyPrint(parts)
+
+if args.pretty:
+  writePretty(parts, None)
+else:
+  writeJson(parts, None)
