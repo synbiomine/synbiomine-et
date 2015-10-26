@@ -29,6 +29,20 @@ class MyParser(argparse.ArgumentParser):
 class Part(object):
   pass
 
+#################
+### FUNCTIONS ###
+#################
+def prettyPrint(parts):
+  summaryTable = texttable.Texttable()
+  summaryTable.set_cols_width([16, 16, 16, 64])
+  summaryTable.add_row(['Part', 'Protein', 'Uniprot', 'Description'])
+
+  for part in parts:
+    # We need to strip out uniccode for texttable - might need to loko for another module
+    summaryTable.add_row([part.name.encode('ascii', 'ignore'), part.proteinName.encode('ascii', 'ignore'), part.uniprotName.encode('ascii', 'ignore'), part.description.encode('ascii', 'ignore')])
+
+  print summaryTable.draw()
+
 ############
 ### MAIN ###
 ############
@@ -74,12 +88,4 @@ for table in tables:
 
     parts.append(part)
 
-summaryTable = texttable.Texttable()
-summaryTable.set_cols_width([16, 16, 16, 64])
-summaryTable.add_row(['Part', 'Protein', 'Uniprot', 'Description'])
-
-for part in parts:
-  # We need to strip out uniccode for texttable - might need to loko for another module
-  summaryTable.add_row([part.name.encode('ascii', 'ignore'), part.proteinName.encode('ascii', 'ignore'), part.uniprotName.encode('ascii', 'ignore'), part.description.encode('ascii', 'ignore')])
-
-print summaryTable.draw()
+prettyPrint(parts)
