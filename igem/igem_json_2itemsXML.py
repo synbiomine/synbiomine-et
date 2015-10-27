@@ -75,7 +75,7 @@ proteinItems = {}
 
 for part in parts.values():
   if args.verbose:
-    print "Processing part %s" % part.name
+    print "Processing part %s, uniprot %s" % (part.name, part.uniprotName)
 
   if part.uniprotName not in proteinItems:
     proteinItem = doc.createItem("Protein")
@@ -94,7 +94,7 @@ for part in parts.values():
 
   doc.addItem(partItem)
 
-for proteinItems in proteinItems.values():
+for proteinItem in proteinItems.values():
   doc.addItem(proteinItem)
 
 doc.write(args.outFile)
