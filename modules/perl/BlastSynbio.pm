@@ -26,6 +26,7 @@ no warnings ('uninitialized');
 
 # Set working directory
 # my $work_dir = "/SAN_synbiomine/data/SYNBIO_data/BLAST/Bsub168";
+my $work_dir = "/tmp";
 
 sub run_BLAST {
 

@@ -25,35 +25,37 @@ binmode(STDOUT, 'utf8');
 # Silence warnings when printing null fields
 no warnings ('uninitialized');
 
-my $usage = "Usage: dbtbs2itemsXML.pl <DBTBS.xml> <InterMine_model> <OUT_FILE>
+my $usage = "Usage: dbtbs2itemsXML.pl <DBTBS.xml> <intermine-model.xml> <synonyms.txt> <OUT_FILE>
 
 Synopsis: consumes a static file dbtbs.xml containing transcriptional regulatory
 information for Bacillus subtilis 168. Output creates items XML linking genes
 to regulatory info e.g. promoters, transcription factors, sigma factors,
 operons and terminators. 
 
+\tDBTBS.xml : DBTBS XML source file for parsing
+\tintermine-model.xml : InterMine model file
+\tsynonyms.txt: Synonyms file to convert old synonyms used in DBTBS to newer identifiers
+
 \tOUT_FILE : just to capture verbose output for testing
 
 We still need to redirect output to file e.g:\t> dbtbd_items.xml_file
 
-Optionally, capture errors & warning:\t2> err
-
 Note: These data are needed by Bacillus RegNet for orthologous regulation prediction
-across species/ strains.
-
-";
+across species/strains.";
 
 ### command line options ###
 my (%opts, $debug);
 
 getopts('hd', \%opts);
-defined $opts{"h"} and die $usage;
+defined $opts{"h"} and die "$usage\n";
 defined $opts{"d"} and $debug++;
 
-unless ( $ARGV[2] ) { die $usage };
+die "$usage\n" unless ($ARGV[3]);
 
 # specify and open query file (format: )
-my ($xml_file, $model_file, $out_file) = @ARGV;
+# We need a look-up file (synonyms_file) to convert synonym [old] symbols to  B. sub unique identifiers
+# synonyms file was downloaded from bacilluscope: ids, symbols and synonyms extracted
+my ($xml_file, $model_file, $synonyms_file, $out_file) = @ARGV;
 
 ### Keep a track of processed identifiers and items
 my %seen_tfac;
@@ -66,10 +68,6 @@ my %seen_tfac_items; # track processed tfac items
 my %seen_sigma_items; # track processed tfac items
 my %evidenceCode_items;
 my %seen_publication_items;
-
-# We need a look-up file to convert synonym [old] symbols to  B. sub unique identifiers
-# synonyms file was downloaded from bacilluscope: ids, symbols and synonyms extracted
-my $synonyms_file = "/SAN_synbiomine/data/SYNBIO_data/promoters/Bsub/Bsub_synonyms/bsub_id_symbol_synonyms_May2014.txt";
 
 # open up the synonyms file
 open(SYN_FILE, "< $synonyms_file") || die "cannot open $synonyms_file: $!\n";
@@ -125,7 +123,9 @@ my $title = "DBTBS - Regulatory features for Bacillus subtilis 168";
 my $url = "http://dbtbs.hgc.jp";
 my $chromosome = "NC_000964.3";
 
-my $work_dir = "/SAN_synbiomine/data/SYNBIO_data/BLAST/Bsub168"; # our blast database
+
+# my $work_dir = "/SAN_synbiomine/data/SYNBIO_data/BLAST/Bsub168"; # our blast database
+my $work_dir = "/tmp";
 
 # instantiate the model
 my $model = new InterMine::Model(file => $model_file);
