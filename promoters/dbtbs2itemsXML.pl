@@ -25,7 +25,7 @@ binmode(STDOUT, 'utf8');
 # Silence warnings when printing null fields
 no warnings ('uninitialized');
 
-my $usage = "Usage:dbtbs2itemsXML.pl DBTBS.xml InterMine_model OUT_FILE 
+my $usage = "Usage: dbtbs2itemsXML.pl <DBTBS.xml> <InterMine_model> <OUT_FILE>
 
 Synopsis: consumes a static file dbtbs.xml containing transcriptional regulatory
 information for Bacillus subtilis 168. Output creates items XML linking genes
