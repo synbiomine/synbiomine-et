@@ -55,6 +55,7 @@ cur.execute("select table_name from information_schema.tables where table_schema
 tables = cur.fetchall()
 
 prettySummaryTable = texttable.Texttable()
+prettySummaryTable.set_deco(texttable.Texttable.VLINES | texttable.Texttable.HLINES)
 prettySummaryTable.set_cols_width([64, 10])
 prettySummaryTable.add_row(['Table', 'Entries'])
 
