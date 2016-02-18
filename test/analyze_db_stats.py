@@ -21,8 +21,8 @@ class MyParser(argparse.ArgumentParser):
 ### SUBROUTINES ###
 ###################
 
-def outputJson(name, results, f):
-  jsonData = { 'name' : name, 'tables' : results }
+def outputJson(name, host, results, f):
+  jsonData = { 'name' : name, 'host' : host, 'tables' : results }
   f.write(json.dumps(jsonData, indent=4))
 
 def prettyPrintResults(results):
@@ -55,8 +55,10 @@ connString = "dbname=%s" % dbName
 if args.dbuser:
   connString += " user=%s" % args.dbuser
 
+dbHost = 'localhost'
 if args.dbhost:
-  connString += " host=%s" % args.dbhost
+  dbHost = args.dbhost
+  connString += " host=%s" % dbHost
 
 if args.dbport:
   connString + " port=%s" % args.dbport
@@ -87,6 +89,6 @@ cur.close()
 conn.close()
 
 if args.output:
-  outputJson(dbName, results, args.output)
+  outputJson(dbName, dbHost, results, args.output)
 
 prettyPrintResults(results)
