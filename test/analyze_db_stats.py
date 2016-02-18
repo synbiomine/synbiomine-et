@@ -21,8 +21,9 @@ class MyParser(argparse.ArgumentParser):
 ### SUBROUTINES ###
 ###################
 
-def outputJson(results, f):
-  f.write(json.dumps(results, indent=4))
+def outputJson(name, results, f):
+  jsonData = { 'name':name, 'tables':results }
+  f.write(json.dumps(jsonData, indent=4))
 
 def prettyPrintResults(results):
   # Pretty print results
@@ -86,6 +87,6 @@ cur.close()
 conn.close()
 
 if args.output:
-  outputJson(results, args.output)
+  outputJson(dbName, results, args.output)
 
 prettyPrintResults(results)
