@@ -20,6 +20,17 @@ class MyParser(argparse.ArgumentParser):
 ### SUBROUTINES ###
 ###################
 
+def prettyPrintResults(results):
+  # Pretty print results
+  prettySummaryTable = texttable.Texttable()
+  prettySummaryTable.set_deco(texttable.Texttable.VLINES | texttable.Texttable.HLINES)
+  prettySummaryTable.add_row(['Table', 'Entries'])
+
+  for table in sorted(results.keys()):
+    prettySummaryTable.add_row([table, results[table]])
+
+  print prettySummaryTable.draw()
+
 ############
 ### MAIN ###
 ############
@@ -69,12 +80,4 @@ for table in tables:
 cur.close()
 conn.close()
 
-# Pretty print results
-prettySummaryTable = texttable.Texttable()
-prettySummaryTable.set_deco(texttable.Texttable.VLINES | texttable.Texttable.HLINES)
-prettySummaryTable.add_row(['Table', 'Entries'])
-
-for table in sorted(results.keys()):
-  prettySummaryTable.add_row([table, results[table]])
-
-print prettySummaryTable.draw()
+prettyPrintResults(results)
