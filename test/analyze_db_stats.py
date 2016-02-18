@@ -62,5 +62,7 @@ for table in tables:
   if args.all or count > 0:
     print "%s: %s" % (table, count)
 
+print "FIN"
+
 cur.close()
 conn.close()
