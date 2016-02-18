@@ -22,7 +22,7 @@ class MyParser(argparse.ArgumentParser):
 ###################
 
 def outputJson(name, results, f):
-  jsonData = { 'name':name, 'tables':results }
+  jsonData = { 'name' : name, 'tables' : results }
   f.write(json.dumps(jsonData, indent=4))
 
 def prettyPrintResults(results):
