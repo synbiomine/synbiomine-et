@@ -72,7 +72,6 @@ conn.close()
 # Pretty print results
 prettySummaryTable = texttable.Texttable()
 prettySummaryTable.set_deco(texttable.Texttable.VLINES | texttable.Texttable.HLINES)
-prettySummaryTable.set_cols_width([64, 10])
 prettySummaryTable.add_row(['Table', 'Entries'])
 
 for table in sorted(results.keys()):
