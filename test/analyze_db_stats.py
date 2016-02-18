@@ -53,11 +53,7 @@ cur = conn.cursor()
 
 cur.execute("select table_name from information_schema.tables where table_schema='public' order by table_schema, table_name;")
 tables = cur.fetchall()
-
-prettySummaryTable = texttable.Texttable()
-prettySummaryTable.set_deco(texttable.Texttable.VLINES | texttable.Texttable.HLINES)
-prettySummaryTable.set_cols_width([64, 10])
-prettySummaryTable.add_row(['Table', 'Entries'])
+results = {}
 
 for table in tables:
   table = table[0]
@@ -66,10 +62,20 @@ for table in tables:
   count = cur.fetchone()[0]
 
   if args.all or count > 0:
-    prettySummaryTable.add_row([table, count])
+    results[table] = count
+    # prettySummaryTable.add_row([table, count])
     # print "%s: %s" % (table, count)
 
 cur.close()
 conn.close()
+
+# Pretty print results
+prettySummaryTable = texttable.Texttable()
+prettySummaryTable.set_deco(texttable.Texttable.VLINES | texttable.Texttable.HLINES)
+prettySummaryTable.set_cols_width([64, 10])
+prettySummaryTable.add_row(['Table', 'Entries'])
+
+for table in sorted(results.keys()):
+  prettySummaryTable.add_row([table, results[table]])
 
 print prettySummaryTable.draw()
