@@ -3,6 +3,7 @@
 # Show database statistical information
 
 import argparse
+import datetime
 import json
 import psycopg2
 import sys
@@ -22,7 +23,7 @@ class MyParser(argparse.ArgumentParser):
 ###################
 
 def outputJson(name, host, results, f):
-  jsonData = { 'name' : name, 'host' : host, 'tables' : results }
+  jsonData = { 'name' : name, 'host' : host, 'date' : datetime.datetime.now().isoformat(), 'tables' : results }
   f.write(json.dumps(jsonData, indent=4))
 
 def prettyPrintResults(results):
