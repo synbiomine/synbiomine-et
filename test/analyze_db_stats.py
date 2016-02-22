@@ -23,11 +23,14 @@ class MyParser(argparse.ArgumentParser):
 ###################
 
 def outputJson(name, host, results, fileName):
-  jsonData = { 'name' : name, 'host' : host, 'date' : datetime.datetime.now().isoformat(), 'tables' : results }
+  now = datetime.datetime.now()
+  jsonData = { 'name' : name, 'host' : host, 'date' : now.isoformat(), 'tables' : results }
+  
+  if fileName == None:
+    fileName = "%s-%s-%s" % (name, host, now.isoformat())
 
-  if fileName != None:
-    with open(fileName, 'w') as f:
-      f.write(json.dumps(jsonData, indent=4))
+  with open(fileName, 'w') as f:
+    f.write(json.dumps(jsonData, indent=4))
 
 def prettyPrintResults(results):
   # Pretty print results
@@ -92,7 +95,7 @@ for table in tables:
 cur.close()
 conn.close()
 
-if args.output:
+if hasattr(args, 'output'):
   outputJson(dbName, dbHost, results, args.output)
 else:
   prettyPrintResults(results)
