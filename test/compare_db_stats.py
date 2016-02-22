@@ -54,7 +54,7 @@ for tableName in sorted(allTableNames):
   row = [ tableName ]
   for mine in data:
     if tableName in mine['tables']:
-      row.append(mine['tables'][tableName])
+      row.append('{:,}'.format(mine['tables'][tableName]))
     else:
       row.append('-')
   prettySummaryTable.add_row(row)
