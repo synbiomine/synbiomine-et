@@ -22,9 +22,12 @@ class MyParser(argparse.ArgumentParser):
 ### SUBROUTINES ###
 ###################
 
-def outputJson(name, host, results, f):
+def outputJson(name, host, results, fileName):
   jsonData = { 'name' : name, 'host' : host, 'date' : datetime.datetime.now().isoformat(), 'tables' : results }
-  f.write(json.dumps(jsonData, indent=4))
+
+  if fileName != None:
+    with open(fileName, 'w') as f:
+      f.write(json.dumps(jsonData, indent=4))
 
 def prettyPrintResults(results):
   # Pretty print results
@@ -47,7 +50,7 @@ parser.add_argument('--dbhost', help='db host if this is not localhost')
 parser.add_argument('--dbport', help='db port if this is not localhost')
 parser.add_argument('--dbpass', help='db password if this is required')
 parser.add_argument('-a', '--all', action="store_true", help='show tables with zero rows')
-parser.add_argument('-o', '--output', nargs='?', type=argparse.FileType('w'), help='write results to file in JSON format.')
+parser.add_argument('-o', '--output', nargs='?', help='write results to file in JSON format.')
 args = parser.parse_args()
 
 dbName = args.dbname
