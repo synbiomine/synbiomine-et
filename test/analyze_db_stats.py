@@ -47,7 +47,7 @@ parser.add_argument('--dbhost', help='db host if this is not localhost')
 parser.add_argument('--dbport', help='db port if this is not localhost')
 parser.add_argument('--dbpass', help='db password if this is required')
 parser.add_argument('-a', '--all', action="store_true", help='show tables with zero rows')
-parser.add_argument('-o', '--output', nargs='?', type=argparse.FileType('w'), help='write results to file in JSON format')
+parser.add_argument('-o', '--output', nargs='?', type=argparse.FileType('w'), help='write results to file in JSON format.')
 args = parser.parse_args()
 
 dbName = args.dbname
@@ -91,5 +91,5 @@ conn.close()
 
 if args.output:
   outputJson(dbName, dbHost, results, args.output)
-
-prettyPrintResults(results)
+else:
+  prettyPrintResults(results)
