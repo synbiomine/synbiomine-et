@@ -25,7 +25,7 @@ projectXmlPath = "intermine/project.xml"
 ############
 parser = MyParser('Prepare a new dataset structure in the data repository.')
 parser.add_argument('projectXmlTemplatePath', help='path to the project xml template')
-parser.add_argument('repositoryPath', help='path to the repository.')
+parser.add_argument('repositoryPath', help='path to the data repository.')
 args = parser.parse_args()
 
 repoPath = args.repositoryPath
