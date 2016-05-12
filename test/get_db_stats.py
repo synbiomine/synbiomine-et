@@ -21,12 +21,13 @@ class MyParser(argparse.ArgumentParser):
 ###################
 ### SUBROUTINES ###
 ###################
-def getCounts(conn):
+def getCounts(conn, showEmpty = True):
   """Get counts of all InterMine database tables.
   
   Returns a dictionary of <table-name>:<count>
   
-  conn - open database connection"""
+  conn - open database connection
+  showEmpty - if true then 0 counts are also shown"""
   
   with conn.cursor() as cur:
     cur.execute("select table_name from information_schema.tables where table_schema='public' order by table_schema, table_name;")
@@ -39,19 +40,20 @@ def getCounts(conn):
       cur.execute("select count(*) from %s" % table)
       count = cur.fetchone()[0]
     
-      if args.all or count > 0:
+      if showEmpty or count > 0:
         results[table] = count
         # prettySummaryTable.add_row([table, count])
         # print "%s: %s" % (table, count)
         
     return results
   
-def getMetadataSizes(conn):
+def getMetadataSizes(conn, showEmpty = True):
   """Get sizes of all InterMine metadata entries
   
   Returns a dictionary of <name>:<size>
   
-  conn - open database connection"""    
+  conn - open database connection
+  showEmpty - if true then 0 sizes are also shown"""    
   with conn.cursor() as cur:
     cur.execute("select key, length(value), length(blob_value) from intermine_metadata;")
     entries = cur.fetchall()
@@ -62,7 +64,7 @@ def getMetadataSizes(conn):
       
       size = max(size, blobSize)
       
-      if args.all or size > 0:
+      if showEmpty or size > 0:
         results[name] = size
       
   return results                
@@ -131,8 +133,8 @@ if args.dbpass:
 
 conn = psycopg2.connect(connString)
 
-counts = getCounts(conn)
-metadataSizes = getMetadataSizes(conn)
+counts = getCounts(conn, showEmpty = args.all)
+metadataSizes = getMetadataSizes(conn, showEmpty = args.all)
 
 conn.close()
 
