@@ -32,7 +32,7 @@ def outputJson(name, host, results, fileName):
   with open(fileName, 'w') as f:
     f.write(json.dumps(jsonData, indent=4))
 
-def prettyPrintResults(results):
+def prettyPrintSummaryResults(results):
   # Pretty print results
   prettySummaryTable = texttable.Texttable()
   prettySummaryTable.set_deco(texttable.Texttable.VLINES | texttable.Texttable.HLINES)
@@ -98,4 +98,4 @@ conn.close()
 if hasattr(args, 'output'):
   outputJson(dbName, dbHost, results, args.output)
 else:
-  prettyPrintResults(results)
+  prettyPrintSummaryResults(results)
