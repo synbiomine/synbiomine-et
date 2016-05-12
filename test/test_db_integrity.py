@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-# An incomplete scripts which aims to test certain integrity aspects of a synbiomine InterMine database
+# An incomplete script that aims to test certain integrity aspects of a synbiomine InterMine database
 
 import argparse
 import psycopg2
