@@ -21,8 +21,13 @@ class MyParser(argparse.ArgumentParser):
 ###################
 ### SUBROUTINES ###
 ###################
-
 def getCounts(conn):
+  """Get counts of all InterMine database tables.
+  
+  Returns a dictionary of <table-name>:<count>
+  
+  conn - open database connection"""
+  
   with conn.cursor() as cur:
     cur.execute("select table_name from information_schema.tables where table_schema='public' order by table_schema, table_name;")
     tables = cur.fetchall()
@@ -39,11 +44,35 @@ def getCounts(conn):
         # prettySummaryTable.add_row([table, count])
         # print "%s: %s" % (table, count)
         
-    return results  
+    return results
   
-def outputJson(name, host, results, fileName):
+def getMetadataSizes(conn):
+  """Get sizes of all InterMine metadata entries
+  
+  Returns a dictionary of <name>:<size>
+  
+  conn - open database connection"""    
+  with conn.cursor() as cur:
+    cur.execute("select key, length(value), length(blob_value) from intermine_metadata;")
+    entries = cur.fetchall()
+    results = {}
+    
+    for entry in entries:      
+      name = entry[0]
+      size = entry[1]
+      blobSize = entry[2]
+      
+      if blobSize > size:
+        size = blobSize
+      
+      if args.all or size > 0:
+        results[name] = size
+      
+  return results                
+  
+def outputJson(name, host, counts, metadataSizes, fileName):
   now = datetime.datetime.now()
-  jsonData = { 'name' : name, 'host' : host, 'date' : now.isoformat(), 'tables' : results }
+  jsonData = { 'name' : name, 'host' : host, 'date' : now.isoformat(), 'tables' : counts, 'metadata' : metadataSizes }
   
   if fileName == None:
     fileName = "%s-%s-%s" % (name, host, now.isoformat())
@@ -51,16 +80,27 @@ def outputJson(name, host, results, fileName):
   with open(fileName, 'w') as f:
     f.write(json.dumps(jsonData, indent=4))
 
-def prettyPrintCountResults(results):
-  # Pretty print results
+def prettyPrintCounts(counts):
+  # Pretty print counts
   prettySummaryTable = texttable.Texttable()
   prettySummaryTable.set_deco(texttable.Texttable.VLINES | texttable.Texttable.HLINES)
   prettySummaryTable.add_row(['Table', 'Entries'])
 
-  for table in sorted(results.keys()):
-    prettySummaryTable.add_row([table, results[table]])
+  for table in sorted(counts.keys()):
+    prettySummaryTable.add_row([table, counts[table]])
 
   print prettySummaryTable.draw()
+  
+def prettyPrintMetadataSizes(sizes):
+  # Pretty print counts
+  prettySummaryTable = texttable.Texttable()
+  prettySummaryTable.set_deco(texttable.Texttable.VLINES | texttable.Texttable.HLINES)
+  prettySummaryTable.add_row(['Name', 'Size'])
+
+  for entry in sorted(sizes.keys()):
+    prettySummaryTable.add_row([entry, sizes[entry]])
+
+  print prettySummaryTable.draw()  
 
 ############
 ### MAIN ###
@@ -94,11 +134,14 @@ if args.dbpass:
 
 conn = psycopg2.connect(connString)
 
-results = getCounts(conn)
+counts = getCounts(conn)
+metadataSizes = getMetadataSizes(conn)
 
 conn.close()
 
 if hasattr(args, 'output'):
-  outputJson(dbName, dbHost, results, args.output)
+  outputJson(dbName, dbHost, counts, metadataSizes, args.output)
 else:
-  prettyPrintCountResults(results)
+  prettyPrintCounts(counts)
+  print
+  prettyPrintMetadataSizes(metadataSizes)
