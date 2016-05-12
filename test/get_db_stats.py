@@ -78,28 +78,33 @@ def outputJson(name, host, counts, metadataSizes, fileName):
 
   with open(fileName, 'w') as f:
     f.write(json.dumps(jsonData, indent=4))
+    
+def generatePrettyPrintTable(headers):
+  table = texttable.Texttable()
+  table.set_deco(texttable.Texttable.VLINES | texttable.Texttable.HLINES)
+  table.add_row(headers)
+  
+  return table  
 
 def prettyPrintCounts(counts):
-  # Pretty print counts
-  prettySummaryTable = texttable.Texttable()
-  prettySummaryTable.set_deco(texttable.Texttable.VLINES | texttable.Texttable.HLINES)
-  prettySummaryTable.add_row(['Table', 'Entries'])
-
+  """Pretty print counts"""
+  
+  consoleTable = generatePrettyPrintTable(['Table', 'Entries'])
+  
   for table in sorted(counts.keys()):
-    prettySummaryTable.add_row([table, counts[table]])
+    consoleTable.add_row([table, counts[table]])
 
-  print prettySummaryTable.draw()
+  print consoleTable.draw()
   
 def prettyPrintMetadataSizes(sizes):
-  # Pretty print counts
-  prettySummaryTable = texttable.Texttable()
-  prettySummaryTable.set_deco(texttable.Texttable.VLINES | texttable.Texttable.HLINES)
-  prettySummaryTable.add_row(['Name', 'Size'])
+  """Pretty print metadata sizes"""
+  
+  consoleTable = generatePrettyPrintTable(['Name', 'Size'])
 
   for entry in sorted(sizes.keys()):
-    prettySummaryTable.add_row([entry, sizes[entry]])
+    consoleTable.add_row([entry, sizes[entry]])
 
-  print prettySummaryTable.draw()  
+  print consoleTable.draw()  
 
 ############
 ### MAIN ###
