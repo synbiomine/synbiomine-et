@@ -60,8 +60,7 @@ def getMetadataSizes(conn):
     for entry in entries:
       (name, size, blobSize) = entry
       
-      if blobSize > size:
-        size = blobSize
+      size = max(size, blobSize)
       
       if args.all or size > 0:
         results[name] = size
