@@ -22,6 +22,25 @@ class MyParser(argparse.ArgumentParser):
 ### SUBROUTINES ###
 ###################
 
+def getCounts(conn):
+  with conn.cursor() as cur:
+    cur.execute("select table_name from information_schema.tables where table_schema='public' order by table_schema, table_name;")
+    tables = cur.fetchall()
+    results = {}
+      
+    for table in tables:
+      table = table[0]
+        
+      cur.execute("select count(*) from %s" % table)
+      count = cur.fetchone()[0]
+    
+      if args.all or count > 0:
+        results[table] = count
+        # prettySummaryTable.add_row([table, count])
+        # print "%s: %s" % (table, count)
+        
+    return results  
+  
 def outputJson(name, host, results, fileName):
   now = datetime.datetime.now()
   jsonData = { 'name' : name, 'host' : host, 'date' : now.isoformat(), 'tables' : results }
@@ -75,21 +94,7 @@ if args.dbpass:
 
 conn = psycopg2.connect(connString)
 
-with conn.cursor() as cur:
-  cur.execute("select table_name from information_schema.tables where table_schema='public' order by table_schema, table_name;")
-  tables = cur.fetchall()
-  results = {}
-    
-  for table in tables:
-    table = table[0]
-      
-    cur.execute("select count(*) from %s" % table)
-    count = cur.fetchone()[0]
-  
-    if args.all or count > 0:
-      results[table] = count
-      # prettySummaryTable.add_row([table, count])
-      # print "%s: %s" % (table, count)
+results = getCounts(conn)
 
 conn.close()
 
