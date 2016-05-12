@@ -75,24 +75,22 @@ if args.dbpass:
 
 conn = psycopg2.connect(connString)
 
-cur = conn.cursor()
-
-cur.execute("select table_name from information_schema.tables where table_schema='public' order by table_schema, table_name;")
-tables = cur.fetchall()
-results = {}
-
-for table in tables:
-  table = table[0]
+with conn.cursor() as cur:
+  cur.execute("select table_name from information_schema.tables where table_schema='public' order by table_schema, table_name;")
+  tables = cur.fetchall()
+  results = {}
+    
+  for table in tables:
+    table = table[0]
+      
+    cur.execute("select count(*) from %s" % table)
+    count = cur.fetchone()[0]
   
-  cur.execute("select count(*) from %s" % table)
-  count = cur.fetchone()[0]
+    if args.all or count > 0:
+      results[table] = count
+      # prettySummaryTable.add_row([table, count])
+      # print "%s: %s" % (table, count)
 
-  if args.all or count > 0:
-    results[table] = count
-    # prettySummaryTable.add_row([table, count])
-    # print "%s: %s" % (table, count)
-
-cur.close()
 conn.close()
 
 if hasattr(args, 'output'):
