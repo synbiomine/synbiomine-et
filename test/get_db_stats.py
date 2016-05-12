@@ -57,10 +57,8 @@ def getMetadataSizes(conn):
     entries = cur.fetchall()
     results = {}
     
-    for entry in entries:      
-      name = entry[0]
-      size = entry[1]
-      blobSize = entry[2]
+    for entry in entries:
+      (name, size, blobSize) = entry
       
       if blobSize > size:
         size = blobSize
