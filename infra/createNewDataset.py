@@ -16,9 +16,7 @@ class MyParser(argparse.ArgumentParser):
 #################
 ### CONSTANTS ###
 #################
-currentSymLinkName = "current";
 sections = [ "eggnog", "genbank", "go-annotation", "intermine", "kegg", "kegg-reaction", "taxons", "uniprot" ]
-projectXmlPath = "intermine/project.xml"
 
 ############
 ### MAIN ###
@@ -29,25 +27,24 @@ parser.add_argument('repositoryPath', help='path to the data repository.')
 args = parser.parse_args()
 
 repoPath = args.repositoryPath
-templatePath = os.path.join('../..', args.projectXmlTemplatePath)
+templatePath = args.projectXmlTemplatePath
 
 if not os.path.exists(repoPath):
   os.mkdir(repoPath)
 
-os.chdir(repoPath)
-
 # datasetDirName = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M")
 datasetDirName = datetime.datetime.now().strftime("%Y-%m-%d")
+datasetPath = "%s/%s" % (repoPath, datasetDirName)
 
-if os.path.exists(datasetDirName):
-  raise Exception("Dataset path %s already exists!" % datasetDirName)
+if os.path.exists(datasetPath):
+  raise Exception("Dataset path %s already exists!" % datasetPath)
 
-os.mkdir(datasetDirName)
-os.chdir(datasetDirName)
+os.mkdir(datasetPath)
 
 for section in sections:
-  os.mkdir(section)
+  os.mkdir("%s/%s" % (datasetPath, section))
 
+projectXmlPath = "%s/intermine/project.xml" % datasetPath
 shutil.copy(templatePath, projectXmlPath)
 
 print "Created dataset structure at %s" % (os.path.join(repoPath, datasetDirName))
