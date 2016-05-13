@@ -17,6 +17,7 @@ class MyParser(argparse.ArgumentParser):
 ### CONSTANTS ###
 #################
 sections = [ "eggnog", "genbank", "go-annotation", "intermine", "kegg", "kegg-reaction", "taxons", "uniprot" ]
+logsDir = "logs"
 
 ############
 ### MAIN ###
@@ -42,7 +43,10 @@ if os.path.exists(datasetPath):
 os.mkdir(datasetPath)
 
 for section in sections:
-  os.mkdir("%s/%s" % (datasetPath, section))
+  sectionPath = "%s/%s" % (datasetPath, section)
+  os.mkdir(sectionPath)
+  logsPath = "%s/%s" % (sectionPath, logsDir)
+  os.mkdir(logsPath)
 
 projectXmlPath = "%s/intermine/project.xml" % datasetPath
 shutil.copy(templatePath, projectXmlPath)
