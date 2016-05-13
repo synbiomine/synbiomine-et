@@ -3,6 +3,7 @@
 use strict;
 use warnings;
 use File::Spec::Functions;
+use File::Tee qw(tee);
 use Getopt::Std;
 use Net::FTP;
 use LWP::UserAgent;
@@ -14,10 +15,9 @@ use IO::Uncompress::Gunzip qw(:all);
 
 use feature ':5.12';
 
-my $current_symlink = "current";
 my $selected_genomes_fn = "synbiomine_selected_assembly_summary_refseq.txt";
 
-my $usage = "Usage:fetchSynbioData.pl [-hv] data_directory
+my $usage = "Usage:fetchSynbioData.pl [-hv] dataset_directory
 
 Data download script for SynBioMine.
 The data directory needs to contain sub-directories named:
@@ -66,9 +66,10 @@ getopts('hv', \%opts);
 defined $opts{"h"} and die $usage;
 defined $opts{"v"} and $verbose = 1;
 
-#my $base = "/SAN_synbiomine/data/";
 @ARGV > 0 or die $usage;
 my $base = $ARGV[0];
+
+tee STDOUT, '>>', "$base/logs/fetchSynbioData.log";
 
 # email addr is required for NCBI FTP use
 my $contact = 'justincc@intermine.org'; # Please set your email address here to help us debug in case of problems.
