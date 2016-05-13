@@ -12,12 +12,11 @@ use feature ':5.12';
 # Print unicode to standard out
 binmode(STDOUT, 'utf8');
 # Silence warnings when printing null fields
-no warnings ('uninitialized');
+no warnings('uninitialized');
 
-my $usage = "Usage: writeSynbioMineProjectXML.pl [-tvgh] [-i <project-xml>] genbank_directory
+my $usage = "Usage: writeSynbioMineProjectXML.pl [-tvgh] dataset_directory
 
-synopsis: reads the genbank directory and writes associated data that's needed for the build.
-Default output writes the source XML needed for the project.xml.
+synopsis: reads the dataset's genbank directory and writes associated data that's needed for the build.
 Run with the -g option, writes info for the gff_config file. 
 The -t option will generate a tab-separated genomes summary file (see below)
 
@@ -39,13 +38,15 @@ defined $opts{"h"} and die $usage;
 defined $opts{"t"} and $tabView++; # tab summary - maps assembly vers to org name & tax ID
 defined $opts{"g"} and $gffconfig++; # writes gff_config.txt file to run dir
 defined $opts{"v"} and $verbose++; # used for debugging
-defined $opts{"i"} and $insert++;
-my $insertPath = $opts{i};
+# defined $opts{"i"} and $insert++;
+# Currently we are always inserting but an option may come back again not to insert
+$insert = 1;
 
 @ARGV > 0 or die $usage;
 
-my $dir = $ARGV[0];
-# my $dir = ($ARGV[0]) ? "$ARGV[0]" : '/SAN_synbiomine/data/genbank/current';
+my $base = $ARGV[0];
+my $genbankdir = "$base/genbank";
+my $insertPath = "$base/intermine/project.xml";
 
 # if they want the config, open the file for writing (-g option)
 if ($gffconfig) {
@@ -54,7 +55,7 @@ if ($gffconfig) {
 }
 
 # open the dir they specified
-opendir(DIR, $dir) or die "cannot open dir: $!";
+opendir(DIR, $genbankdir) or die "cannot open dir: $!";
 
 # generate headers if a tab summary is needed (-t option)
 say "taxID\torganism name\tsubdir\tfile prefix" if ($tabView);
@@ -75,7 +76,7 @@ if ($insert) {
 
 # read the sub dir listing - name with assembly IDs
 while (my $subdir = readdir DIR) {
-  my $gbDir = "$dir/$subdir"; # generate the dir path
+  my $gbDir = "$genbankdir/$subdir"; # generate the dir path
 
   next if $subdir =~ /^\.|^\.\./; # ignore ./ and ../
   say "SUB: ", $subdir if ($verbose); # keep track of sub-dir
