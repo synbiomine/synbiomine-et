@@ -42,10 +42,12 @@ my ($DAY, $MONTH, $YEAR) = ($tm->mday, ($tm->mon) + 1, ($tm->year) + 1900);
 
 @ARGV > 0 or die $usage;
 
-my $genbank_dir = "$ARGV[0]/genbank";
+my $base = $ARGV[0];
 
 # At this point we have established that the dataset exists and want to start logging our activity
-tee STDOUT, '>>', "$genbank_dir/logs/selectGenomes.log";
+tee STDOUT, '>>', "$base/logs/selectGenomes.log";
+
+my $genbank_dir = "$ARGV[0]/genbank";
 
 my $contact = 'justincc@intermine.org'; # Please set your email address here to help us debug in case of problems.
 
