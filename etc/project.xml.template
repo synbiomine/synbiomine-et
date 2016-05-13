@@ -1,13 +1,12 @@
 <?xml version="1.0"?>
 <!-- 
   This template is acted upon by the other scripts in this repository to create a synbiomine project XML.
-  Some hardcoding to test synbiomine2 at present.
 -->
 <project type="bio">
   <property name="target.model" value="genomic"/>
   <property name="source.location" location="../bio/sources/"/>
   <property name="common.os.prefix" value="common"/>
-  <property name="intermine.properties.file" value="synbiomine2.properties"/>
+  <property name="intermine.properties.file" value="synbiomine.properties"/>
   <property name="default.intermine.properties.file" location="../default.intermine.integrate.properties"/>
   <sources>
   
