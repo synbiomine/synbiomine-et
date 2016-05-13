@@ -3,6 +3,7 @@
 use strict;
 use warnings;
 use File::Spec::Functions;
+use File::Tee qw(tee);
 use Getopt::Std;
 use Net::FTP;
 use Time::localtime;
@@ -27,6 +28,8 @@ my (%opts, $verbose, $load_preselected_assemblies, $preselected_assemblies_path)
 
 getopts('hp:v', \%opts);
 defined $opts{"h"} and die $usage;
+
+
 if (defined $opts{"p"}) {
   $load_preselected_assemblies = 1;
   $preselected_assemblies_path = $opts{"p"};
@@ -38,15 +41,11 @@ my $tm = localtime;
 my ($DAY, $MONTH, $YEAR) = ($tm->mday, ($tm->mon) + 1, ($tm->year) + 1900);
 
 @ARGV > 0 or die $usage;
-my $base = $ARGV[0];
 
-notify_new_activity("Creating data directory structure at [$base]");
+my $genbank_dir = "$ARGV[0]/genbank";
 
-if (not -d $base) {
-  mkdir $base, 0755 or die "Could not create data_directory $base: $!\n";
-}
-
-my $genbank_dir = catdir($base, "genbank");
+# At this point we have established that the dataset exists and want to start logging our activity
+tee STDOUT, '>>', "$genbank_dir/logs/selectGenomes.log";
 
 my $contact = 'justincc@intermine.org'; # Please set your email address here to help us debug in case of problems.
 
