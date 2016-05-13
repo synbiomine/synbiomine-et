@@ -6,6 +6,15 @@ import gzip
 import os.path
 import sys
 
+class Logger(object):
+    def __init__(self, logPath):
+        self.terminal = sys.stdout
+        self.log = open(logPath, "a")
+
+    def write(self, message):
+        self.terminal.write(message)
+        self.log.write(message)  
+
 class MyParser(argparse.ArgumentParser):
     def error(self, message):
         sys.stderr.write('error: %s\n' % message)
@@ -98,15 +107,20 @@ def filterIdsMap(idsMapPath, filteredMapPath, taxonIds, verbose=False):
 ############
 parser = MyParser('Retrieve required EggNOG files and filter required data by organism taxon IDs.')
 parser.add_argument('eggNogFilesPath', help='path to eggNOG files location. This may be an already populated, partially populated or empty directory.')
-parser.add_argument('taxonIdsPath', help='path to the taxon IDs file.')
+parser.add_argument('datasetPath', help='path to the dataset.')
 parser.add_argument('-v', '--verbose', action="store_true", help="verbose output")
 args = parser.parse_args()
+
+logPath = "%s/logs/fetchEggnogData.log"
+sys.stdout = Logger(logPath)
+
+taxonsPath = "%s/taxons/taxons.txt" % args.datasetPath
 
 eggNogFtpHost = 'eggnog.embl.de'
 eggNogFtpBase = 'eggNOG/4.0/'
 files = set(['eggnogv4.funccats.txt', 'description/bactNOG.description.txt.gz', 'funccat/bactNOG.funccat.txt.gz', 'members/bactNOG.members.txt.gz', 'id_conversion.tsv'])
 
 assemblePrereqFiles(args.eggNogFilesPath, eggNogFtpHost, eggNogFtpBase, files)
-taxonIds = readTaxonIds(args.taxonIdsPath)
+taxonIds = readTaxonIds(taxonsPath)
 # print "taxons [%s]" % (" ".join(taxonIds))
 filterIdsMap(os.path.join(args.eggNogFilesPath, 'id_conversion.tsv'), os.path.join(args.eggNogFilesPath, 'id_conversion_taxons.txt'), taxonIds, args.verbose)
