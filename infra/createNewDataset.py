@@ -41,12 +41,11 @@ if os.path.exists(datasetPath):
   raise Exception("Dataset path %s already exists!" % datasetPath)
 
 os.mkdir(datasetPath)
+os.mkdir("%s/%s" % (datasetPath, logsDir))
 
 for section in sections:
   sectionPath = "%s/%s" % (datasetPath, section)
   os.mkdir(sectionPath)
-  logsPath = "%s/%s" % (sectionPath, logsDir)
-  os.mkdir(logsPath)
 
 projectXmlPath = "%s/intermine/project.xml" % datasetPath
 shutil.copy(templatePath, projectXmlPath)
