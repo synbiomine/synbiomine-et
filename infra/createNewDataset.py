@@ -43,13 +43,7 @@ if os.path.exists(datasetDirName):
   raise Exception("Dataset path %s already exists!" % datasetDirName)
 
 os.mkdir(datasetDirName)
-
-if os.path.exists(currentSymLinkName):
-  os.remove(currentSymLinkName)
-
-os.symlink(datasetDirName, currentSymLinkName)
-
-os.chdir(currentSymLinkName)
+os.chdir(datasetDirName)
 
 for section in sections:
   os.mkdir(section)
