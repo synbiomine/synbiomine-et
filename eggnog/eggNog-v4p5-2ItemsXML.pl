@@ -149,29 +149,6 @@ for my $cat (@cats) {
 }
 close ($funccat_fh);
 
-
-### Process EggNOG descriptions file
-# File format
-# EggNogID \t category description
-
-notify_new_activity("Adding EggNogCategory XML");
-
-my %nog_descriptions;
-open my $nogdesc_fh, "$nog_description" or die "can't open file: $nog_description $!\n";
-
-say "Processing file $nog_description";
-
-while (<$nogdesc_fh>) {
-  chomp;
-  my ($nogID, $description) = split("\t", $_);
-  $description = ($description) ? $description : "No description";
-  $nog_descriptions{$nogID} = $description;
-
-  make_nogDesc_item($nogID, $description, $ortholog_data_set_item);
-}
-
-close ($nogdesc_fh);
-
 ### Process file which maps EggNogIDs to functional categories
 # File format
 # EggNogID \t AB    [joined_classifiers - belongs to categories A & B ]
