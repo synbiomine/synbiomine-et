@@ -22,14 +22,16 @@ arch\tarchaea (uses arNOG)
 Required files:
 taxon_ID_file
   format: taxID1 taxID2 ... taxID
-  generated: by the download scripts, fetchSynbioData.pl and fetchArchaeaData.pl
-  location: data/taxons/<date_dir>/taxons_dd_mm_year.txt
+  generated: by the download scripts, fetchEggNogData.py and fetchArchaeaData.pl
+
 im_model_file.xml
   intermine genomic model file containing the functional categories 
   model extension used in synbio-funccat (see synbio-funccat_additions)
   there is a copy in this repository (etc/funccat_model_dev.xml)
+
 eggnog_data_dir
   path to eggnog data previously downloaded by fetchEggNogData.py
+
 output_items_file.xml
   location to write out the generated items xml
 ";
