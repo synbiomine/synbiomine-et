@@ -57,7 +57,6 @@ my $id_file = $base_url . "id_conversion_taxons.txt"; ## this is a subset of id_
 
 my $nog_members = $base_url . $domain_set . ".members.txt";
 my $nog_funccat = $base_url . $domain_set . ".funccat.txt";
-my $nog_description = $base_url . $domain_set . ".description.txt";
 my $funccat_divisions = $base_url . "eggnogv4.funccats.txt";
 
 my $model = new InterMine::Model(file => $model_file);
