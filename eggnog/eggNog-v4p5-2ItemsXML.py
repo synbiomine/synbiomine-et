@@ -27,7 +27,13 @@ class MyParser(argparse.ArgumentParser):
 ### FUNCTIONS ###
 #################
 def logEyeCatcher(text):
-  print "~~~ %s ~~~" % text
+    print "~~~ %s ~~~" % text
+
+def addDataSourceItem(doc):
+    dataSourceItem = doc.createItem("DataSource")
+    dataSourceItem.addAttribute('name', 'EggNOG: A database of orthologous groups and functional annotation')
+    dataSourceItem.addAttribute('url', 'http://eggnog.eml.de')
+    doc.addItem(dataSourceItem)
 
 ############
 ### MAIN ###
@@ -52,10 +58,7 @@ sys.stdout = Logger(logPath)
 model = IM.Model(modelPath)
 doc = IM.Document(model)
 
-dataSourceItem = doc.createItem("DataSource")
-dataSourceItem.addAttribute('name', 'EggNOG: A database of orthologous groups and functional annotation')
-dataSourceItem.addAttribute('url', 'http://eggnog.eml.de')
-doc.addItem(dataSourceItem)
+addDataSourceItem(doc)
 
 doc.write(itemsPath)
 
