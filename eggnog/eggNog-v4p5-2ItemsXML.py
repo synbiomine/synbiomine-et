@@ -53,6 +53,22 @@ def addFuncCatItem(doc, dataSetItem, category, classifier, description):
     doc.addItem(item)
     return item
 
+def addFuncCats(doc, dataSetItem, funcCatsPath):
+    with open(funcCatsPath) as f:
+        eggNogRaw = f.read()
+        eggNogSections = eggNogRaw.split('\n\n')
+
+    for section in eggNogSections:
+        lines = section.splitlines()
+        division = lines[0]
+        # print "division=[%s]" % division
+
+        for line in lines[1:]:
+            line = line.strip()
+            m = re.match("^\[(?P<letter>.{1})\] (?P<description>.*)$", line)
+            # print "line=[%s,%s]" % (m.group('letter'), m.group('description'))
+            addFuncCatItem(doc, dataSetItem, division, m.group('letter'), m.group('description'))
+
 ############
 ### MAIN ###
 ############
@@ -67,7 +83,7 @@ datasetPath = args.datasetPath
 modelPath = args.modelPath
 itemsPath = "%s/eggnog/eggnog-items.xml" % datasetPath
 logPath = "%s/logs/eggNog-v4p5-2ItemsXML.log" % datasetPath
-eggNogFunctionalCategoriesPath = "%s/eggnog4.functional_categories.txt" % eggNogPath
+eggNogFuncCatsPath = "%s/eggnog4.functional_categories.txt" % eggNogPath
 eggNogMembersPath = "%s/data/bactNOG/bactNOG.members.tsv.gz" % eggNogPath
 
 sys.stdout = Logger(logPath)
@@ -79,20 +95,7 @@ dataSourceItem = addDataSourceItem(doc, 'EggNOG: A database of orthologous group
 addDataSetItem(doc, 'EggNOG Non-supervised Orthologous Groups', dataSourceItem)
 funcCatDataSetItem = addDataSetItem(doc, 'EggNOG Functional Categories', dataSourceItem)
 
-with open(eggNogFunctionalCategoriesPath) as f:
-    eggNogRaw = f.read()
-    eggNogSections = eggNogRaw.split('\n\n')
-
-for section in eggNogSections:
-    lines = section.splitlines()
-    division = lines[0]
-    # print "division=[%s]" % division
-
-    for line in lines[1:]:
-        line = line.strip()
-        m = re.match("^\[(?P<letter>.{1})\] (?P<description>.*)$", line)
-        # print "line=[%s,%s]" % (m.group('letter'), m.group('description'))
-        addFuncCatItem(doc, funcCatDataSetItem, division, m.group('letter'), m.group('description'))
+addFuncCats(doc, funcCatDataSetItem, eggNogFuncCatsPath)
 
 doc.write(itemsPath)
 
