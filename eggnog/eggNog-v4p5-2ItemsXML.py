@@ -28,19 +28,28 @@ class MyParser(argparse.ArgumentParser):
 ### FUNCTIONS ###
 #################
 def logEyeCatcher(text):
-    print "~~~ %s ~~~" % text
+    print '~~~ %s ~~~' % text
 
 def addDataSetItem(doc, name, dataSourceItem):
-    item = doc.createItem("DataSet")
+    item = doc.createItem('DataSet')
     item.addAttribute('name', name)
     item.addAttribute('dataSource', dataSourceItem)
     doc.addItem(item)
     return item
 
 def addDataSourceItem(doc, name, url):
-    item = doc.createItem("DataSource")
+    item = doc.createItem('DataSource')
     item.addAttribute('name', name)
     item.addAttribute('url', url)
+    doc.addItem(item)
+    return item
+
+def addFuncCatItem(doc, dataSetItem, category, classifier, description):
+    item = doc.createItem('FunctionalCategory')
+    item.addAttribute('dataSets', [ dataSetItem ])
+    item.addAttribute('category', category)
+    item.addAttribute('classifier', classifier)
+    item.addAttribute('name', description)
     doc.addItem(item)
     return item
 
@@ -66,11 +75,9 @@ sys.stdout = Logger(logPath)
 model = IM.Model(modelPath)
 doc = IM.Document(model)
 
-dsItem = addDataSourceItem(doc, 'EggNOG: A database of orthologous groups and functional annotation', 'http://eggnog.eml.de')
-addDataSetItem(doc, 'EggNOG Non-supervised Orthologous Groups', dsItem)
-addDataSetItem(doc, 'EggNOG Functional Categories', dsItem)
-
-doc.write(itemsPath)
+dataSourceItem = addDataSourceItem(doc, 'EggNOG: A database of orthologous groups and functional annotation', 'http://eggnog.eml.de')
+addDataSetItem(doc, 'EggNOG Non-supervised Orthologous Groups', dataSourceItem)
+funcCatDataSetItem = addDataSetItem(doc, 'EggNOG Functional Categories', dataSourceItem)
 
 with open(eggNogFunctionalCategoriesPath) as f:
     eggNogRaw = f.read()
@@ -79,12 +86,15 @@ with open(eggNogFunctionalCategoriesPath) as f:
 for section in eggNogSections:
     lines = section.splitlines()
     division = lines[0]
-    print "division=[%s]" % division
+    # print "division=[%s]" % division
 
     for line in lines[1:]:
         line = line.strip()
         m = re.match("^\[(?P<letter>.{1})\] (?P<description>.*)$", line)
-        print "line=[%s,%s]" % (m.group('letter'), m.group('description'))
+        # print "line=[%s,%s]" % (m.group('letter'), m.group('description'))
+        addFuncCatItem(doc, funcCatDataSetItem, division, m.group('letter'), m.group('description'))
+
+doc.write(itemsPath)
 
 """
 logEyeCatcher("Processing protein member files")
