@@ -3,6 +3,7 @@
 import argparse
 import gzip
 import os
+import re
 import sys
 
 sys.path.insert(1, os.path.dirname(os.path.abspath(__file__)) + '/../modules/python')
@@ -55,10 +56,9 @@ args = parser.parse_args()
 eggNogPath = args.eggNogPath
 datasetPath = args.datasetPath
 modelPath = args.modelPath
-
 itemsPath = "%s/eggnog/eggnog-items.xml" % datasetPath
-
 logPath = "%s/logs/eggNog-v4p5-2ItemsXML.log" % datasetPath
+eggNogFunctionalCategoriesPath = "%s/eggnog4.functional_categories.txt" % eggNogPath
 eggNogMembersPath = "%s/data/bactNOG/bactNOG.members.tsv.gz" % eggNogPath
 
 sys.stdout = Logger(logPath)
@@ -71,6 +71,20 @@ addDataSetItem(doc, 'EggNOG Non-supervised Orthologous Groups', dsItem)
 addDataSetItem(doc, 'EggNOG Functional Categories', dsItem)
 
 doc.write(itemsPath)
+
+with open(eggNogFunctionalCategoriesPath) as f:
+    eggNogRaw = f.read()
+    eggNogSections = eggNogRaw.split('\n\n')
+
+for section in eggNogSections:
+    lines = section.splitlines()
+    division = lines[0]
+    print "division=[%s]" % division
+
+    for line in lines[1:]:
+        line = line.strip()
+        m = re.match("^\[(?P<letter>.{1})\] (?P<description>.*)$", line)
+        print "line=[%s,%s]" % (m.group('letter'), m.group('description'))
 
 """
 logEyeCatcher("Processing protein member files")
