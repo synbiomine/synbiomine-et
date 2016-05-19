@@ -77,6 +77,14 @@ def addFuncCats(doc, dataSetItem, funcCatsPath):
             # print "line=[%s,%s]" % (m.group('letter'), m.group('description'))
             addFuncCatItem(doc, dataSetItem, division, m.group('letter'), m.group('description'))
 
+def addGroupDescriptions(doc, dataSetItem, annotationsPath):
+    with gzip.open(annotationsPath) as f:
+        for line in f:
+            # print "line %d [%s]" % (i, line)
+            taxonLevel, groupId, proteinCount, speciesCount, funcCat, funcDescription = line.strip().split('\t')
+            addGroupDescriptionItem(doc, dataSetItem, groupId, funcDescription)
+            # i += 1
+
 ############
 ### MAIN ###
 ############
@@ -106,13 +114,7 @@ groupDataSetItem = addDataSetItem(doc, 'EggNOG Non-supervised Orthologous Groups
 funcCatDataSetItem = addDataSetItem(doc, 'EggNOG Functional Categories', dataSourceItem)
 
 addFuncCats(doc, funcCatDataSetItem, eggNogFuncCatsPath)
-
-with gzip.open(eggNogAnnotationsPath) as f:
-    for line in f:
-        # print "line %d [%s]" % (i, line)
-        taxonLevel, groupId, proteinCount, speciesCount, funcCat, funcDescription = line.strip().split('\t')
-        addGroupDescriptionItem(doc, groupDataSetItem, groupId, funcDescription)
-        # i += 1
+addGroupDescriptions(doc, groupDataSetItem, eggNogAnnotationsPath)
 
 doc.write(itemsPath)
 
