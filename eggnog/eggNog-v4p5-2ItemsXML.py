@@ -68,6 +68,7 @@ doc = IM.Document(model)
 
 dsItem = addDataSourceItem(doc, 'EggNOG: A database of orthologous groups and functional annotation', 'http://eggnog.eml.de')
 addDataSetItem(doc, 'EggNOG Non-supervised Orthologous Groups', dsItem)
+addDataSetItem(doc, 'EggNOG Functional Categories', dsItem)
 
 doc.write(itemsPath)
 
