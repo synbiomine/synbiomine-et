@@ -36,10 +36,10 @@ def addDataSetItem(doc, dsItem):
     doc.addItem(item)
     return item
 
-def addDataSourceItem(doc):
+def addDataSourceItem(doc, name, url):
     item = doc.createItem("DataSource")
-    item.addAttribute('name', 'EggNOG: A database of orthologous groups and functional annotation')
-    item.addAttribute('url', 'http://eggnog.eml.de')
+    item.addAttribute('name', name)
+    item.addAttribute('url', url)
     doc.addItem(item)
     return item
 
@@ -66,7 +66,7 @@ sys.stdout = Logger(logPath)
 model = IM.Model(modelPath)
 doc = IM.Document(model)
 
-dsItem = addDataSourceItem(doc)
+dsItem = addDataSourceItem(doc, 'EggNOG: A database of orthologous groups and functional annotation', 'http://eggnog.eml.de')
 addDataSetItem(doc, dsItem)
 
 doc.write(itemsPath)
