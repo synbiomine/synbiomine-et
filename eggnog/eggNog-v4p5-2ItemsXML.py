@@ -53,18 +53,30 @@ def addFuncCatItem(doc, dataSetItem, category, classifier, description):
     doc.addItem(item)
     return item
 
-def addGroupDescriptionItem(doc, dataSetItem, id, description):
+def addGroupDescriptionItem(doc, dataSetItem, id, funcCatItems, description):
     item = doc.createItem('EggNogCategory')
     item.addAttribute('dataSets', [ dataSetItem ])
     item.addAttribute('primaryIdentifier', id)
+    item.addAttribute('functionalCategories', funcCatItems)
     item.addAttribute('description', description)
     doc.addItem(item)
     return item
 
-def addFuncCats(doc, dataSetItem, funcCatsPath):
+def addFuncCatItems(doc, dataSetItem, funcCatsPath):
+    """
+    Add functional category items to the document.
+
+    :param doc:
+    :param dataSetItem:
+    :param funcCatsPath:
+    :return: dictionary where letter => item
+    """
+
     with open(funcCatsPath) as f:
         eggNogRaw = f.read()
         eggNogSections = eggNogRaw.split('\n\n')
+
+    funcCatItems = {}
 
     for section in eggNogSections:
         lines = section.splitlines()
@@ -75,15 +87,36 @@ def addFuncCats(doc, dataSetItem, funcCatsPath):
             line = line.strip()
             m = re.match("^\[(?P<letter>.{1})\] (?P<description>.*)$", line)
             # print "line=[%s,%s]" % (m.group('letter'), m.group('description'))
-            addFuncCatItem(doc, dataSetItem, division, m.group('letter'), m.group('description'))
+            letter, description = m.group('letter'), m.group('description')
+            item = addFuncCatItem(doc, dataSetItem, division, letter, description)
+            funcCatItems[letter] = item
 
-def addGroupDescriptions(doc, dataSetItem, annotationsPath):
+    return funcCatItems
+
+def addGroupItems(doc, dataSetItem, funcCatItems, annotationsPath):
+    """
+    Add group items to the document.
+
+    :return: dictionary where group-id => item
+    """
+
     with gzip.open(annotationsPath) as f:
+        groupItems = {}
+
         for line in f:
-            # print "line %d [%s]" % (i, line)
-            taxonLevel, groupId, proteinCount, speciesCount, funcCat, funcDescription = line.strip().split('\t')
-            addGroupDescriptionItem(doc, dataSetItem, groupId, funcDescription)
+            line = line.strip()
+            # print "line [%s]" % (line)
+            taxonLevel, groupId, proteinCount, speciesCount, funcCatIds, funcDescription = line.split('\t')
+
+            # The functional categories column will have multiple letter for multiple categories (e.g. 'DZ')
+            funcCatItemsForGroup = []
+            for funcCatId in funcCatIds:
+                funcCatItemsForGroup.append(funcCatItems[funcCatId])
+
+            groupItems[groupId] = addGroupDescriptionItem(doc, dataSetItem, groupId, funcCatItemsForGroup, funcDescription)
             # i += 1
+
+    return groupItems
 
 ############
 ### MAIN ###
@@ -115,10 +148,10 @@ groupDataSetItem = addDataSetItem(doc, 'EggNOG Non-supervised Orthologous Groups
 funcCatDataSetItem = addDataSetItem(doc, 'EggNOG Functional Categories', dataSourceItem)
 
 logEyeCatcher("Adding functional category items")
-addFuncCats(doc, funcCatDataSetItem, eggNogFuncCatsPath)
+funcCatItems = addFuncCatItems(doc, funcCatDataSetItem, eggNogFuncCatsPath)
 
 logEyeCatcher("Adding group description items")
-addGroupDescriptions(doc, groupDataSetItem, eggNogAnnotationsPath)
+groupItems = addGroupItems(doc, groupDataSetItem, funcCatItems, eggNogAnnotationsPath)
 
 doc.write(itemsPath)
 

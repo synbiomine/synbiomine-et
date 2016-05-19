@@ -20,7 +20,7 @@ class Document:
     :param item:
     :return:
     """
-    
+
     self._items.append(item)
 
   def createItem(self, className):
