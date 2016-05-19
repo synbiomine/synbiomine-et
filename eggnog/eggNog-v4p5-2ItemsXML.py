@@ -109,11 +109,15 @@ sys.stdout = Logger(logPath)
 model = IM.Model(modelPath)
 doc = IM.Document(model)
 
+logEyeCatcher("Adding data source and data set items")
 dataSourceItem = addDataSourceItem(doc, 'EggNOG: A database of orthologous groups and functional annotation', 'http://eggnog.eml.de')
 groupDataSetItem = addDataSetItem(doc, 'EggNOG Non-supervised Orthologous Groups', dataSourceItem)
 funcCatDataSetItem = addDataSetItem(doc, 'EggNOG Functional Categories', dataSourceItem)
 
+logEyeCatcher("Adding functional category items")
 addFuncCats(doc, funcCatDataSetItem, eggNogFuncCatsPath)
+
+logEyeCatcher("Adding group description items")
 addGroupDescriptions(doc, groupDataSetItem, eggNogAnnotationsPath)
 
 doc.write(itemsPath)
