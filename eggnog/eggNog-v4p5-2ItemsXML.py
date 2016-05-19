@@ -29,10 +29,10 @@ class MyParser(argparse.ArgumentParser):
 def logEyeCatcher(text):
     print "~~~ %s ~~~" % text
 
-def addDataSetItem(doc, dsItem):
+def addDataSetItem(doc, name, dataSourceItem):
     item = doc.createItem("DataSet")
-    item.addAttribute('name', 'EggNOG Non-supervised Orthologous Groups')
-    item.addAttribute('dataSource', dsItem)
+    item.addAttribute('name', name)
+    item.addAttribute('dataSource', dataSourceItem)
     doc.addItem(item)
     return item
 
@@ -67,7 +67,7 @@ model = IM.Model(modelPath)
 doc = IM.Document(model)
 
 dsItem = addDataSourceItem(doc, 'EggNOG: A database of orthologous groups and functional annotation', 'http://eggnog.eml.de')
-addDataSetItem(doc, dsItem)
+addDataSetItem(doc, 'EggNOG Non-supervised Orthologous Groups', dsItem)
 
 doc.write(itemsPath)
 
