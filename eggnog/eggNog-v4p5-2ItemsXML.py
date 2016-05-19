@@ -53,6 +53,14 @@ def addFuncCatItem(doc, dataSetItem, category, classifier, description):
     doc.addItem(item)
     return item
 
+def addGroupDescriptionItem(doc, dataSetItem, id, description):
+    item = doc.createItem('EggNogCategory')
+    item.addAttribute('dataSets', [ dataSetItem ])
+    item.addAttribute('primaryIdentifier', id)
+    item.addAttribute('description', description)
+    doc.addItem(item)
+    return item
+
 def addFuncCats(doc, dataSetItem, funcCatsPath):
     with open(funcCatsPath) as f:
         eggNogRaw = f.read()
@@ -83,6 +91,8 @@ datasetPath = args.datasetPath
 modelPath = args.modelPath
 itemsPath = "%s/eggnog/eggnog-items.xml" % datasetPath
 logPath = "%s/logs/eggNog-v4p5-2ItemsXML.log" % datasetPath
+
+eggNogAnnotationsPath = "%s/data/bactNOG/bactNOG.annotations.tsv.gz" % eggNogPath
 eggNogFuncCatsPath = "%s/eggnog4.functional_categories.txt" % eggNogPath
 eggNogMembersPath = "%s/data/bactNOG/bactNOG.members.tsv.gz" % eggNogPath
 
@@ -92,10 +102,17 @@ model = IM.Model(modelPath)
 doc = IM.Document(model)
 
 dataSourceItem = addDataSourceItem(doc, 'EggNOG: A database of orthologous groups and functional annotation', 'http://eggnog.eml.de')
-addDataSetItem(doc, 'EggNOG Non-supervised Orthologous Groups', dataSourceItem)
+groupDataSetItem = addDataSetItem(doc, 'EggNOG Non-supervised Orthologous Groups', dataSourceItem)
 funcCatDataSetItem = addDataSetItem(doc, 'EggNOG Functional Categories', dataSourceItem)
 
 addFuncCats(doc, funcCatDataSetItem, eggNogFuncCatsPath)
+
+with gzip.open(eggNogAnnotationsPath) as f:
+    for line in f:
+        # print "line %d [%s]" % (i, line)
+        taxonLevel, groupId, proteinCount, speciesCount, funcCat, funcDescription = line.strip().split('\t')
+        addGroupDescriptionItem(doc, groupDataSetItem, groupId, funcDescription)
+        # i += 1
 
 doc.write(itemsPath)
 
