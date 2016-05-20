@@ -95,7 +95,7 @@ def addFuncCatItems(doc, dataSetItem, funcCatsPath):
 
 def addGroupItems(doc, dataSetItem, funcCatItems, annotationsPath):
     """
-    Add group items to the document.
+    Add group items to the document.  Also adds those group item references to the functional category item.
 
     :return: dictionary where group-id => item
     """
@@ -114,6 +114,10 @@ def addGroupItems(doc, dataSetItem, funcCatItems, annotationsPath):
                 funcCatItemsForGroup.append(funcCatItems[funcCatId])
 
             groupItems[groupId] = addGroupDescriptionItem(doc, dataSetItem, groupId, funcCatItemsForGroup, funcDescription)
+
+            for funcCatItem in funcCatItemsForGroup:
+                funcCatItem.addToAttribute('eggNogCategories', groupItems[groupId])
+
             # i += 1
 
     return groupItems
