@@ -31,6 +31,9 @@ def logEyeCatcher(text):
     print '~~~ %s ~~~' % text
 
 def addDataSetItem(doc, name, dataSourceItem):
+    if beVerbose:
+        print "Adding DataSet %s" % name
+
     item = doc.createItem('DataSet')
     item.addAttribute('name', name)
     item.addAttribute('dataSource', dataSourceItem)
@@ -38,6 +41,9 @@ def addDataSetItem(doc, name, dataSourceItem):
     return item
 
 def addDataSourceItem(doc, name, url):
+    if beVerbose:
+        print "Adding DataSource %s" % name
+
     item = doc.createItem('DataSource')
     item.addAttribute('name', name)
     item.addAttribute('url', url)
@@ -45,6 +51,9 @@ def addDataSourceItem(doc, name, url):
     return item
 
 def addFuncCatItem(doc, dataSetItem, category, classifier, description):
+    if beVerbose:
+        print "Adding FunctionalCategory %s, %s, %s" % (category, classifier, description)
+
     item = doc.createItem('FunctionalCategory')
     item.addAttribute('dataSets', [ dataSetItem ])
     item.addAttribute('category', category)
@@ -54,6 +63,9 @@ def addFuncCatItem(doc, dataSetItem, category, classifier, description):
     return item
 
 def addGroupItem(doc, dataSetItem, id, funcCatItems, description):
+    if beVerbose:
+        print "Adding EggNogCategory %s" % id
+
     item = doc.createItem('EggNogCategory')
     item.addAttribute('dataSets', [ dataSetItem ])
     item.addAttribute('primaryIdentifier', id)
@@ -63,12 +75,18 @@ def addGroupItem(doc, dataSetItem, id, funcCatItems, description):
     return item
 
 def addOrganismItem(doc, taxonId):
+    if beVerbose:
+        print "Adding Organism taxon %s" % taxonId
+
     item = doc.createItem('Organism')
     item.addAttribute('taxonId', taxonId)
     doc.addItem(item)
     return item
 
 def addGeneItem(doc, organismItem, geneId):
+    if beVerbose:
+        print "Adding Gene %s %s" % (organismItem.getAttribute('taxonId'), geneId)
+
     item = doc.createItem('Gene')
     item.addAttribute('primaryIdentifier', geneId)
     item.addAttribute('secondaryIdentifier', geneId)
@@ -85,6 +103,9 @@ def addFuncCatItems(doc, dataSetItem, funcCatsPath):
     :param funcCatsPath:
     :return: dictionary where letter => item
     """
+
+    if beVerbose:
+        print "Reading from %s" % funcCatsPath
 
     with open(funcCatsPath) as f:
         eggNogRaw = f.read()
@@ -114,6 +135,9 @@ def addGroupItems(doc, dataSetItem, funcCatItems, annotationsPath):
     :return: dictionary where group-id => item
     """
 
+    if beVerbose:
+        print "Reading from %s" % annotationsPath
+
     with gzip.open(annotationsPath) as f:
         groupItems = {}
 
@@ -137,6 +161,10 @@ def addGroupItems(doc, dataSetItem, funcCatItems, annotationsPath):
     return groupItems
 
 def addGeneItems(doc, groupItems, membersPath):
+
+    if beVerbose:
+        print "Reading from %s" % membersPath
+
     with gzip.open(membersPath) as f:
         geneItems = {}
         organismItems = {}
@@ -159,6 +187,8 @@ def addGeneItems(doc, groupItems, membersPath):
                 geneItem.addToAttribute('eggNogCategories', groupItem)
                 groupItem.addToAttribute('genes', geneItem)
 
+    return organismItems, geneItems
+
 ############
 ### MAIN ###
 ############
@@ -166,11 +196,14 @@ parser = MyParser('Take files from EggNOG and produce Functional Categories, Egg
 parser.add_argument('eggNogPath', help='previously fetched data files from eggNOG.')
 parser.add_argument('datasetPath', help='path to the dataset.')
 parser.add_argument('modelPath', help='path to the InterMine genomic model XML')
+parser.add_argument('-v', '--verbose', action='store_true', help='be verbose')
 args = parser.parse_args()
 
+beVerbose = args.verbose
 eggNogPath = args.eggNogPath
 datasetPath = args.datasetPath
 modelPath = args.modelPath
+
 itemsPath = "%s/eggnog/eggnog-items.xml" % datasetPath
 logPath = "%s/logs/eggNog-v4p5-2ItemsXML.log" % datasetPath
 
@@ -190,19 +223,16 @@ funcCatDataSetItem = addDataSetItem(doc, 'EggNOG Functional Categories', dataSou
 
 logEyeCatcher("Adding functional category items")
 funcCatItems = addFuncCatItems(doc, funcCatDataSetItem, eggNogFuncCatsPath)
+print "Added %d functional category items" % len(funcCatItems)
 
 logEyeCatcher("Adding group description items")
 groupItems = addGroupItems(doc, groupDataSetItem, funcCatItems, eggNogAnnotationsPath)
+print "Added %d EggNOG group items" % len(groupItems)
 
 logEyeCatcher("Adding gene and organism items")
-addGeneItems(doc, groupItems, eggNogMembersPath)
+organismItems, geneItems = addGeneItems(doc, groupItems, eggNogMembersPath)
+print "Added %d organism items" % len(organismItems)
+print "Added %d gene items" % len(geneItems)
 
+logEyeCatcher("Writing InterMine item XML")
 doc.write(itemsPath)
-
-"""
-logEyeCatcher("Processing protein member files")
-
-with gzip.open(eggNogMembersPath) as f:
-  for line in f:
-    print line
-"""

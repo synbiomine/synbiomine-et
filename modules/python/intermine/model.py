@@ -86,3 +86,9 @@ class Item:
       self._attrs[name].append(value)
     else:
       self._attrs[name] = [ value ]
+
+  def getAttribute(self, name):
+    return self._attrs[name]
+
+  def hasAttribute(self, name):
+    return name in self._attrs
