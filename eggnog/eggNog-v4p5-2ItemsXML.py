@@ -170,6 +170,7 @@ def addGeneItems(doc, groupItems, membersPath):
         organismItems = {}
 
         for line in f:
+            line = line.strip()
             taxLevel, groupId, proteinCount, speciesCount, funcCat, eggNogGeneIds = line.split('\t')
 
             for eggNogGeneId in eggNogGeneIds.split(','):
