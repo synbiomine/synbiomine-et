@@ -53,12 +53,26 @@ def addFuncCatItem(doc, dataSetItem, category, classifier, description):
     doc.addItem(item)
     return item
 
-def addGroupDescriptionItem(doc, dataSetItem, id, funcCatItems, description):
+def addGroupItem(doc, dataSetItem, id, funcCatItems, description):
     item = doc.createItem('EggNogCategory')
     item.addAttribute('dataSets', [ dataSetItem ])
     item.addAttribute('primaryIdentifier', id)
     item.addAttribute('functionalCategories', funcCatItems)
     item.addAttribute('description', description)
+    doc.addItem(item)
+    return item
+
+def addOrganismItem(doc, taxonId):
+    item = doc.createItem('Organism')
+    item.addAttribute('taxonId', taxonId)
+    doc.addItem(item)
+    return item
+
+def addGeneItem(doc, organismItem, geneId):
+    item = doc.createItem('Gene')
+    item.addAttribute('primaryIdentifier', geneId)
+    item.addAttribute('secondaryIdentifier', geneId)
+    item.addAttribute('organism', organismItem)
     doc.addItem(item)
     return item
 
@@ -113,7 +127,7 @@ def addGroupItems(doc, dataSetItem, funcCatItems, annotationsPath):
             for funcCatId in funcCatIds:
                 funcCatItemsForGroup.append(funcCatItems[funcCatId])
 
-            groupItems[groupId] = addGroupDescriptionItem(doc, dataSetItem, groupId, funcCatItemsForGroup, funcDescription)
+            groupItems[groupId] = addGroupItem(doc, dataSetItem, groupId, funcCatItemsForGroup, funcDescription)
 
             for funcCatItem in funcCatItemsForGroup:
                 funcCatItem.addToAttribute('eggNogCategories', groupItems[groupId])
@@ -121,6 +135,29 @@ def addGroupItems(doc, dataSetItem, funcCatItems, annotationsPath):
             # i += 1
 
     return groupItems
+
+def addGeneItems(doc, groupItems, membersPath):
+    with gzip.open(membersPath) as f:
+        geneItems = {}
+        organismItems = {}
+
+        for line in f:
+            taxLevel, groupId, proteinCount, speciesCount, funcCat, eggNogGeneIds = line.split('\t')
+
+            for eggNogGeneId in eggNogGeneIds.split(','):
+                taxonId, geneId = eggNogGeneId.split('.', 1)
+
+                if taxonId not in organismItems:
+                    organismItems[taxonId] = addOrganismItem(doc, taxonId)
+
+                if geneId not in geneItems:
+                    geneItems[geneId] = addGeneItem(doc, organismItems[taxonId], geneId)
+
+                geneItem = geneItems[geneId]
+                groupItem = groupItems[groupId]
+
+                geneItem.addToAttribute('eggNogCategories', groupItem)
+                groupItem.addToAttribute('genes', geneItem)
 
 ############
 ### MAIN ###
@@ -156,6 +193,9 @@ funcCatItems = addFuncCatItems(doc, funcCatDataSetItem, eggNogFuncCatsPath)
 
 logEyeCatcher("Adding group description items")
 groupItems = addGroupItems(doc, groupDataSetItem, funcCatItems, eggNogAnnotationsPath)
+
+logEyeCatcher("Adding gene and organism items")
+addGeneItems(doc, groupItems, eggNogMembersPath)
 
 doc.write(itemsPath)
 
