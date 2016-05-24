@@ -194,15 +194,14 @@ def addGeneItems(doc, groupItems, membersPath):
 ### MAIN ###
 ############
 parser = MyParser('Take files from EggNOG and produce Functional Categories, EggNOG orthology groups and map bacterial genes to these.')
-parser.add_argument('eggNogPath', help='previously fetched data files from eggNOG.')
 parser.add_argument('datasetPath', help='path to the dataset.')
 parser.add_argument('modelPath', help='path to the InterMine genomic model XML')
 parser.add_argument('-v', '--verbose', action='store_true', help='be verbose')
 args = parser.parse_args()
 
 beVerbose = args.verbose
-eggNogPath = args.eggNogPath
 datasetPath = args.datasetPath
+eggNogPath = "%s/eggnog" % datasetPath
 modelPath = args.modelPath
 
 itemsPath = "%s/eggnog/eggnog-items.xml" % datasetPath

@@ -39,7 +39,7 @@ def assemblePrereqFiles(localDir, remoteUrlStub, paths):
 
         if beVerbose:
             print "Downloading %s to %s" % (remoteUrl, dir)
-                    
+
         if not os.path.exists(dir):
             os.makedirs(dir)
 
