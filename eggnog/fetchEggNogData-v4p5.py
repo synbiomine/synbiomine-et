@@ -54,7 +54,7 @@ eggNogPath = "%s/eggnog" % datasetPath
 logPath = "%s/logs/fetchEggnogData.log" % datasetPath
 sys.stdout = Logger(logPath)
 
-eggNogUrlStub = "http://eggnogdb.embl.de/download/"
-files = set(['eggnogv4.funccats.txt', 'data/bactNOG/bactNOG.annotations.gz', 'data/bactNOG/bactNOG.members.tsv.gz'])
+eggNogUrlStub = "http://eggnogdb.embl.de/download/eggnog_4.5/"
+files = set(['eggnog4.functional_categories.txt', 'data/bactNOG/bactNOG.annotations.tsv.gz', 'data/bactNOG/bactNOG.members.tsv.gz'])
 
 assemblePrereqFiles(eggNogPath, eggNogUrlStub, files)
