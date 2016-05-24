@@ -34,12 +34,16 @@ def assemblePrereqFiles(localDir, remoteUrlStub, paths):
     logEyeCatcher("Downloading files")
 
     for path in paths:
+        remoteUrl = "%s/%s" % (remoteUrlStub, path)
         dir = "%s/%s" % (localDir, os.path.dirname(path))
 
+        if beVerbose:
+            print "Downloading %s to %s" % (remoteUrl, dir)
+                    
         if not os.path.exists(dir):
             os.makedirs(dir)
 
-        wget.download("%s/%s" % (remoteUrlStub, path), out = dir)
+        wget.download(remoteUrl, out = dir)
 
 ############
 ### MAIN ###
@@ -49,6 +53,7 @@ parser.add_argument('datasetPath', help='path to the dataset location.')
 parser.add_argument('-v', '--verbose', action="store_true", help="verbose output")
 args = parser.parse_args()
 
+beVerbose = args.verbose
 datasetPath = args.datasetPath
 eggNogPath = "%s/eggnog" % datasetPath
 logPath = "%s/logs/fetchEggnogData.log" % datasetPath
