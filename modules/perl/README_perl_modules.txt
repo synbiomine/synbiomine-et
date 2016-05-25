@@ -1,4 +1,4 @@
-ML’s SynBioMine WS modules:
+Mike Lyne’s SynBioMine WS modules:
 
 BlastSynbio.pm
 syntax: use BlastSynbio qw/run_BLAST/      [BLASTN against genome and return coordinates]
