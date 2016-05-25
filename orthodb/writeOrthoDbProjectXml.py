@@ -41,7 +41,7 @@ projectXmlPath = "%s/intermine/project.xml" % datasetPath
 taxonsPath = "%s/taxons/taxons.txt" % datasetPath
 
 with open(taxonsPath) as f:
-    taxons = f.read()
+    taxons = f.read().strip()
 
 project = imp.Project("%s/intermine/project.xml" % datasetPath)
 source = imp.Source(
