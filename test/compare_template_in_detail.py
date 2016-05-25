@@ -1,17 +1,11 @@
 #!/usr/bin/python
 
-import argparse
+import os
 import sys
 from intermine.webservice import Service
 
-###############
-### CLASSES ###
-###############
-class MyParser(argparse.ArgumentParser):
-    def error(self, message):
-        sys.stderr.write('error: %s\n' % message)
-        self.print_help()
-        sys.exit(2)
+sys.path.insert(1, os.path.dirname(os.path.abspath(__file__)) + '/../modules/python')
+import intermine.utils as imu
 
 ###################
 ### SUBROUTINES ###
@@ -81,7 +75,7 @@ def compareWithKey(rowsA, rowsB, keyName, verbose):
 ############
 ### MAIN ###
 ############
-parser = MyParser('Compare a template between two versions of the same webservice in detail.')
+parser = imu.ArgParser('Compare a template between two versions of the same webservice in detail.')
 parser.add_argument('-v', '--verbose')
 parser.add_argument('-k', '--key')
 parser.add_argument('template_name')

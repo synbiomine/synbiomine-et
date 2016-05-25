@@ -12,22 +12,19 @@
 #
 # Of course, this is a horribly fragile way to do it, so an IGEM API to do this would be vastly better
 
-import argparse
 import httplib
 import json
+import os
 import sys
 import texttable
 from bs4 import BeautifulSoup
 
+sys.path.insert(1, os.path.dirname(os.path.abspath(__file__)) + '/../modules/python')
+import intermine.utils as imu
+
 ###############
 ### CLASSES ###
 ###############
-class MyParser(argparse.ArgumentParser):
-    def error(self, message):
-        sys.stderr.write('error: %s\n' % message)
-        self.print_help()
-        sys.exit(2)
-
 class Part(object):
   def __init__(self):
     self.name = 'UNSET'
@@ -105,7 +102,7 @@ def scrapeParts(host, url):
 host = "parts.igem.org"
 url = "/Protein_coding_sequences/Transcriptional_regulators"
 
-parser = MyParser('Scrape iGEM part metadata.')
+parser = imu.ArgParser('Scrape iGEM part metadata.')
 parser.add_argument('outFile', nargs='?', type=argparse.FileType('w'), default=sys.stdout, help='Parts output file.  If not given then output is printed to STDOUT')
 parser.add_argument('-p', '--pretty', action='store_true', help="If set, output part information in table format, otherwise output is JSON")
 parser.add_argument('-v', '--verbose', action='store_true')

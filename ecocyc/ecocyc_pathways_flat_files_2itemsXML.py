@@ -1,23 +1,12 @@
 #!/usr/bin/python
 
-import argparse
-from lxml import etree as ET
 import os
-import os.path
 import sys
 import urllib
 
 sys.path.insert(1, os.path.dirname(os.path.abspath(__file__)) + '/../modules/python')
 import intermine.model as IM
-
-###############
-### CLASSES ###
-###############
-class MyParser(argparse.ArgumentParser):
-    def error(self, message):
-        sys.stderr.write('error: %s\n' % message)
-        self.print_help()
-        sys.exit(2)
+import intermine.utils as imu
 
 ###################
 ### SUBROUTINES ###
@@ -166,7 +155,7 @@ def processPathwaysDatFile(fn):
 ############
 ### MAIN ###
 ############
-parser = MyParser('Tranform ecocyc pathways flat files to InterMine items import XML.')
+parser = imu.ArgParser('Tranform ecocyc pathways flat files to InterMine items import XML.')
 parser.add_argument('imModelFilename', help='the file containing the InterMine data model.')
 parser.add_argument('inputDirname', help='the directory containing the input flat files.')
 parser.add_argument('outputFilename', help='the output location for the generated items XML.')

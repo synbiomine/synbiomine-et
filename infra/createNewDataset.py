@@ -1,17 +1,12 @@
 #!/usr/bin/python
 
-import argparse
 import datetime
 import os
-import os.path
 import shutil
 import sys
 
-class MyParser(argparse.ArgumentParser):
-    def error(self, message):
-        sys.stderr.write('error: %s\n' % message)
-        self.print_help()
-        sys.exit(2)
+sys.path.insert(1, os.path.dirname(os.path.abspath(__file__)) + '/../modules/python')
+import intermine.utils as imu
 
 #################
 ### CONSTANTS ###
@@ -22,7 +17,7 @@ logsDir = "logs"
 ############
 ### MAIN ###
 ############
-parser = MyParser('Prepare a new dataset structure in the data repository.')
+parser = imu.ArgParser('Prepare a new dataset structure in the data repository.')
 parser.add_argument('projectXmlTemplatePath', help='path to the project xml template')
 parser.add_argument('repositoryPath', help='path to the data repository.')
 args = parser.parse_args()

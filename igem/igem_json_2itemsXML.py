@@ -1,22 +1,16 @@
 #!/usr/bin/python
 
-import argparse
 import json
 import os
 import sys
 
 sys.path.insert(1, os.path.dirname(os.path.abspath(__file__)) + '/../modules/python')
 import intermine.model as IM
+import intermine.utils as imu
 
 ###############
 ### CLASSES ###
 ###############
-class MyParser(argparse.ArgumentParser):
-    def error(self, message):
-        sys.stderr.write('error: %s\n' % message)
-        self.print_help()
-        sys.exit(2)
-
 class Part(object):
   def __init__(self):
     self.name = 'UNSET'
@@ -46,7 +40,7 @@ def readPartsFromJson(inFile):
 ############
 ### MAIN ###
 ############
-parser = MyParser('Tranform IGEM JSON files in out format after scraping to InterMine item import XML.')
+parser = imu.ArgParser('Tranform IGEM JSON files in out format after scraping to InterMine item import XML.')
 parser.add_argument('imModelFile', help='the file containing the InterMine data model.')
 parser.add_argument('inFile', nargs='?', type=argparse.FileType('r'), default=sys.stdin, help='Parts input file.  If not given then input is STDIN')
 parser.add_argument('outFile', nargs='?', type=argparse.FileType('w'), default=sys.stdout, help='InterMine items XML file.  If not given then output is STDOUT')

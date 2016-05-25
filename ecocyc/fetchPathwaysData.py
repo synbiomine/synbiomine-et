@@ -4,27 +4,20 @@
 #   pip install beautifulsoup4
 # NOTE: This script was not completed because we gained access to the ftp download for the equivalent flat files
 
-import argparse
 import httplib
-import os.path
+import os
 import re
 import sys
 import urllib
 from bs4 import BeautifulSoup
 
-###############
-### CLASSES ###
-###############
-class MyParser(argparse.ArgumentParser):
-    def error(self, message):
-        sys.stderr.write('error: %s\n' % message)
-        self.print_help()
-        sys.exit(2)
+sys.path.insert(1, os.path.dirname(os.path.abspath(__file__)) + '/../modules/python')
+import intermine.utils as imu
 
 ############
 ### MAIN ###
 ############
-parser = MyParser('Download ecocyc pathways via their web service.')
+parser = imu.ArgParser('Download ecocyc pathways via their web service.')
 parser.add_argument('dataPath', help='path to put the data.')
 args = parser.parse_args()
 

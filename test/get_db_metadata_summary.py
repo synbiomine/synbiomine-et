@@ -1,26 +1,16 @@
 #!/usr/bin/python
 
-import argparse
 import psycopg2
+import os
 import sys
 
-###############
-### CLASSES ###
-###############
-class MyParser(argparse.ArgumentParser):
-    def error(self, message):
-        sys.stderr.write('error: %s\n' % message)
-        self.print_help()
-        sys.exit(2)
-
-###################
-### SUBROUTINES ###
-###################
+sys.path.insert(1, os.path.dirname(os.path.abspath(__file__)) + '/../modules/python')
+import intermine.utils as imu
 
 ############
 ### MAIN ###
 ############
-parser = MyParser('Show information about the intermine_metadata.')
+parser = imu.ArgParser('Show information about the intermine_metadata.')
 parser.add_argument('dbname', help='name of the database.')
 parser.add_argument('--dbuser', help='db user if this is different from the current')
 parser.add_argument('--dbhost', help='db host if this is not localhost')

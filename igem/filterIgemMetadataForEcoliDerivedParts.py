@@ -3,22 +3,19 @@
 # Filters the output from fetchIgemMetadata.py to return only parts that we can tell are derived from E. coli
 # This currently misses a lot, as we only identify a part if it has a UniProt protein entry and that entry is for E. coli K-12
 
-import argparse
 import httplib
 import json
+import os
 import sys
 import StringIO
 from lxml import etree
 
+sys.path.insert(1, os.path.dirname(os.path.abspath(__file__)) + '/../modules/python')
+import intermine.utils as imu
+
 ###############
 ### CLASSES ###
 ###############
-class MyParser(argparse.ArgumentParser):
-    def error(self, message):
-        sys.stderr.write('error: %s\n' % message)
-        self.print_help()
-        sys.exit(2)
-
 class Part(object):
   def __init__(self):
     self.name = 'UNSET'
@@ -57,7 +54,7 @@ def writeJson(parts, outFile):
 ############
 ### MAIN ###
 ############
-parser = MyParser('Filter scraped iGEM part metadata for parts which obviously derive from E. coli K-12')
+parser = imu.ArgParser('Filter scraped iGEM part metadata for parts which obviously derive from E. coli K-12')
 parser.add_argument('inFile', nargs='?', type=argparse.FileType('r'), default=sys.stdin, help='Parts input file.  If not given then input is STDIN')
 parser.add_argument('outFile', nargs='?', type=argparse.FileType('w'), default=sys.stdout, help='Filtered parts output file.  If not given then output is STDOUT')
 parser.add_argument('-v', '--verbose', action='store_true')

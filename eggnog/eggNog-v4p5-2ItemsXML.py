@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 
-import argparse
 import gzip
 import os
 import re
@@ -8,21 +7,7 @@ import sys
 
 sys.path.insert(1, os.path.dirname(os.path.abspath(__file__)) + '/../modules/python')
 import intermine.model as IM
-
-class Logger(object):
-    def __init__(self, logPath):
-        self.terminal = sys.stdout
-        self.log = open(logPath, "a")
-
-    def write(self, message):
-        self.terminal.write(message)
-        self.log.write(message)  
-
-class MyParser(argparse.ArgumentParser):
-    def error(self, message):
-        sys.stderr.write('error: %s\n' % message)
-        self.print_help()
-        sys.exit(2)
+import intermine.utils as imu
 
 #################
 ### FUNCTIONS ###
@@ -193,7 +178,7 @@ def addGeneItems(doc, groupItems, membersPath):
 ############
 ### MAIN ###
 ############
-parser = MyParser('Take files from EggNOG and produce Functional Categories, EggNOG orthology groups and map bacterial genes to these.')
+parser = imu.ArgParser('Take files from EggNOG and produce Functional Categories, EggNOG orthology groups and map bacterial genes to these.')
 parser.add_argument('datasetPath', help='path to the dataset.')
 parser.add_argument('modelPath', help='path to the InterMine genomic model XML')
 parser.add_argument('-v', '--verbose', action='store_true', help='be verbose')
@@ -211,7 +196,7 @@ eggNogAnnotationsPath = "%s/data/bactNOG/bactNOG.annotations.tsv.gz" % eggNogPat
 eggNogFuncCatsPath = "%s/eggnog4.functional_categories.txt" % eggNogPath
 eggNogMembersPath = "%s/data/bactNOG/bactNOG.members.tsv.gz" % eggNogPath
 
-sys.stdout = Logger(logPath)
+sys.stdout = imu.Logger(logPath)
 
 model = IM.Model(modelPath)
 doc = IM.Document(model)

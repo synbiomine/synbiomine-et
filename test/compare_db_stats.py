@@ -2,28 +2,18 @@
 
 # Compare previously fetched database statistical information
 
-import argparse
 import json
+import os
 import sys
 import texttable
 
-###############
-### CLASSES ###
-###############
-class MyParser(argparse.ArgumentParser):
-    def error(self, message):
-        sys.stderr.write('error: %s\n' % message)
-        self.print_help()
-        sys.exit(2)
-
-###################
-### SUBROUTINES ###
-###################
+sys.path.insert(1, os.path.dirname(os.path.abspath(__file__)) + '/../modules/python')
+import intermine.utils as imu
 
 ############
 ### MAIN ###
 ############
-parser = MyParser('Compare previously fetched information about InterMine databases.')
+parser = imu.ArgParser('Compare previously fetched information about InterMine databases.')
 parser.add_argument('-v', '--verbose', action='store_true')
 parser.add_argument('jsonFile', nargs='*')
 args = parser.parse_args()

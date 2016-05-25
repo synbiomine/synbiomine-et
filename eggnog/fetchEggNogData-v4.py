@@ -1,25 +1,12 @@
 #!/usr/bin/python
 
-import argparse
 import ftplib
 import gzip
-import os.path
+import os
 import sys
 
-class Logger(object):
-    def __init__(self, logPath):
-        self.terminal = sys.stdout
-        self.log = open(logPath, "a")
-
-    def write(self, message):
-        self.terminal.write(message)
-        self.log.write(message)  
-
-class MyParser(argparse.ArgumentParser):
-    def error(self, message):
-        sys.stderr.write('error: %s\n' % message)
-        self.print_help()
-        sys.exit(2)
+sys.path.insert(1, os.path.dirname(os.path.abspath(__file__)) + '/../modules/python')
+import intermine.utils as imu
 
 #################
 ### FUNCTIONS ###
@@ -105,14 +92,14 @@ def filterIdsMap(idsMapPath, filteredMapPath, taxonIds, verbose=False):
 ############
 ### MAIN ###
 ############
-parser = MyParser('Retrieve required EggNOG files and filter required data by organism taxon IDs.')
+parser = imu.ArgParser('Retrieve required EggNOG files and filter required data by organism taxon IDs.')
 parser.add_argument('eggNogFilesPath', help='path to eggNOG files location. This may be an already populated, partially populated or empty directory.')
 parser.add_argument('datasetPath', help='path to the dataset.')
 parser.add_argument('-v', '--verbose', action="store_true", help="verbose output")
 args = parser.parse_args()
 
 logPath = "%s/logs/fetchEggnogData.log"
-sys.stdout = Logger(logPath)
+sys.stdout = imu.Logger(logPath)
 
 taxonsPath = "%s/taxons/taxons.txt" % args.datasetPath
 
