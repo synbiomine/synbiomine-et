@@ -11,7 +11,7 @@ import intermine.utils as imu
 ############
 ### MAIN ###
 ############
-parser = imu.ArgParser('Add OrthoDB project entry to InterMine SynBioMine project XML.')
+parser = imu.ArgParser('Add OrthoDB source entry to InterMine SynBioMine project XML.')
 parser.add_argument('datasetPath', help='path to the dataset location.')
 parser.add_argument('orthoDbDataPath', help='path to the OrthoDB data')
 parser.add_argument('-v', '--verbose', action="store_true", help="verbose output")
