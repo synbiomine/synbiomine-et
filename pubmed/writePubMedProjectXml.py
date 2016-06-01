@@ -2,7 +2,6 @@
 
 import os
 import sys
-import shutil
 
 sys.path.insert(1, os.path.dirname(os.path.abspath(__file__)) + '/../modules/python')
 import intermine.project as imp
@@ -28,17 +27,15 @@ taxonsPath = "%s/taxons/taxons.txt" % datasetPath
 with open(taxonsPath) as f:
     taxons = f.read().strip()
 
-project = imp.Project("%s/intermine/project.xml" % datasetPath)
-
-source = imp.Source(
-    'pubmed-gene', 'pubmed-gene',
+imp.addSourcesToProject(
+    "%s/intermine/project.xml" % datasetPath,
     [
-        { 'name':'src.data.dir',            'location':os.path.dirname(pubMedDataPath) },
-        { 'name':'src.data.dir.includes',   'value':os.path.basename(pubMedDataPath) },
-        { 'name':'pubmed.organisms',        'value':taxons }
-    ],
-    dump=True)
-project.addSource(source)
-
-shutil.copy(projectXmlPath, "%s.bak" % projectXmlPath)
-project.write(projectXmlPath)
+        imp.Source(
+        'pubmed-gene', 'pubmed-gene',
+        [
+            { 'name':'src.data.dir',            'location':os.path.dirname(pubMedDataPath) },
+            { 'name':'src.data.dir.includes',   'value':os.path.basename(pubMedDataPath) },
+            { 'name':'pubmed.organisms',        'value':taxons }
+        ],
+        dump=True)
+    ])

@@ -1,4 +1,22 @@
+import shutil
 from lxml import etree
+
+def addSourcesToProject(projectPath, sources):
+    """
+    Add sources to a project and write out the project XML, first backing up the existing project XML to <projectPath>.bak
+
+    :param projectPath:
+    :param sources:
+    :return:
+    """
+
+    project = Project(projectPath)
+
+    for source in sources:
+        project.addSource(source)
+
+    shutil.copy(projectPath, "%s.bak" % projectPath)
+    project.write(projectPath)
 
 class Project:
     def __init__(self, fn):

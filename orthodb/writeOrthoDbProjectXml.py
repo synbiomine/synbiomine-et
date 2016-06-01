@@ -2,7 +2,6 @@
 
 import os
 import sys
-import shutil
 
 sys.path.insert(1, os.path.dirname(os.path.abspath(__file__)) + '/../modules/python')
 import intermine.project as imp
@@ -28,16 +27,14 @@ taxonsPath = "%s/taxons/taxons.txt" % datasetPath
 with open(taxonsPath) as f:
     taxons = f.read().strip()
 
-project = imp.Project("%s/intermine/project.xml" % datasetPath)
-
-source = imp.Source(
-    'orthodb', 'orthodb',
+imp.addSourcesToProject(
+    "%s/intermine/project.xml" % datasetPath,
     [
-        { 'name':'src.data.dir',        'location':orthoDbDataPath },
-        { 'name':'orthodb.organisms',   'value':taxons }
-    ],
-    dump=True)
-project.addSource(source)
-
-shutil.copy(projectXmlPath, "%s.bak" % projectXmlPath)
-project.write(projectXmlPath)
+        imp.Source(
+            'orthodb', 'orthodb',
+            [
+                { 'name':'src.data.dir',        'location':orthoDbDataPath },
+                { 'name':'orthodb.organisms',   'value':taxons }
+            ],
+            dump=True)
+    ])
