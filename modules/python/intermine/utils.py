@@ -41,3 +41,6 @@ def handleSimpleSourceAddProcess(sourceTypeNameInDataset, sources, logName):
     sys.stdout = Logger(logPath)
 
     imp.addSourcesToProject("%s/intermine/project.xml" % datasetPath, sources)
+
+def printSection(text):
+    print '~~~ %s ~~~' % text

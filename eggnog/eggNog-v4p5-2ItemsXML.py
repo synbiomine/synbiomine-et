@@ -12,9 +12,6 @@ import intermine.utils as imu
 #################
 ### FUNCTIONS ###
 #################
-def logEyeCatcher(text):
-    print '~~~ %s ~~~' % text
-
 def addDataSetItem(doc, name, dataSourceItem):
     if beVerbose:
         print "Adding DataSet %s" % name
@@ -201,23 +198,23 @@ sys.stdout = imu.Logger(logPath)
 model = IM.Model(modelPath)
 doc = IM.Document(model)
 
-logEyeCatcher("Adding data source and data set items")
+imu.printSection("Adding data source and data set items")
 dataSourceItem = addDataSourceItem(doc, 'EggNOG: A database of orthologous groups and functional annotation', 'http://eggnog.eml.de')
 groupDataSetItem = addDataSetItem(doc, 'EggNOG Non-supervised Orthologous Groups', dataSourceItem)
 funcCatDataSetItem = addDataSetItem(doc, 'EggNOG Functional Categories', dataSourceItem)
 
-logEyeCatcher("Adding functional category items")
+imu.printSection("Adding functional category items")
 funcCatItems = addFuncCatItems(doc, funcCatDataSetItem, eggNogFuncCatsPath)
 print "Added %d functional category items" % len(funcCatItems)
 
-logEyeCatcher("Adding group description items")
+imu.printSection("Adding group description items")
 groupItems = addGroupItems(doc, groupDataSetItem, funcCatItems, eggNogAnnotationsPath)
 print "Added %d EggNOG group items" % len(groupItems)
 
-logEyeCatcher("Adding gene and organism items")
+imu.printSection("Adding gene and organism items")
 organismItems, geneItems = addGeneItems(doc, groupItems, eggNogMembersPath)
 print "Added %d organism items" % len(organismItems)
 print "Added %d gene items" % len(geneItems)
 
-logEyeCatcher("Writing InterMine item XML")
+imu.printSection("Writing InterMine item XML")
 doc.write(itemsPath)
