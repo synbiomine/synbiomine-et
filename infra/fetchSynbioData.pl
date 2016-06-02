@@ -24,7 +24,7 @@ The data directory needs to contain sub-directories named:
 uniprot
 kegg
 genbank
-go-annotation
+goa
 taxons
 
 It makes a new sub-directory under each with that day's date: dd_mm_yyyy
@@ -38,7 +38,7 @@ Retrieves from UniProt (www.uniprot.org) and writes to uniprot directory
 \tSwissProt proteins (taxonID_uniprot_sprot.xml)
 \tTrEMBL proteins (taxonID_uniprot_trembl.xml)
 
-Retrieves from EBI GO proteomes (ftp.ebi.ac.uk) and writes to go-annotation directory
+Retrieves from EBI GO proteomes (ftp.ebi.ac.uk) and writes to goa directory
 Fetch and parse proteome2taxid file to get taxon to proteome ID mappings
 \tproteomID.orgShortname.goa : proteome GO annotations
 
@@ -151,7 +151,7 @@ my $ebi_hostname = 'ftp.ebi.ac.uk';
 my $ebi_home = '/pub/databases/GO/goa/proteomes'; 
 my $ebi_file = 'proteome2taxid'; # this is where we get the look-up file that maps GO proteome to organism
 
-my $go_dir = catdir($base, "go-annotation");
+my $go_dir = catdir($base, "goa");
 
 # say "Trying FTP for: $ebi_hostname";
 my $ftp3 = Net::FTP->new($ebi_hostname, BlockSize => 20480, Timeout => $timeout);
