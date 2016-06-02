@@ -53,6 +53,7 @@ class Document:
                 elif isinstance(value, Item):
                     etree.SubElement(itemTag, "reference", attrib={"name": name, "ref_id": value._id})
                 else:
+                    # print "Writing attribute [%s]:[%s]" % (name, value)
                     etree.SubElement(itemTag, "attribute", attrib={"name": name, "value": str(value)})
 
         tree = etree.ElementTree(itemsTag)

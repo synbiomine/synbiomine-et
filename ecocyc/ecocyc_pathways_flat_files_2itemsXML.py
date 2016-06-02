@@ -152,13 +152,26 @@ def processPathwaysDatFile(fn):
 
   return pathways
 
+#Based on an answer by John Machin on Stack Overflow (http://stackoverflow.com/users/84270/john-machin)
+#http://stackoverflow.com/questions/8733233/filtering-out-certain-bytes-in-python
+# However, adapted to also filter out extended ASCII (0x7f to 0xff).  May be a better way of doing this.
+def isValidXMLChar(char):
+  codepoint = ord(char)
+  return 0x20 <= codepoint <= 0x7E or   \
+         0x100 <= codepoint <= 0xD7FF or   \
+         codepoint in (0x9, 0xA, 0xD) or  \
+         0xE000 <= codepoint <= 0xFFFD or \
+         0x10000 <= codepoint <= 0x10FFFF
+
+def filterInvalidXMLChars(input):
+    return filter(isValidXMLChar, input)
+
 ############
 ### MAIN ###
 ############
-parser = imu.ArgParser('Tranform ecocyc pathways flat files to InterMine items import XML.')
-parser.add_argument('imModelFilename', help='the file containing the InterMine data model.')
-parser.add_argument('inputDirname', help='the directory containing the input flat files.')
-parser.add_argument('outputFilename', help='the output location for the generated items XML.')
+parser = imu.ArgParser('Tranform ecocyc pathways flat files to InterMine items import XML')
+parser.add_argument('inputDir', help='directory containing Ecocyc pathways.col and pathways.dat files')
+parser.add_argument('datasetPath', help='path to the dataset location')
 args = parser.parse_args()
 
 # This contains pathway details
@@ -167,20 +180,22 @@ pathwaysDatFn = "pathways.dat"
 # This links gene ids to pathways
 pathwaysColFn = "pathways.col"
 
-if not os.path.isdir(args.inputDirname):
-  print >> sys.stderr, "[%s] is not a directory" % args.inputDirname
-  sys.exit(1)
-
-model = IM.Model(args.imModelFilename)
+datasetPath = args.datasetPath
+model = IM.Model('%s/intermine/genomic_model.xml' % datasetPath)
 doc = IM.Document(model)
-inputDn = args.inputDirname
-outputFn = args.outputFilename
+inputDn = args.inputDir
+outputFn = "%s/ecocyc/items.xml" % datasetPath
+
+if not os.path.isdir(inputDn):
+  print >> sys.stderr, "[%s] is not a directory" % inputDn
+  sys.exit(1)
 
 pathways = processPathwaysDatFile("%s/%s" % (inputDn, pathwaysDatFn))
 pathwaysToGenes = processPathwaysColFile("%s/%s" % (inputDn, pathwaysColFn))
 
 print "Processed %d pathways" % len(pathways)
 
+imu.printSection("Adding metadata items")
 dataSourceItem = doc.createItem("DataSource")
 dataSourceItem.addAttribute('name', 'Ecocyc')
 dataSourceItem.addAttribute('url', 'http://ecocyc.org')
@@ -191,11 +206,14 @@ dataSetItem.addAttribute('name', 'Ecocyc pathways')
 dataSetItem.addAttribute('dataSource', dataSourceItem)
 doc.addItem(dataSetItem)
 
+imu.printSection("Adding organism item")
 organismItem = doc.createItem("Organism")
 
 # NCBI Taxon id for Escherichia coli K-12 substr. MG1655
 organismItem.addAttribute('taxonId', 511145)
 doc.addItem(organismItem)
+
+imu.printSection("Adding pathway items")
 
 # We need to track pathway IM items so we can later associate these with genes
 pathwayItems = {}
@@ -214,11 +232,14 @@ for pathway in pathways.itervalues():
   else:
     pathwayComment = ''
 
-  pathwayItem.addAttribute('description', pathwayComment)
+  pathwayItem.addAttribute('description', filterInvalidXMLChars(pathwayComment))
+  # pathwayItem.addAttribute('description', pathwayComment.decode('iso-8859-1').encode('utf8'))
   pathwayItem.addToAttribute('dataSets', dataSetItem)
 
   doc.addItem(pathwayItem)
   pathwayItems[pathwayId] = pathwayItem
+
+imu.printSection("Adding gene items")
 
 geneItems = {}
 
@@ -250,6 +271,7 @@ for pathway in pathwaysToGenes.itervalues():
       print >> sys.stderr, "Gene %s has pathway %s but not such pathway found in %s" % (symbol, pathwayId, pathwaysDatFn)
       sys.exit(1)
 
+imu.printSection("Writing items XML")
 doc.write(outputFn)
 
 print "Wrote %d genes in %d pathways" % (len(geneItems), len(pathwayItems))
