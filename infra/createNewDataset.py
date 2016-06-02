@@ -11,19 +11,21 @@ import intermine.utils as imu
 #################
 ### CONSTANTS ###
 #################
-sections = [ "eggnog", "genbank", "go-annotation", "intermine", "kegg", "kegg-reaction", "taxons", "uniprot" ]
+sections = [ "eggnog", "genbank", "goa", "intermine", "kegg", "taxons", "uniprot" ]
 logsDir = "logs"
 
 ############
 ### MAIN ###
 ############
-parser = imu.ArgParser('Prepare a new dataset structure in the data repository.')
-parser.add_argument('projectXmlTemplatePath', help='path to the project xml template')
-parser.add_argument('repositoryPath', help='path to the data repository.')
+parser = imu.ArgParser('Prepare a new dataset structure in the data repository')
+parser.add_argument('projectXmlPath', help='path to the project XML template')
+parser.add_argument('modelPath', help='path to the mine model XML')
+parser.add_argument('repositoryPath', help='path to the data repository')
 args = parser.parse_args()
 
 repoPath = args.repositoryPath
-templatePath = args.projectXmlTemplatePath
+templatePath = args.projectXmlPath
+modelPath = args.modelPath
 
 if not os.path.exists(repoPath):
     os.mkdir(repoPath)
@@ -44,5 +46,8 @@ for section in sections:
 
 projectXmlPath = "%s/intermine/project.xml" % datasetPath
 shutil.copy(templatePath, projectXmlPath)
+
+datasetModelPath = "%s/intermine/genomic_model.xml" % datasetPath
+shutil.copy(modelPath, datasetModelPath)
 
 print "Created dataset structure at %s" % (os.path.join(repoPath, datasetDirName))
