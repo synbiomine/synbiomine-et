@@ -8,6 +8,8 @@ import httplib
 import os
 import re
 import sys
+print "DO NOT USE.  Now using directly downloaded pathways files, not web-scraping"
+sys.exit(1)
 import urllib
 from bs4 import BeautifulSoup
 
