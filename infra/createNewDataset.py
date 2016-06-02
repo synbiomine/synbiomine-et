@@ -26,21 +26,21 @@ repoPath = args.repositoryPath
 templatePath = args.projectXmlTemplatePath
 
 if not os.path.exists(repoPath):
-  os.mkdir(repoPath)
+    os.mkdir(repoPath)
 
 # datasetDirName = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M")
 datasetDirName = datetime.datetime.now().strftime("%Y-%m-%d")
 datasetPath = "%s/%s" % (repoPath, datasetDirName)
 
 if os.path.exists(datasetPath):
-  raise Exception("Dataset path %s already exists!" % datasetPath)
+    raise Exception("Dataset path %s already exists!" % datasetPath)
 
 os.mkdir(datasetPath)
 os.mkdir("%s/%s" % (datasetPath, logsDir))
 
 for section in sections:
-  sectionPath = "%s/%s" % (datasetPath, section)
-  os.mkdir(sectionPath)
+    sectionPath = "%s/%s" % (datasetPath, section)
+    os.mkdir(sectionPath)
 
 projectXmlPath = "%s/intermine/project.xml" % datasetPath
 shutil.copy(templatePath, projectXmlPath)
