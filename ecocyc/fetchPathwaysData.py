@@ -18,15 +18,10 @@ import intermine.utils as imu
 ### MAIN ###
 ############
 parser = imu.ArgParser('Download ecocyc pathways via their web service.')
-parser.add_argument('dataPath', help='path to put the data.')
+parser.add_argument('datasetPath', help='path to the dataset location.')
 args = parser.parse_args()
 
-dataPath = args.dataPath
-
-# Sanity
-if not os.path.isdir(dataPath):
-  print >> sys.stderr, "No such directory [%s]" % dataPath
-  sys.exit(1)
+dataPath = "%s/ecocyc" % args.datasetPath
 
 pathwayRe = re.compile("object=([^&]+)")
 
@@ -62,6 +57,9 @@ print resp.status, resp.reason
 print "PATHWAY %s" % pathways[0]
 pathwayRespXml = resp.read()
 print pathwayRespXml
+
+os.mkdir(dataPath)
+
 with open("%s/%s.xml" % (dataPath, pathways[0]), 'w') as f:
   f.write(pathwayRespXml)
 # Retrieve genes for first pathway as a test
