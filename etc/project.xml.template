@@ -8,98 +8,10 @@
   <property name="common.os.prefix" value="common"/>
   <property name="intermine.properties.file" value="synbiomine.properties"/>
   <property name="default.intermine.properties.file" location="../default.intermine.integrate.properties"/>
+
   <sources>
-  
-    <source name="uniprot-keywords" type="uniprot-keywords" >
-      <property name="src.data.dir" location="data/uniprot/current"/>
-      <property name="src.data.dir.includes" value="keywlist.xml"/>
-    </source>
-
-    <source name="eggnog-functional-categories" type="synbio-funccat" >
-      <property name="src.data.dir" location="data/eggnog/current"/>
-    </source>
-
-    <source name="nicolas2012-regulation-Bsub168" type="synbio-regulation" >
-      <property name="src.data.dir" location="data/promoters/Bsub/Nicolas2012/current"/>
-    </source>
-
-    <source name="nicolas2012-GEOSeries-Bsub168" type="synbio-GEOSeries" >
-      <property name="src.data.dir" location="data/geo/Bsub/Nicolas2012/current"/>
-    </source>
-
-    <source name="faith-GEOSeries-EcoliK12" type="synbio-GEOSeries">
-      <property name="src.data.dir" location="data/geo/Ecoli/Faith2007/current"/>
-    </source>
-
-    <source name="dbtbs-regulation-Bsub168" type="synbio-regulation" >
-      <property name="src.data.dir" location="data/promoters/Bsub/DBTBS/current"/>
-    </source>
-
-    <source name="interpro" type="interpro">
-      <property name="src.data.dir" location="/micklem/data/interpro/current"/>
-    </source>
-
     <source name="so" type="so">
       <property name="src.data.file" location="../../bio/sources/so/so.obo"/>
-    </source>
-
-    <source name="go" type="go" >
-      <property name="src.data.file" location="/micklem/data/go-annotation/current/gene_ontology.obo"/>
-    </source>
-
-    <source name="go-annotation" type="go-annotation" >
-      <property name="ontologyfile" location="/micklem/data/go-annotation/current/gene_ontology.obo"/>
-      <property name="src.data.dir" location="data/go-annotation/current/"/>
-      <property name="ontologyPrefix" value="GO"/>
-    </source>
-
-    <source name="biogrid" type="biogrid">
-      <property name="src.data.dir" location="/micklem/data/biogrid/current"/>
-      <property name="src.data.dir.includes" value="*psi25.xml"/>
-      <property name="biogrid.organisms" value="511145 224308"/>
-    </source>
-
-<!--
-    <source name="reactome" type="biopax">
-      <property name="src.data.dir" location="/local-homes/justincc/sshfs/mega1/micklem/data/reactome/current"/>
-      <property name="biopax.organisms" value="511145"/>
-      <property name="biopax.datasourcename" value="Reactome"/>
-      <property name="biopax.datasetname" value="Reactome data set"/>
-      <property name="biopax.curated" value="false"/>
-    </source>
--->
-
-    <source name="reactome" type="reactome">
-      <property name="src.data.dir" location="/micklem/data/reactome/current"/>
-      <property name="reactome.organisms" value="511145"/>
-      <property name="reactome.datasourcename" value="Reactome"/>
-      <property name="reactome.datasetname" value="Reactome data set"/>
-      <property name="reactome.curated" value="false"/>
-    </source>
-
-    <source name="kegg-reactions-to-pathways" type="synbio-reaction" >
-      <property name="src.data.dir" location="data/kegg-reaction/current"/>
-    </source>
-
-    <source name="pathway2model-Bsub168" type="synbio-reaction" >
-      <property name="src.data.dir" location="data/path2model/Bsub168/current"/>
-    </source>
-
-    <source name="pathway2model-EcoliMG1655" type="synbio-reaction" >
-      <property name="src.data.dir" location="data/path2model/EcoliMG1655/current"/>
-    </source>
-
-    <source name="entrez-organism" type="entrez-organism">
-      <property name="src.data.file" location="build/organisms.xml"/>
-    </source>
-
-    <!-- 
-      This entry must always come after everything else.
-      It adds information (title, etc.) to existing publication objectstore entries added by other sources.
-    -->
-    <source name="update-publications" type="update-publications" >
-      <property name="src.data.file" location="build/publications.xml"/>
-      <property name="loadFullRecord" value="true"/>
     </source>
   </sources>
 
@@ -111,9 +23,6 @@
     <post-process name="summarise-objectstore"/>
     <post-process name="create-autocomplete-index"/>
     <post-process name="create-search-index"/>
-
-
-
   </post-processing>
 
 </project>
