@@ -31,11 +31,17 @@ imp.addSourcesToProject(
     "%s/intermine/project.xml" % datasetPath,
     [
         imp.Source(
-        'pubmed-gene', 'pubmed-gene',
-        [
-            { 'name':'src.data.dir',            'location':os.path.dirname(pubMedDataPath) },
-            { 'name':'src.data.dir.includes',   'value':os.path.basename(pubMedDataPath) },
-            { 'name':'pubmed.organisms',        'value':taxons }
-        ],
-        dump=True)
+            'pubmed-gene', 'pubmed-gene',
+            [
+                { 'name':'src.data.dir',            'location':os.path.dirname(pubMedDataPath) },
+                { 'name':'src.data.dir.includes',   'value':os.path.basename(pubMedDataPath) },
+                { 'name':'pubmed.organisms',        'value':taxons }
+            ]),
+
+        imp.Source(
+            'update-publications', 'update-publications',
+            [
+                { 'name':'src.data.file', 'location':'build/publications.xml' },
+                { 'name':'loadFullRecord', 'value':'true' }
+            ])
     ])
