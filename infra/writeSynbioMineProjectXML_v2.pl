@@ -152,20 +152,16 @@ exit 0;
 sub try_add_source {
   my ($sourceFile, $taxID, $sourceName, $genSub) = @_;
 
-  if (-e $sourceFile) {
-    say $sourceFile if ($verbose);
+  if ($sources_e->findnodes("source[\@name='$sourceName']")) {
+    say "Found existing source $taxID => $sourceName.  Skipping.";
+  } else {
+    my $xml = $genSub->();
 
-    if ($sources_e->findnodes("source[\@name='$sourceName']")) {
-      say "Found existing source $taxID => $sourceName.  Skipping.";
+    if ($insert) {
+      say "Adding source $taxID => $sourceName";
+      $sources_e->appendWellBalancedChunk($xml);
     } else {
-      my $xml = $genSub->();
-
-      if ($insert) {
-        say "Adding source $taxID => $sourceName";
-        $sources_e->appendWellBalancedChunk($xml);
-      } else {
-        print $xml;
-      } 
+      print $xml;
     }
   }
 } 
