@@ -56,12 +56,12 @@ if ($insert) {
 
 # read the sub dir listing - name with assembly IDs
 while (my $subdir = readdir DIR) {
-  my $gbDir = "$genbankdir/$subdir";
+  my $currAssemblyDir = "$genbankdir/$subdir";
 
   next if $subdir =~ /^\.|^\.\./; # ignore ./ and ../
   say "SUB: ", $subdir if ($verbose);
 
-  opendir(CURR, $gbDir) or die "Cannot open $gbDir: $!";
+  opendir(CURR, $currAssemblyDir) or die "Cannot open $currAssemblyDir: $!";
 
   # not sure if we need this now - in the old FTP dir, plasmid annotation were present
   my %gffSize; # keep track of which is the biggest file
@@ -74,7 +74,7 @@ while (my $subdir = readdir DIR) {
 # which is the biggest gff file - this is probably the chrm
   if ( @gff ) {
     foreach my $file (@gff) {
-      my $fSize = -s "$gbDir/$file";
+      my $fSize = -s "$currAssemblyDir/$file";
       $file =~ /^(.+)\.gff/;
       my $ncID = $1;
       $gffSize{$ncID} = $fSize;
@@ -89,7 +89,7 @@ while (my $subdir = readdir DIR) {
   say $report if ($verbose);
 
 # We use the assembly report file to get the strain to assembly ID mappings
-  open REPORT_IN, "$gbDir/$report" or die "can't open file: $!";
+  open REPORT_IN, "$currAssemblyDir/$report" or die "can't open file: $!";
 
   my ($taxname, $taxID, $orgm);
   while (<REPORT_IN>) {
@@ -126,9 +126,9 @@ while (my $subdir = readdir DIR) {
   my $chrm = "$largest\.fna"; # chromosome fasta
 
   try_add_source(
-    catdir($gbDir, $gffFile), $taxID, "$orgm-gff", sub { gen_gff("$orgm-gff", $taxID, $taxname, $subdir, $gbDir, $gffFile); });
+    catdir($currAssemblyDir, $gffFile), $taxID, "$orgm-gff", sub { gen_gff("$orgm-gff", $taxID, $taxname, $subdir, $currAssemblyDir, $gffFile); });
   try_add_source(
-    catdir($gbDir, $chrm), $taxID, "$orgm-chromosome-fasta", sub { gen_chrm("$orgm-chromosome-fasta", $taxID, $taxname, $chrm, $gbDir); });
+    catdir($currAssemblyDir, $chrm), $taxID, "$orgm-chromosome-fasta", sub { gen_chrm("$orgm-chromosome-fasta", $taxID, $taxname, $chrm, $currAssemblyDir); });
     
   closedir(CURR);
 }
