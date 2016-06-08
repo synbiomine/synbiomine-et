@@ -515,12 +515,13 @@ sub fetch_file {
   my ($ftp, $ftp_path, $to_path, $use_ascii) = @_;
 
   if (-e $to_path) {
-    say "Using existing file $to_path";
+    if ($verbose) { say "Using existing file $to_path"; }
     return 1;
   } else {
+    if ($verbose) { say "Fetching $ftp_path to $to_path"; }
     set_ftp_transfer_mode($ftp, $use_ascii);
 
-    return $ftp->get($ftp_path, $to_path)
+    $ftp->get($ftp_path, $to_path) or die "Could not get $ftp_path to $to_path ", $ftp->message;
   }
 }
 
