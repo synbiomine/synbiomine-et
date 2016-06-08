@@ -39,6 +39,10 @@ my $base = $ARGV[0];
 my $genbankdir = "$base/genbank";
 my $insertPath = "$base/intermine/project.xml";
 
+# This is the location we will use for the project XML entries.
+# It will not match genbankdir which is our current actual path to the genbank data.
+my $genbankProjectDir = "data/current/genbank";
+
 opendir(DIR, $genbankdir) or die "cannot open dir: $!";
 
 my ($projectXml, $sources_e);
@@ -119,16 +123,16 @@ while (my $subdir = readdir DIR) {
 
   close (REPORT_IN);
 
-  my $gffFile = "$largest\.gff";
-
   say "TAX:$taxname, $taxID" if ($verbose);
 
+  my $projectAssemblyDir = "$genbankProjectDir/$subdir";
+  my $gffFile = "$largest\.gff";
   my $chrm = "$largest\.fna"; # chromosome fasta
 
   try_add_source(
-    catdir($currAssemblyDir, $gffFile), $taxID, "$orgm-gff", sub { gen_gff("$orgm-gff", $taxID, $taxname, $subdir, $currAssemblyDir, $gffFile); });
+    $taxID, "$orgm-gff", sub { gen_gff("$orgm-gff", $taxID, $taxname, $subdir, $projectAssemblyDir, $gffFile); });
   try_add_source(
-    catdir($currAssemblyDir, $chrm), $taxID, "$orgm-chromosome-fasta", sub { gen_chrm("$orgm-chromosome-fasta", $taxID, $taxname, $chrm, $currAssemblyDir); });
+    $taxID, "$orgm-chromosome-fasta", sub { gen_chrm("$orgm-chromosome-fasta", $taxID, $taxname, $chrm, $projectAssemblyDir); });
     
   closedir(CURR);
 }
@@ -150,7 +154,7 @@ if ($insert) {
 exit 0;
 
 sub try_add_source {
-  my ($sourceFile, $taxID, $sourceName, $genSub) = @_;
+  my ($taxID, $sourceName, $genSub) = @_;
 
   if ($sources_e->findnodes("source[\@name='$sourceName']")) {
     say "Found existing source $taxID => $sourceName.  Skipping.";
