@@ -61,8 +61,6 @@ while (my $subdir = readdir DIR) {
   next if $subdir =~ /^\.|^\.\./; # ignore ./ and ../
   say "SUB: ", $subdir if ($verbose);
 
-  not -d $gbDir and next;
-
   opendir(CURR, $gbDir) or die "Cannot open $gbDir: $!";
 
   # not sure if we need this now - in the old FTP dir, plasmid annotation were present
