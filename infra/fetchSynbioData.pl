@@ -38,7 +38,7 @@ Retrieves from UniProt (www.uniprot.org) and writes to uniprot directory
 
 Retrieves from EBI GO proteomes (ftp.ebi.ac.uk) and writes to goa directory
 Fetch and parse proteome2taxid file to get taxon to proteome ID mappings
-\tproteomID.orgShortname.goa : proteome GO annotations
+\tproteomeID.orgShortname.goa : proteome GO annotations
 
 Uses taxon ID to query KEGG webservices (www.genome.jp) and writes to kegg directory
 and retrieves KEGG organism three-letter codes. In the kegg directory it writes:
