@@ -27,8 +27,6 @@ genbank
 goa
 taxons
 
-It makes a new sub-directory under each with that day's date: dd_mm_yyyy
-
 Retrieves from NCBI (ftp.ncbi.nlm.nih.gov) and writes to genbank directory
 \tChromosome fasta (.fna)
 \tRefSeq annotation (.gff)
