@@ -14,30 +14,23 @@ binmode(STDOUT, 'utf8');
 # Silence warnings when printing null fields
 no warnings('uninitialized');
 
-my $usage = "Usage: writeSynbioMineProjectXML.pl [-tvh] dataset_directory
+my $usage = "Usage: writeSynbioMineProjectXML.pl [-vh] dataset_directory
 
 synopsis: reads the dataset's genbank directory and writes associated data that's needed for the build.
 The -t option will generate a tab-separated genomes summary file (see below)
 
 options:
 \t-h\tthis usage
-\t-g\twrite gff_config file 
-\t-t\tprint details in tab view
-\t\ttaxID\torganism name\tsubdir\tfile prefix
-\t-i\tif neither -g or -t are specified then the generated XML entries are inserted directly into the given project.xml file and written back out
-\t  \totherwise the XML will be printed
 \t-v\tverbose mode - additional output for debugging
+\tgenerated XML entries are inserted directly into the given project.xml file and written back out
 
 ";
 
-my (%opts, $tabView, $insert, $verbose);
+my (%opts, $verbose);
 
-getopts('htgvi:', \%opts);
+getopts('hv:', \%opts);
 defined $opts{"h"} and die $usage;
-defined $opts{"t"} and $tabView++; # tab summary - maps assembly vers to org name & tax ID
 defined $opts{"v"} and $verbose++; # used for debugging
-# defined $opts{"i"} and $insert++;
-# Currently we are always inserting but an option may come back again not to insert
 $insert = 1;
 
 @ARGV > 0 or die $usage;
@@ -46,11 +39,7 @@ my $base = $ARGV[0];
 my $genbankdir = "$base/genbank";
 my $insertPath = "$base/intermine/project.xml";
 
-# open the dir they specified
 opendir(DIR, $genbankdir) or die "cannot open dir: $!";
-
-# generate headers if a tab summary is needed (-t option)
-say "taxID\torganism name\tsubdir\tfile prefix" if ($tabView);
 
 my ($projectXml, $sources_e);
 my $xmlParser = XML::LibXML->new();
@@ -135,24 +124,15 @@ while (my $subdir = readdir DIR) {
 
   my $gffFile = "$largest\.gff";
 
-# generates a tab-delimited summary of the genbank directory
-# Provides mappings of assembly IDs to their organisms
-  if ($tabView) {
-    say "$taxID\t$taxname\t$subdir\t$largest";
-    next;
-  }
-
   say "TAX:$taxname, $taxID" if ($verbose);
 
   my $chrm = "$largest\.fna"; # chromosome fasta
 #  my $fasta = "$largest\.frn"; # RNA fasta - we don't use this any more
 
-  if (not $tabView) {
-    try_add_source(
-      catdir($gbDir, $gffFile), $taxID, "$orgm-gff", sub { gen_gff("$orgm-gff", $taxID, $taxname, $subdir, $gbDir, $gffFile); });
-    try_add_source(
-      catdir($gbDir, $chrm), $taxID, "$orgm-chromosome-fasta", sub { gen_chrm("$orgm-chromosome-fasta", $taxID, $taxname, $chrm, $gbDir); });
-  }
+  try_add_source(
+    catdir($gbDir, $gffFile), $taxID, "$orgm-gff", sub { gen_gff("$orgm-gff", $taxID, $taxname, $subdir, $gbDir, $gffFile); });
+  try_add_source(
+    catdir($gbDir, $chrm), $taxID, "$orgm-chromosome-fasta", sub { gen_chrm("$orgm-chromosome-fasta", $taxID, $taxname, $chrm, $gbDir); });
 
   # don't use gene fasta any more
   #  if (-e "$gbDir/$fasta") {
