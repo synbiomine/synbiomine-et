@@ -30,7 +30,7 @@ my (%opts, $verbose);
 
 getopts('hv:', \%opts);
 defined $opts{"h"} and die $usage;
-defined $opts{"v"} and $verbose++; # used for debugging
+defined $opts{"v"} and $verbose++;
 $insert = 1;
 
 @ARGV > 0 or die $usage;
@@ -56,12 +56,11 @@ if ($insert) {
 
 # read the sub dir listing - name with assembly IDs
 while (my $subdir = readdir DIR) {
-  my $gbDir = "$genbankdir/$subdir"; # generate the dir path
+  my $gbDir = "$genbankdir/$subdir";
 
   next if $subdir =~ /^\.|^\.\./; # ignore ./ and ../
-  say "SUB: ", $subdir if ($verbose); # keep track of sub-dir
+  say "SUB: ", $subdir if ($verbose);
 
-  # Ignore paths here that aren't directories
   not -d $gbDir and next;
 
   opendir(CURR, $gbDir) or die "Cannot open $gbDir: $!";
@@ -69,7 +68,7 @@ while (my $subdir = readdir DIR) {
   # not sure if we need this now - in the old FTP dir, plasmid annotation were present
   my %gffSize; # keep track of which is the biggest file
 
-  my @list = readdir (CURR); # dir listing of the assembly dir
+  my @list = readdir (CURR);
 
   my @gff = grep( /gff/, @list ); # make a list of the gff files
   my @report = grep( /txt/, @list ); # make a list of the report files
@@ -96,7 +95,7 @@ while (my $subdir = readdir DIR) {
 
   my ($taxname, $taxID, $orgm);
   while (<REPORT_IN>) {
-    chomp; # take off the line endings
+    chomp;
 
 # Header format is :
 # Organism name:  Bacillus anthracis str. Ames
@@ -120,30 +119,23 @@ while (my $subdir = readdir DIR) {
     }
   }
 
-  close (REPORT_IN); # close the report file
+  close (REPORT_IN);
 
   my $gffFile = "$largest\.gff";
 
   say "TAX:$taxname, $taxID" if ($verbose);
 
   my $chrm = "$largest\.fna"; # chromosome fasta
-#  my $fasta = "$largest\.frn"; # RNA fasta - we don't use this any more
 
   try_add_source(
     catdir($gbDir, $gffFile), $taxID, "$orgm-gff", sub { gen_gff("$orgm-gff", $taxID, $taxname, $subdir, $gbDir, $gffFile); });
   try_add_source(
     catdir($gbDir, $chrm), $taxID, "$orgm-chromosome-fasta", sub { gen_chrm("$orgm-chromosome-fasta", $taxID, $taxname, $chrm, $gbDir); });
-
-  # don't use gene fasta any more
-  #  if (-e "$gbDir/$fasta") {
-  #    say $fasta if ($verbose);
-  #    &fasta_print($orgm, $taxID, $taxname, $fasta, $gbDir);
-  #  }
     
-  closedir(CURR); # close the assembly dir
+  closedir(CURR);
 }
 
-closedir(DIR); # close the genbank dir
+closedir(DIR);
 
 if ($insert) {
   # For some reason, appendWellBalancedChunk() is destroying the indentation level of the </sources> end tag.
