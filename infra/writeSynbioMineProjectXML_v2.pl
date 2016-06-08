@@ -71,6 +71,8 @@ while (my $subdir = readdir DIR) {
   my %gffSize; # keep track of which is the biggest file
 
   my @list = readdir (CURR);
+  
+  closedir(CURR);
 
   my @gff = grep( /gff/, @list ); # make a list of the gff files
   my @report = grep( /txt/, @list ); # make a list of the report files
@@ -133,8 +135,6 @@ while (my $subdir = readdir DIR) {
     $taxID, "$orgm-gff", sub { gen_gff("$orgm-gff", $taxID, $taxname, $subdir, $projectAssemblyDir, $gffFile); });
   try_add_source(
     $taxID, "$orgm-chromosome-fasta", sub { gen_chrm("$orgm-chromosome-fasta", $taxID, $taxname, $chrm, $projectAssemblyDir); });
-    
-  closedir(CURR);
 }
 
 closedir(DIR);
