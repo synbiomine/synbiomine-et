@@ -202,7 +202,7 @@ close SELECTED_ASSEM;
 ##############################
 
 =pod
-Return FTP data where lines have t omatch Bacillus|Escherichia|Geobacillus
+Return FTP data where lines have to match Bacillus|Escherichia|Geobacillus
 =cut
 sub fetch_filtered_data {
 
