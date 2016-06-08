@@ -10,8 +10,9 @@ import intermine.utils as imu
 #################
 ### CONSTANTS ###
 #################
-sections = [ "eggnog", "genbank", "goa", "intermine", "kegg", "taxons", "uniprot" ]
-logsDir = "logs"
+sections = [ 'eggnog', 'genbank', 'goa', 'intermine', 'kegg', 'taxons', 'uniprot' ]
+logsDir = 'logs'
+newDatasetSymlink = '../new'
 
 ############
 ### MAIN ###
@@ -22,9 +23,10 @@ parser.add_argument('modelPath', help='path to the mine model XML')
 parser.add_argument('datasetPath', help='path for the dataset')
 args = parser.parse_args()
 
-datasetPath = args.datasetPath
 templatePath = args.projectXmlPath
 modelPath = args.modelPath
+datasetPath = args.datasetPath
+newDatasetSymlinkPath = "%s/%s" % (datasetPath, newDatasetSymlink)
 
 if os.path.exists(datasetPath):
     raise Exception("Dataset path %s already exists!" % datasetPath)
@@ -42,4 +44,6 @@ shutil.copy(templatePath, projectXmlPath)
 datasetModelPath = "%s/intermine/genomic_model.xml" % datasetPath
 shutil.copy(modelPath, datasetModelPath)
 
-print "Created dataset structure at %s" % datasetPath
+os.symlink(os.path.basename(datasetPath), newDatasetSymlinkPath)
+
+print "Created dataset structure at %s, link %s" % (datasetPath, newDatasetSymlink)
