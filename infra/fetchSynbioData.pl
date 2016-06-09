@@ -298,9 +298,6 @@ sub fetch_assemblies {
   my ($ftpHostname, $ftpTimeout, $ftpUsername, $ftpPassword, $taxonEntries_ref) = @_;
   my %taxonEntries = %{ $taxonEntries_ref };
 
-  # Now... FTP to NCBI genomes to get chromosome fasta (.fna) and refseq annotations (.gff)
-  my $refseq = '/genomes/refseq/bacteria'; # used for path
-
   my $ftp2 = Net::FTP->new($ftpHostname, BlockSize => 20480, Timeout => $ftpTimeout);
   defined($ftp2) or die "Could not connect to $hostname: $!";
 
