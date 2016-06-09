@@ -16,7 +16,7 @@ imu.handleSimpleSourceAddProcess(
         imp.Source(
             'synbio-ecocyc', 'synbio-ecocyc',
             [
-                { 'name':'src.data.dir',        'location':'data/ecocyc' },
+                { 'name':'src.data.dir',        'location':'data/current/ecocyc' },
             ])
     ],
     "writeEcocycProjectXml")
