@@ -16,7 +16,7 @@ imu.handleSimpleSourceAddProcess(
         imp.Source(
             'biogrid', 'biogrid',
             [
-                { 'name':'src.data.dir',            'location':'data/biogrid' },
+                { 'name':'src.data.dir',            'location':'data/current/biogrid' },
                 { 'name':'src.data.dir.includes',   'value':'*psi25.xml'},
                 { 'name':'biogrid.organisms',       'value':'511145 224308'}
             ])
