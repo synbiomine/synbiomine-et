@@ -177,17 +177,16 @@ def addGeneItems(doc, groupItems, membersPath):
 ############
 parser = imu.ArgParser('Take files from EggNOG and produce Functional Categories, EggNOG orthology groups and map bacterial genes to these.')
 parser.add_argument('datasetPath', help='path to the dataset.')
-parser.add_argument('modelPath', help='path to the InterMine genomic model XML')
 parser.add_argument('-v', '--verbose', action='store_true', help='be verbose')
 args = parser.parse_args()
 
 beVerbose = args.verbose
 datasetPath = args.datasetPath
-eggNogPath = "%s/eggnog" % datasetPath
-modelPath = args.modelPath
+eggNogPath = '%s/eggnog' % datasetPath
+modelPath = '%s/intermine/genomic_model.xml' % datasetPath
 
-itemsPath = "%s/eggnog/eggnog-items.xml" % datasetPath
-logPath = "%s/logs/eggNog-v4p5-2ItemsXML.log" % datasetPath
+itemsPath = '%s/eggnog/eggnog-items.xml' % datasetPath
+logPath = '%s/logs/eggNog-v4p5-2ItemsXML.log' % datasetPath
 
 eggNogAnnotationsPath = "%s/data/bactNOG/bactNOG.annotations.tsv.gz" % eggNogPath
 eggNogFuncCatsPath = "%s/eggnog4.functional_categories.txt" % eggNogPath
