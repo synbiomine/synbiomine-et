@@ -16,7 +16,7 @@ imu.handleSimpleSourceAddProcess(
         imp.Source(
             'go-annotation', 'go-annotation',
             [
-                { 'name':'src.data.dir',        'location':'data/goa' },
+                { 'name':'src.data.dir',        'location':'data/current/goa' },
             ])
     ],
     "writeGoaProjectXml")
