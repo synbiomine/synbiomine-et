@@ -391,7 +391,7 @@ sub query_uniprot {
 
   if ($response_taxon->is_success) {
 
-# Check the header for results
+    # Check the header for results
     my $results = $response_taxon->header('X-Total-Results');
     unless ($results) {
       if ($db =~ /sprot/) {
@@ -406,9 +406,9 @@ sub query_uniprot {
       return;
     }
 
-# Check the timestamps to see if the server data is newer
+    # Check the timestamps to see if the server data is newer
     my $release = $response_taxon->header('X-UniProt-Release');
-    my $date = sprintf("%4d-%02d-%02d", HTTP::Date::parse_date($response_taxon->header('Last-Modified')));
+    my $date = sprintf("%4d-%02d-%02d", (HTTP::Date::parse_date($response_taxon->header('Last-Modified')))[0..2]);
 
     say "Fetched $results entries in UniProt release $release ($date) for $db";
 
