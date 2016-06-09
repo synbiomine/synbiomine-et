@@ -298,10 +298,10 @@ sub fetch_assemblies {
   my ($ftpHostname, $ftpTimeout, $ftpUsername, $ftpPassword, $taxonEntries_ref) = @_;
   my %taxonEntries = %{ $taxonEntries_ref };
 
-  my $ftp2 = Net::FTP->new($ftpHostname, BlockSize => 20480, Timeout => $ftpTimeout);
-  defined($ftp2) or die "Could not connect to $hostname: $!";
+  my $ftp = Net::FTP->new($ftpHostname, BlockSize => 20480, Timeout => $ftpTimeout);
+  defined($ftp) or die "Could not connect to $hostname: $!";
 
-  $ftp2->login($ftpUsername, $ftpPassword) or die "Cannot login ", $ftp2->message;
+  $ftp->login($ftpUsername, $ftpPassword) or die "Cannot login ", $ftp->message;
 
   # Loop through the taxon IDs and download the GFF, chrm fasta and the report file
   for my $key (sort {$a <=> $b} keys %taxonEntries) {
@@ -328,7 +328,7 @@ sub fetch_assemblies {
     # say "[$1]";
     my $refseq_path = $1;
 
-    if (not $ftp2->cwd($refseq_path)) {
+    if (not $ftp->cwd($refseq_path)) {
       say "No FTP directory $key => $refseq_path.  Skipping";
       next;
     }
@@ -336,7 +336,7 @@ sub fetch_assemblies {
     say "Fetching files for $key => $refseq_path";
 
     # get a list of the matching files
-    my @file_list = grep /\.gff.gz|\.fna.gz|_report.txt/, $ftp2->ls();
+    my @file_list = grep /\.gff.gz|\.fna.gz|_report.txt/, $ftp->ls();
 
     # loop through the file list and download them to the relevant organsims genbank directory
     for my $gb_file (@file_list) {
@@ -346,10 +346,10 @@ sub fetch_assemblies {
         $gb_file =~ /(.+)\.gz/;
         my $raw = $1;
 
-        $ftp2->binary or die "Cannot set binary mode: $!"; # binary mode for the zip file
+        $ftp->binary or die "Cannot set binary mode: $!"; # binary mode for the zip file
         # say "Fetch and unzip: $gb_file --> $raw"; # fetch and unzip
 
-        my $retr_fh = $ftp2->retr($gb_file) or log_error("Problem with $refseq_path\nCannot retrieve $gb_file");
+        my $retr_fh = $ftp->retr($gb_file) or log_error("Problem with $refseq_path\nCannot retrieve $gb_file");
 
         if ($retr_fh) {
           gunzip $retr_fh => "$genbank_dir/$assembly_vers/$raw", AutoClose => 1
@@ -361,19 +361,19 @@ sub fetch_assemblies {
           next;
         }
       } else {
-        $ftp2->ascii or die "Cannot set ascii mode: $!"; # set ascii mode for non-binary otherwise you get errors
+        $ftp->ascii or die "Cannot set ascii mode: $!"; # set ascii mode for non-binary otherwise you get errors
 
         # say "Fetching: $gb_file";
 
-        $ftp2->get($gb_file, "$genbank_dir/$assembly_vers/$gb_file")
+        $ftp->get($gb_file, "$genbank_dir/$assembly_vers/$gb_file")
 	      or log_error("Problem with $refseq_path\n\nCannot retrieve $gb_file");
       }
     }
 
-    $ftp2->cwd("/");
+    $ftp->cwd("/");
   }
 
-  $ftp2->quit;
+  $ftp->quit;
 }
 
 =pod
