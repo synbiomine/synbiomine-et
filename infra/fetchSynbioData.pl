@@ -227,86 +227,9 @@ $ftp3->quit;
 ##################
 
 log_new_activity("Downloading NCBI FASTA, GFF and assembly reports");
+fetch_assemblies($hostname, $timeout, $username, $password, \%org_taxon);
 
-# Now... FTP to NCBI genomes to get chromosome fasta (.fna) and refseq annotations (.gff)
-my $refseq = '/genomes/refseq/bacteria'; # used for path
-
-my $ftp2 = Net::FTP->new($hostname, BlockSize => 20480, Timeout => $timeout);
-defined($ftp2) or die "Could not connect to $hostname: $!";
-
-$ftp2->login($username, $password) or die "Cannot login ", $ftp2->message;
-
-# Loop through the taxon IDs and download the GFF, chrm fasta and the report file
-for my $key (sort {$a <=> $b} keys %org_taxon) {
-
-  # Make a directory for each genbank organism
-  my ($species, $assembly_vers, $refseq_category, $assembly_ftp_dir) = @{ $org_taxon{$key} };
-  my $assembly_dir = catdir($genbank_dir, $assembly_vers);
-
-  if (-d $assembly_dir) {
-    my $assemblyReportPath = catdir($assembly_dir, "${assembly_vers}_assembly_report.txt");
-    my $assemblyFastaPath = catdir($assembly_dir, "${assembly_vers}_genomic.fna");
-    my $assemblyGffPath = catdir($assembly_dir, "${assembly_vers}_genomic.gff");
-
-    if (-e $assemblyReportPath and -e $assemblyFastaPath and -e $assemblyGffPath) {
-      say "Using existing files for $key => $species";
-      next;
-    }
-  }
-
-  mkdir $assembly_dir, 0755;
-
-  say "Fetching [$assembly_ftp_dir]" if ($verbose);
-  $assembly_ftp_dir =~ /ftp:\/\/[^\/]+\/(.*)/;
-  # say "[$1]";
-  my $refseq_path = $1;
-
-  if (not $ftp2->cwd($refseq_path)) {
-    say "No FTP directory $key => $refseq_path.  Skipping";
-    next;
-  }
-
-  say "Fetching files for $key => $refseq_path";
-
-# get a list of the matching files
-  my @file_list = grep /\.gff.gz|\.fna.gz|_report.txt/, $ftp2->ls();
-
-# loop through the file list and download them to the relevant organsims genbank directory
-  for my $gb_file (@file_list) {
-    # say "Processing FILE: ", $gb_file;
-
-    if ($gb_file =~ /\.gz/) {
-      $gb_file =~ /(.+)\.gz/;
-      my $raw = $1;
-
-      $ftp2->binary or die "Cannot set binary mode: $!"; # binary mode for the zip file
-      # say "Fetch and unzip: $gb_file --> $raw"; # fetch and unzip
-
-      my $retr_fh = $ftp2->retr($gb_file) or log_error("Problem with $refseq_path\nCannot retrieve $gb_file");
-
-      if ($retr_fh) {
-        gunzip $retr_fh => "$genbank_dir/$assembly_vers/$raw", AutoClose => 1
-          or log_error("Zip error $refseq_path\nCannot uncompress '$gb_file': $GunzipError");
-        # say "Success - adding: $genbank_dir/$date_dir/$assembly_vers/$raw";
-      }
-      else {
-        say "Darn! Problem with $refseq_path\nCouldn't get $gb_file";
-        next;
-      }
-    } else {
-      $ftp2->ascii or die "Cannot set ascii mode: $!"; # set ascii mode for non-binary otherwise you get errors 
-
-      # say "Fetching: $gb_file";
-
-      $ftp2->get($gb_file, "$genbank_dir/$assembly_vers/$gb_file")
-	      or log_error("Problem with $refseq_path\n\nCannot retrieve $gb_file");
-    }
-  }
-
-  $ftp2->cwd("/");
-}
-
-$ftp2->quit;
+##################
 
 log_new_activity("Adding reference proteomes");
 
@@ -368,6 +291,93 @@ scalar(@errors) and print RESET;
 ##############################
 ######## SUBROUTINES #########
 ##############################
+=pod
+Fetch assembly data
+=cut
+sub fetch_assemblies {
+  my ($ftpHostname, $ftpTimeout, $ftpUsername, $ftpPassword, $taxonEntries_ref) = @_;
+  my %taxonEntries = %{ $taxonEntries_ref };
+
+  # Now... FTP to NCBI genomes to get chromosome fasta (.fna) and refseq annotations (.gff)
+  my $refseq = '/genomes/refseq/bacteria'; # used for path
+
+  my $ftp2 = Net::FTP->new($ftpHostname, BlockSize => 20480, Timeout => $ftpTimeout);
+  defined($ftp2) or die "Could not connect to $hostname: $!";
+
+  $ftp2->login($ftpUsername, $ftpPassword) or die "Cannot login ", $ftp2->message;
+
+  # Loop through the taxon IDs and download the GFF, chrm fasta and the report file
+  for my $key (sort {$a <=> $b} keys %taxonEntries) {
+
+    # Make a directory for each genbank organism
+    my ($species, $assembly_vers, $refseq_category, $assembly_ftp_dir) = @{ $taxonEntries{$key} };
+    my $assembly_dir = catdir($genbank_dir, $assembly_vers);
+
+    if (-d $assembly_dir) {
+      my $assemblyReportPath = catdir($assembly_dir, "${assembly_vers}_assembly_report.txt");
+      my $assemblyFastaPath = catdir($assembly_dir, "${assembly_vers}_genomic.fna");
+      my $assemblyGffPath = catdir($assembly_dir, "${assembly_vers}_genomic.gff");
+
+      if (-e $assemblyReportPath and -e $assemblyFastaPath and -e $assemblyGffPath) {
+        say "Using existing files for $key => $species";
+        next;
+      }
+    }
+
+    mkdir $assembly_dir, 0755;
+
+    say "Fetching [$assembly_ftp_dir]" if ($verbose);
+    $assembly_ftp_dir =~ /ftp:\/\/[^\/]+\/(.*)/;
+    # say "[$1]";
+    my $refseq_path = $1;
+
+    if (not $ftp2->cwd($refseq_path)) {
+      say "No FTP directory $key => $refseq_path.  Skipping";
+      next;
+    }
+
+    say "Fetching files for $key => $refseq_path";
+
+    # get a list of the matching files
+    my @file_list = grep /\.gff.gz|\.fna.gz|_report.txt/, $ftp2->ls();
+
+    # loop through the file list and download them to the relevant organsims genbank directory
+    for my $gb_file (@file_list) {
+      # say "Processing FILE: ", $gb_file;
+
+      if ($gb_file =~ /\.gz/) {
+        $gb_file =~ /(.+)\.gz/;
+        my $raw = $1;
+
+        $ftp2->binary or die "Cannot set binary mode: $!"; # binary mode for the zip file
+        # say "Fetch and unzip: $gb_file --> $raw"; # fetch and unzip
+
+        my $retr_fh = $ftp2->retr($gb_file) or log_error("Problem with $refseq_path\nCannot retrieve $gb_file");
+
+        if ($retr_fh) {
+          gunzip $retr_fh => "$genbank_dir/$assembly_vers/$raw", AutoClose => 1
+            or log_error("Zip error $refseq_path\nCannot uncompress '$gb_file': $GunzipError");
+          # say "Success - adding: $genbank_dir/$date_dir/$assembly_vers/$raw";
+        }
+        else {
+          say "Darn! Problem with $refseq_path\nCouldn't get $gb_file";
+          next;
+        }
+      } else {
+        $ftp2->ascii or die "Cannot set ascii mode: $!"; # set ascii mode for non-binary otherwise you get errors
+
+        # say "Fetching: $gb_file";
+
+        $ftp2->get($gb_file, "$genbank_dir/$assembly_vers/$gb_file")
+	      or log_error("Problem with $refseq_path\n\nCannot retrieve $gb_file");
+      }
+    }
+
+    $ftp2->cwd("/");
+  }
+
+  $ftp2->quit;
+}
 
 =pod
 Subroutine user agent to connect to UniProt
