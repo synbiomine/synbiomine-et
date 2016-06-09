@@ -28,7 +28,7 @@ options:
 
 my (%opts, $verbose);
 
-getopts('hv:', \%opts);
+getopts('hv', \%opts);
 defined $opts{"h"} and die $usage;
 defined $opts{"v"} and $verbose++;
 my $insert = 1;
