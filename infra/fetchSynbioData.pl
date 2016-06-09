@@ -99,10 +99,10 @@ my %org_taxon;
 for (@assem) {
   chomp;
 
-  my($assembly_id, $bioproject, $biosample, $wgs_master, $refseq_category, $taxid, 
+  my ($assembly_id, $bioproject, $biosample, $wgs_master, $refseq_category, $taxid,
     $species_taxid, $organism_name, $infraspecific_name, $isolate, $version_status, 
     $assembly_level, $release_type, $genome_rep, $seq_rel_date, $asm_name, 
-    $submitter, $gbrs_paired_asm, $paired_asm_comp) = split("\t", $_);
+    $submitter, $gbrs_paired_asm, $paired_asm_comp, $assembly_ftp_dir) = split("\t", $_);
 
 #  say "Found selected $taxid => $assembly_id, $organism_name" if ($verbose);
 
@@ -111,9 +111,7 @@ for (@assem) {
   $organism_name =~ s/\[/_/;
   $organism_name =~ s/\]//;
 
-  # We're going to construct the directories used to download GFF & fna files
   my $assembly_vers = $assembly_id . "_" . $asm_name;
-  my $assembly_ftp_dir = "all_assembly_versions/" . $assembly_vers;
 
   my $species;
 
@@ -258,7 +256,10 @@ for my $key (sort {$a <=> $b} keys %org_taxon) {
 
   mkdir $assembly_dir, 0755;
 
-  my $refseq_path = "$refseq/$species/$assembly_ftp_dir";
+  say "Fetching [$assembly_ftp_dir]" if ($verbose);
+  $assembly_ftp_dir =~ /ftp:\/\/[^\/]+\/(.*)/;
+  # say "[$1]";
+  my $refseq_path = $1;
 
   if (not $ftp2->cwd($refseq_path)) {
     say "No FTP directory $key => $refseq_path.  Skipping";
@@ -301,6 +302,8 @@ for my $key (sort {$a <=> $b} keys %org_taxon) {
 	      or log_error("Problem with $refseq_path\n\nCannot retrieve $gb_file");
     }
   }
+
+  $ftp2->cwd("/");
 }
 
 $ftp2->quit;
