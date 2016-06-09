@@ -62,6 +62,7 @@ if ($insert) {
 while (my $subdir = readdir DIR) {
   my $currAssemblyDir = "$genbankdir/$subdir";
 
+  next unless -d $currAssemblyDir;
   next if $subdir =~ /^\.|^\.\./; # ignore ./ and ../
   say "SUB: ", $subdir if ($verbose);
 
