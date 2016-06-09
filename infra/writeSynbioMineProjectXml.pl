@@ -31,7 +31,7 @@ my (%opts, $verbose);
 getopts('hv:', \%opts);
 defined $opts{"h"} and die $usage;
 defined $opts{"v"} and $verbose++;
-$insert = 1;
+my $insert = 1;
 
 @ARGV > 0 or die $usage;
 
