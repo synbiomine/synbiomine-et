@@ -50,6 +50,9 @@ kegg_org.txt is needed for kegg_org_pathway_doc.pl to get pathways.
 The script also generates a string of taxon IDs which it writes to the taxons dir.
 The taxon IDs are needed by other data sources in the project.xml e.g. pubmed-gene
 
+This script is idempotent.  Hence, it can be rerun on existing data if not all downloads
+originally completed (it seems the EBI ftp can be a little flaky).
+
 options:
 \t-h\tthis usage
 \t-v\tmore verbose logging
