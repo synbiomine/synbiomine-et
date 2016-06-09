@@ -170,7 +170,6 @@ def filterInvalidXMLChars(input):
 ### MAIN ###
 ############
 parser = imu.ArgParser('Tranform ecocyc pathways flat files to InterMine items import XML')
-parser.add_argument('inputDir', help='directory containing Ecocyc pathways.col and pathways.dat files')
 parser.add_argument('datasetPath', help='path to the dataset location')
 args = parser.parse_args()
 
@@ -183,7 +182,7 @@ pathwaysColFn = "pathways.col"
 datasetPath = args.datasetPath
 model = IM.Model('%s/intermine/genomic_model.xml' % datasetPath)
 doc = IM.Document(model)
-inputDn = args.inputDir
+inputDn = "%s/ecocyc" % datasetPath
 outputFn = "%s/ecocyc/items.xml" % datasetPath
 
 if not os.path.isdir(inputDn):
