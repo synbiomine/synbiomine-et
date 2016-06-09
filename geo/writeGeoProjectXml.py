@@ -16,12 +16,12 @@ imu.handleSimpleSourceAddProcess(
         imp.Source(
             'faith-GEOSeries-EcoliK12', 'synbio-GEOSeries',
             [
-                { 'name':'src.data.dir',        'location':'data/geo/faith-2007' },
+                { 'name':'src.data.dir',        'location':'data/current/geo/faith-2007' },
             ]),
         imp.Source(
             'nicolas2012-GEOSeries-Bsub168', 'synbio-GEOSeries',
             [
-                { 'name':'src.data.dir',        'location':'data/geo/nicolas-2012' },
+                { 'name':'src.data.dir',        'location':'data/current/geo/nicolas-2012' },
             ])
     ],
     "writeGeoProjectXml")
