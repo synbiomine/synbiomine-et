@@ -27,11 +27,11 @@ imp.addSourcesToProject(
         imp.Source(
             'dbtbs-regulation-Bsub168', 'synbio-regulation',
             [
-                { 'name':'src.data.dir',        'location':'data/promoters/dbtbs' },
+                { 'name':'src.data.dir',        'location':'data/current/promoters/dbtbs' },
             ]),
         imp.Source(
             'nicolas2012-regulation-Bsub168', 'synbio-regulation',
             [
-                { 'name':'src.data.dir',        'location':'data/promoters/nicolas-2012' },
+                { 'name':'src.data.dir',        'location':'data/current/promoters/nicolas-2012' },
             ])
     ])
