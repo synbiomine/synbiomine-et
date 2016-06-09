@@ -16,7 +16,14 @@ imu.handleSimpleSourceAddProcess(
         imp.Source(
             'interpro', 'interpro',
             [
-                { 'name':'src.data.dir',        'location':'/micklem/data/interpro/current' },
+                { 'name':'src.data.dir',            'location':'/micklem/data/interpro/current' },
+            ]),
+
+        imp.Source(
+            'protein2ipr', 'protein2ipr',
+            [
+                { 'name':'src.data.dir',            'location':'/micklem/data/interpro/match_complete' },
+                { 'name':'src.data.dir.includes',   'value':'protein2ipr.dat' }
             ])
     ],
     "writeInterProProjectXml")
