@@ -16,7 +16,7 @@ imu.handleSimpleSourceAddProcess(
         imp.Source(
             'eggnog-functional-categories', 'synbio-funccat',
             [
-                { 'name':'src.data.dir',        'location':'data/eggnog' },
+                { 'name':'src.data.dir',        'location':'data/current/eggnog' },
             ])
     ],
     "writeEggNogProjectXml")
