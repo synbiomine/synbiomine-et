@@ -115,6 +115,9 @@ while (my $subdir = readdir DIR) {
       $orgm = $taxname;
       $orgm =~ s/ /-/g;
       $orgm =~ s/\.//g;
+
+      # InterMine doesn't like () either in its source names
+      $orgm =~ s/[\(\)]//g;
     }
 
     if ($_ =~ /Taxid/) {
