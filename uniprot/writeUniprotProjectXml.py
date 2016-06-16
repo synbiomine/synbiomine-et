@@ -16,7 +16,7 @@ parser.add_argument('-v', '--verbose', action="store_true", help="verbose output
 args = parser.parse_args()
 
 datasetPath = args.datasetPath
-uniprotDataPath = 'data/uniprot'
+uniprotDataPath = 'data/current/uniprot'
 
 logPath = "%s/logs/writeOrthoDbProjectXml.log" % datasetPath
 sys.stdout = imu.Logger(logPath)
