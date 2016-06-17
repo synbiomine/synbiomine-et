@@ -8,4 +8,4 @@ class Dataset:
     """
     def getTaxons(self):
         with open(self.taxonsPath) as f:
-            return f.read().strip().split()
+            return set(f.read().strip().split())
