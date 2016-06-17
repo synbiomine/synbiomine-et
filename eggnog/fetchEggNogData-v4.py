@@ -12,11 +12,8 @@ import synbio.dataset as sbds
 #################
 ### FUNCTIONS ###
 #################
-def logEyeCatcher(text):
-  print "~~~ %s ~~~" % text
-
 def assemblePrereqFiles(localDir, ftpHost, ftpBase, files):
-  logEyeCatcher("Checking pre-requisite data files")
+  imu.printSection("Checking pre-requisite data files")
 
   missingFiles = set()
 
@@ -59,7 +56,7 @@ def assemblePrereqFiles(localDir, ftpHost, ftpBase, files):
     ftp.close()
 
 def filterIdsMap(idsMapPath, filteredMapPath, taxonIds, verbose=False):
-  logEyeCatcher("Filtering ID mappings")
+  imu.printSection("Filtering ID mappings")
 
   writeCount = 0
 
@@ -98,5 +95,4 @@ eggNogFtpBase = 'eggNOG/4.0/'
 files = set(['eggnogv4.funccats.txt', 'description/bactNOG.description.txt.gz', 'funccat/bactNOG.funccat.txt.gz', 'members/bactNOG.members.txt.gz', 'id_conversion.tsv'])
 
 assemblePrereqFiles(args.eggNogFilesPath, eggNogFtpHost, eggNogFtpBase, files)
-# print "taxons [%s]" % (" ".join(taxonIds))
 filterIdsMap(os.path.join(args.eggNogFilesPath, 'id_conversion.tsv'), os.path.join(args.eggNogFilesPath, 'id_conversion_taxons.txt'), ds.getTaxons(), args.verbose)
