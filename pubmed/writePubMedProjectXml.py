@@ -32,7 +32,7 @@ imp.addSourcesToProject(
             'pubmed-gene', 'pubmed-gene',
             [
                 { 'name':'src.data.dir',            'location':os.path.dirname(pubMedDataPath) },
-                { 'name':'src.data.dir.includes',   'value':os.path.basename(pubMedDataPath) },
+                { 'name':'src.data.dir.includes',   'value':'gene2pubmed' },
                 { 'name':'pubmed.organisms',        'value':ds.getTaxonsAsString() }
             ]),
 
