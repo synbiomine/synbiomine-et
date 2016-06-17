@@ -6,6 +6,7 @@ import sys
 sys.path.insert(1, os.path.dirname(os.path.abspath(__file__)) + '/../modules/python')
 import intermine.project as imp
 import intermine.utils as imu
+import synbio.dataset as sbds
 
 ############
 ### MAIN ###
@@ -17,15 +18,12 @@ parser.add_argument('-v', '--verbose', action="store_true", help="verbose output
 args = parser.parse_args()
 
 datasetPath = args.datasetPath
+ds = sbds.Dataset(datasetPath)
 pubMedDataPath = args.pubMedDataPath
 
 logPath = "%s/logs/writeOrthoDbProjectXml.log" % datasetPath
 sys.stdout = imu.Logger(logPath)
 projectXmlPath = "%s/intermine/project.xml" % datasetPath
-taxonsPath = "%s/taxons/taxons.txt" % datasetPath
-
-with open(taxonsPath) as f:
-    taxons = f.read().strip()
 
 imp.addSourcesToProject(
     "%s/intermine/project.xml" % datasetPath,
@@ -35,7 +33,7 @@ imp.addSourcesToProject(
             [
                 { 'name':'src.data.dir',            'location':os.path.dirname(pubMedDataPath) },
                 { 'name':'src.data.dir.includes',   'value':os.path.basename(pubMedDataPath) },
-                { 'name':'pubmed.organisms',        'value':taxons }
+                { 'name':'pubmed.organisms',        'value':ds.getTaxonsAsString() }
             ]),
 
         imp.Source(

@@ -6,6 +6,7 @@ import sys
 sys.path.insert(1, os.path.dirname(os.path.abspath(__file__)) + '/../modules/python')
 import intermine.project as imp
 import intermine.utils as imu
+import synbio.dataset as sbds
 
 ############
 ### MAIN ###
@@ -16,6 +17,7 @@ parser.add_argument('-v', '--verbose', action="store_true", help="verbose output
 args = parser.parse_args()
 
 datasetPath = args.datasetPath
+ds = sbds.Dataset(datasetPath)
 uniprotDataPath = 'data/current/uniprot'
 
 logPath = "%s/logs/writeOrthoDbProjectXml.log" % datasetPath
@@ -40,7 +42,7 @@ imp.addSourcesToProject(
             'uniprot-fasta', 'fasta',
             [
                 { 'name':'src.data.dir',            'location':uniprotDataPath },
-                { 'name':'fasta.taxonId',           'value':taxons },
+                { 'name':'fasta.taxonId',           'value':ds.getTaxonsAsString() },
                 { 'name':'fasta.className',         'value':'org.intermine.model.bio.Protein' },
                 { 'name':'fasta.classAttribute',    'value':'primaryAccession' },
                 { 'name':'fasta.dataSetTitle',      'value':'UniProt data set' },

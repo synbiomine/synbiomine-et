@@ -7,6 +7,7 @@ import sys
 
 sys.path.insert(1, os.path.dirname(os.path.abspath(__file__)) + '/../modules/python')
 import intermine.utils as imu
+import synbio.dataset as sbds
 
 #################
 ### FUNCTIONS ###
@@ -57,17 +58,6 @@ def assemblePrereqFiles(localDir, ftpHost, ftpBase, files):
 
     ftp.close()
 
-def readTaxonIds(taxonsPath):
-  logEyeCatcher("Reading taxon IDs")
-
-  taxonIds = set()
-
-  with open(taxonsPath) as f:
-    for line in f:
-      taxonIds.update(line.split())
-
-  return taxonIds
-
 def filterIdsMap(idsMapPath, filteredMapPath, taxonIds, verbose=False):
   logEyeCatcher("Filtering ID mappings")
 
@@ -101,13 +91,12 @@ args = parser.parse_args()
 logPath = "%s/logs/fetchEggnogData.log"
 sys.stdout = imu.Logger(logPath)
 
-taxonsPath = "%s/taxons/taxons.txt" % args.datasetPath
+ds = sbds.Dataset(args.datasetPath)
 
 eggNogFtpHost = 'eggnog.embl.de'
 eggNogFtpBase = 'eggNOG/4.0/'
 files = set(['eggnogv4.funccats.txt', 'description/bactNOG.description.txt.gz', 'funccat/bactNOG.funccat.txt.gz', 'members/bactNOG.members.txt.gz', 'id_conversion.tsv'])
 
 assemblePrereqFiles(args.eggNogFilesPath, eggNogFtpHost, eggNogFtpBase, files)
-taxonIds = readTaxonIds(taxonsPath)
 # print "taxons [%s]" % (" ".join(taxonIds))
-filterIdsMap(os.path.join(args.eggNogFilesPath, 'id_conversion.tsv'), os.path.join(args.eggNogFilesPath, 'id_conversion_taxons.txt'), taxonIds, args.verbose)
+filterIdsMap(os.path.join(args.eggNogFilesPath, 'id_conversion.tsv'), os.path.join(args.eggNogFilesPath, 'id_conversion_taxons.txt'), ds.getTaxons(), args.verbose)
