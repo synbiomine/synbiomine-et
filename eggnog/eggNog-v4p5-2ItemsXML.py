@@ -8,6 +8,7 @@ import sys
 sys.path.insert(1, os.path.dirname(os.path.abspath(__file__)) + '/../modules/python')
 import intermine.model as IM
 import intermine.utils as imu
+import synbio.dataset as sbds
 
 #################
 ### FUNCTIONS ###
@@ -188,9 +189,9 @@ args = parser.parse_args()
 
 beVerbose = args.verbose
 datasetPath = args.datasetPath
+ds = sbds.Dataset(datasetPath)
 eggNogPath = '%s/eggnog' % datasetPath
 modelPath = '%s/intermine/genomic_model.xml' % datasetPath
-taxonsPath = "%s/taxons/taxons.txt" % datasetPath
 
 itemsPath = '%s/eggnog/eggnog-items.xml' % datasetPath
 logPath = '%s/logs/eggNog-v4p5-2ItemsXML.log' % datasetPath
@@ -217,11 +218,8 @@ imu.printSection("Adding group description items")
 groupItems = addGroupItems(doc, groupDataSetItem, funcCatItems, eggNogAnnotationsPath)
 print "Added %d EggNOG group items" % len(groupItems)
 
-with open(taxonsPath) as f:
-    taxons = f.read().strip().split()
-
 imu.printSection("Adding gene and organism items")
-organismItems, geneItems = addGeneItems(doc, groupItems, eggNogMembersPath, taxons)
+organismItems, geneItems = addGeneItems(doc, groupItems, eggNogMembersPath, ds.getTaxons())
 print "Added %d organism items" % len(organismItems)
 print "Added %d gene items" % len(geneItems)
 
