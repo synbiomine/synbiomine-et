@@ -142,7 +142,7 @@ def addGroupItems(doc, dataSetItem, funcCatItems, annotationsPath):
 
     return groupItems
 
-def addGeneItems(doc, groupItems, membersPath):
+def addGeneItems(doc, groupItems, membersPath, taxons):
 
     if beVerbose:
         print "Reading from %s" % membersPath
@@ -157,6 +157,12 @@ def addGeneItems(doc, groupItems, membersPath):
 
             for eggNogGeneId in eggNogGeneIds.split(','):
                 taxonId, geneId = eggNogGeneId.split('.', 1)
+
+                # We must filter out taxons that we are not directly loading into Synbiomine.  Otherwise we get 1.3 GB
+                # of items that cannot even be loaded by InterMine at the moment.  This is the same as the behaviour of
+                # the previous Perl script for processing EggNOG 4.0
+                if taxonId not in taxons:
+                    continue
 
                 if taxonId not in organismItems:
                     organismItems[taxonId] = addOrganismItem(doc, taxonId)
@@ -184,6 +190,7 @@ beVerbose = args.verbose
 datasetPath = args.datasetPath
 eggNogPath = '%s/eggnog' % datasetPath
 modelPath = '%s/intermine/genomic_model.xml' % datasetPath
+taxonsPath = "%s/taxons/taxons.txt" % datasetPath
 
 itemsPath = '%s/eggnog/eggnog-items.xml' % datasetPath
 logPath = '%s/logs/eggNog-v4p5-2ItemsXML.log' % datasetPath
@@ -210,8 +217,11 @@ imu.printSection("Adding group description items")
 groupItems = addGroupItems(doc, groupDataSetItem, funcCatItems, eggNogAnnotationsPath)
 print "Added %d EggNOG group items" % len(groupItems)
 
+with open(taxonsPath) as f:
+    taxons = f.read().strip().split()
+
 imu.printSection("Adding gene and organism items")
-organismItems, geneItems = addGeneItems(doc, groupItems, eggNogMembersPath)
+organismItems, geneItems = addGeneItems(doc, groupItems, eggNogMembersPath, taxons)
 print "Added %d organism items" % len(organismItems)
 print "Added %d gene items" % len(geneItems)
 
