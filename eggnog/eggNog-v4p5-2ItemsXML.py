@@ -6,8 +6,8 @@ import re
 import sys
 
 sys.path.insert(1, os.path.dirname(os.path.abspath(__file__)) + '/../modules/python')
-import intermine.model as IM
-import intermine.utils as imu
+import intermyne.model as IM
+import intermyne.utils as imu
 import synbio.dataset as sbds
 
 #################

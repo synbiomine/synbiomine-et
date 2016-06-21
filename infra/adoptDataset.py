@@ -5,7 +5,7 @@ import shutil
 import sys
 
 sys.path.insert(1, os.path.dirname(os.path.abspath(__file__)) + '/../modules/python')
-import intermine.utils as imu
+import intermyne.utils as imu
 
 #################
 ### CONSTANTS ###

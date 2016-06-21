@@ -4,8 +4,8 @@ import os
 import sys
 
 sys.path.insert(1, os.path.dirname(os.path.abspath(__file__)) + '/../modules/python')
-import intermine.project as imp
-import intermine.utils as imu
+import intermyne.project as imp
+import intermyne.utils as imu
 
 ############
 ### MAIN ###
