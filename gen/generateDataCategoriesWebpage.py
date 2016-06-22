@@ -17,5 +17,6 @@ args = parser.parse_args()
 
 ds = sbds.Dataset(args.datasetPath)
 orgs = ds.getOrganisms()
-for taxonId in sorted(orgs):
-    print "%s:%s" % (taxonId, orgs[taxonId])
+
+for taxonId, name in sorted(orgs.iteritems(), key=lambda item: item[1]):
+    print '  <li>%s (<i>taxon %d</i>)</li>' % (orgs[taxonId], taxonId)
