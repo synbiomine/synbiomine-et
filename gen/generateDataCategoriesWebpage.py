@@ -16,4 +16,6 @@ parser.add_argument('-v', '--verbose', action="store_true", help="verbose output
 args = parser.parse_args()
 
 ds = sbds.Dataset(args.datasetPath)
-print ds.getOrganisms()
+orgs = ds.getOrganisms()
+for taxonId in sorted(orgs):
+    print "%s:%s" % (taxonId, orgs[taxonId])
