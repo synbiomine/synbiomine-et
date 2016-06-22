@@ -635,6 +635,7 @@ class InterMineURLOpener(object):
         if headers is not None:
             hs.update(headers)
         req = Request(url, buff, headers = hs)
+        # print "Request url %s [%s] [%s] [%s]" % (method, url, headers, buff)
         if method is not None:
             req.get_method = lambda: method
         try:
