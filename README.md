@@ -7,4 +7,4 @@ For instructions on generating a dataset from these scripts please see the wiki.
 
 # Licensing #
 
-Scripts in this directory are licensed under the LGPL 2.1
+Scripts in this directory are licensed under BSD, LGPL 2.1
