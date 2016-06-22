@@ -1,19 +1,16 @@
 #!/usr/bin/python
 
-import argparse
+import os
 import sys
-from intermine.webservice import Service
 
-class MyParser(argparse.ArgumentParser):
-    def error(self, message):
-        sys.stderr.write('error: %s\n' % message)
-        self.print_help()
-        sys.exit(2)
+sys.path.insert(1, os.path.dirname(os.path.abspath(__file__)) + '/../modules/python')
+from intermine.webservice import Service
+import intermyne.utils as imu
 
 ############
 ### MAIN ###
 ############
-parser = MyParser('Get results from executing a given template on a given service')
+parser = imu.ArgParser('Get results from executing a given template on a given service')
 parser.add_argument('template')
 parser.add_argument('service')
 args = parser.parse_args()
@@ -24,4 +21,4 @@ rowsA = templateA.get_row_list()
 strsA = map(str, rowsA)
 
 for strA in strsA:
-  print strA
+    print strA
