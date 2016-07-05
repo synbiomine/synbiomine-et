@@ -19,9 +19,9 @@ dc = sbd.Collection(args.colPath)
 ds = dc.getSet('polen')
 
 partsUrl = 'http://synbio.ncl.ac.uk:8083/notification/messagesByTopic/Part/0/2147483647'
-partsPath = '%s/parts.json' % (ds.getRawPath())
+partsPath = '%s/part-messages.json' % (ds.getRawPath())
 
-print 'Retrieving parts from %s to %s' % (partsUrl, partsPath)
+print 'Retrieving part messages from %s to %s' % (partsUrl, partsPath)
 
 with open(partsPath, 'w') as f:
     # For convenience, we fetch all the parts at once.  2147483647 is the maximum polen will deal with before internal error

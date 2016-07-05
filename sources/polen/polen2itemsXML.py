@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+import json
 import os
 import sys
 
@@ -7,6 +8,36 @@ sys.path.insert(1, os.path.dirname(os.path.abspath(__file__)) + '/../../modules/
 import intermyne.model as imm
 import intermyne.utils as imu
 import synbio.data as sbd
+
+###############
+### CLASSES ###
+###############
+class Part:
+    def __init__(self, name, description, uri):
+        self.name = name
+        self.description = description
+        self.uri = uri
+
+#################
+### FUNCTIONS ###
+#################
+"""
+Given a dataset, retrieve the POLEN parts.
+"""
+def getParts(ds):
+    parts = {}
+
+    messagesPath = "%s/part-messages.json" % (ds.getRawPath())
+    with open(messagesPath) as f:
+        data = json.load(f)
+
+    for message in data['messages']:
+        content = message['content']
+
+        # We assume that the part name is the fixed ID.  The last message contains the most uptodate data
+        parts[content['name']] = Part(content['name'], content['description'], content['uri'])
+
+    return parts
 
 ############
 ### MAIN ###
@@ -16,6 +47,13 @@ parser.add_argument('colPath', help='path to the data collection')
 args = parser.parse_args()
 
 dc = sbd.Collection(args.colPath)
+ds = dc.getSet('polen')
+
+parts = getParts(ds)
+for part in parts:
+    print part
+
+"""
 model = dc.getModel()
 doc = imm.Document(model)
 
@@ -29,5 +67,4 @@ dataSetItem = doc.createItem("DataSet")
 dataSetItem.addAttribute('name', 'POLEN Parts')
 dataSetItem.addAttribute('dataSource', dataSourceItem)
 doc.addItem(dataSetItem)
-
-# ds = dc.getSet('polen')
+"""
