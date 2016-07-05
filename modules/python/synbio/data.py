@@ -1,4 +1,8 @@
 import os.path
+import sys
+
+sys.path.insert(1, os.path.dirname(os.path.abspath(__file__) + '/..'))
+import intermyne.model as imm
 
 """
 Represents a collection of datasets
@@ -6,6 +10,8 @@ Represents a collection of datasets
 class Collection:
     def __init__(self, basePath):
         self.basePath = basePath
+
+        self._model = imm.Model('%s/intermine/genomic_model.xml' % self.basePath)
 
         self.genbankPath = '%s/genbank' % self.basePath
         self.selectedAssembliesPath = '%s/synbiomine_selected_assembly_summary_refseq.txt' % self.genbankPath
@@ -27,6 +33,12 @@ class Collection:
             os.mkdir(path)
 
         return Set(path)
+
+    """
+    Get the InterMine model for this data collection.
+    """
+    def getModel(self):
+        return self._model
 
     """
     Get organisms present as first class entities in this dataset
