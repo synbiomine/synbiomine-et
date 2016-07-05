@@ -32,7 +32,7 @@ class Collection:
         if not os.path.exists(path):
             os.mkdir(path)
 
-        return Set(path)
+        return Set(self, path)
 
     """
     Get the InterMine model for this data collection.
@@ -91,7 +91,8 @@ class Collection:
         return ' '.join(self.taxons)
 
 class Set:
-    def __init__(self, basePath):
+    def __init__(self, dc, basePath):
+        self._parentCollection = dc
         self._basePath = basePath
         self._rawPath = "%s/raw" % (self._basePath)
         self._loadPath = "%s/load" % (self._basePath)
@@ -101,6 +102,9 @@ class Set:
 
         if not os.path.exists(self._loadPath):
             os.mkdir(self._loadPath)
+
+    def getCollection(self):
+        return self._parentCollection
 
     def getLoadPath(self):
         return self._loadPath
