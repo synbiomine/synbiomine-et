@@ -20,13 +20,13 @@ class Collection:
     """
     Get the dataset in this collection with the given name.
     """
-    def getDataset(self, name):
+    def getSet(self, name):
         path = "%s/%s" % (self.basePath, name)
 
         if not os.path.exists(path):
             os.mkdir(path)
 
-        return Dataset(path)
+        return Set(path)
 
     """
     Get organisms present as first class entities in this dataset
@@ -78,14 +78,20 @@ class Collection:
     def getTaxonsAsString(self):
         return ' '.join(self.taxons)
 
-class Dataset:
+class Set:
     def __init__(self, basePath):
-        self.basePath = basePath
-        self.rawPath = "%s/raw" % (self.basePath)
-        self.loadPath = "%s/load" % (self.basePath)
+        self._basePath = basePath
+        self._rawPath = "%s/raw" % (self._basePath)
+        self._loadPath = "%s/load" % (self._basePath)
 
-        if not os.path.exists(self.rawPath):
-            os.mkdir(self.rawPath)
+        if not os.path.exists(self._rawPath):
+            os.mkdir(self._rawPath)
 
-        if not os.path.exists(self.loadPath):
-            os.mkdir(self.loadPath)
+        if not os.path.exists(self._loadPath):
+            os.mkdir(self._loadPath)
+
+    def getLoadPath(self):
+        return self._loadPath
+
+    def getRawPath(self):
+        return self._rawPath
