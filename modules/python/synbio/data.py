@@ -1,8 +1,9 @@
-import glob
-import os
-import re
+import os.path
 
-class Dataset:
+"""
+Represents a collection of datasets
+"""
+class Collection:
     def __init__(self, basePath):
         self.basePath = basePath
 
@@ -15,6 +16,17 @@ class Dataset:
     def _parseTaxons(self, taxonsPath):
         with open(taxonsPath) as f:
             self._taxons = set(f.read().strip().split())
+
+    """
+    Get the dataset in this collection with the given name.
+    """
+    def getDataset(self, name):
+        path = "%s/%s" % (self.basePath, name)
+
+        if not os.path.exists(path):
+            os.mkdir(path)
+
+        return Dataset(path)
 
     """
     Get organisms present as first class entities in this dataset
@@ -65,3 +77,15 @@ class Dataset:
     """
     def getTaxonsAsString(self):
         return ' '.join(self.taxons)
+
+class Dataset:
+    def __init__(self, basePath):
+        self.basePath = basePath
+        self.rawPath = "%s/raw" % (self.basePath)
+        self.loadPath = "%s/load" % (self.basePath)
+
+        if not os.path.exists(self.rawPath):
+            os.mkdir(self.rawPath)
+
+        if not os.path.exists(self.loadPath):
+            os.mkdir(self.loadPath)
