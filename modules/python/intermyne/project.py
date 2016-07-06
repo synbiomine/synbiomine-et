@@ -27,7 +27,7 @@ class Project:
         sourcesElement = self._projectTree.xpath('/project/sources')[0]
 
         sourceElement = etree.SubElement(
-            sourcesElement, "source", attrib={ 'name':source.name, 'type':source.type, 'dump':source.dump.__str__() })
+            sourcesElement, "source", attrib={ 'name':source.name, 'type':source.type, 'dump':source.dump.__str__().lower() })
 
         for property in source.properties:
             etree.SubElement(sourceElement, "property", attrib=property)
