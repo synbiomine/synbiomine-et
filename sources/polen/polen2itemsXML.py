@@ -43,7 +43,7 @@ def getParts(ds):
         uri = os.path.basename(content['uri']
 
         # We assume that the part name is the fixed ID.  The last message contains the most uptodate data
-        parts[content['name']] = Part(content['name'], content['description'], content['uri'])
+        parts[content['name']] = Part(name, description, uri)
 
     return parts
 
