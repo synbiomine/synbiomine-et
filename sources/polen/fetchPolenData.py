@@ -25,8 +25,13 @@ class PolenPartMetadata:
 Get the parts messages from POLEN
 """
 def getPolenPartsMessages(ds):
+    messagesPath = "%s/messages" % ds.getRawPath()
+
+    if not os.path.exists(messagesPath):
+        os.mkdir(messagesPath)
+
     partsUrl = 'http://synbio.ncl.ac.uk:8083/notification/messagesByTopic/Part/0/2147483647'
-    partsPath = '%s/part-messages.json' % (ds.getRawPath())
+    partsPath = '%s/part-messages.json' % (messagesPath)
 
     # We're going to write the messages json to a file as well as return it so that we have a record
     print 'Retrieving part messages from %s to %s' % (partsUrl, partsPath)
@@ -56,6 +61,11 @@ def getPolenPartsMd(polenMessagesJson):
 Given POLEN parts metadata, get the actual data files that we're interested in.
 """
 def getParts(ds, polenPartsMd):
+    partsPath = "%s/parts" % ds.getRawPath()
+
+    if not os.path.exists(partsPath):
+        os.mkdir(partsPath)
+
     gotCount = 0
 
     for partMd in polenPartsMd.values():
@@ -64,9 +74,9 @@ def getParts(ds, polenPartsMd):
         # with 'xml'
         uri = "%s/xml" % os.path.dirname(partMd.uri)
         uriComponents = uri.split('/')
-        ourPartPath = "%s/%s.%s" % (ds.getRawPath(), uriComponents[-2], uriComponents[-1])
+        partPath = "%s/%s.%s" % (partsPath, uriComponents[-2], uriComponents[-1])
 
-        print "Fetching %s => %s" % (uri, ourPartPath)
+        print "Fetching %s => %s" % (uri, partPath)
         r = requests.get(uri)
         if r.status_code == 500:
             print "*** Ignoring %s due to server status code %d" % (uri, r.status_code)
@@ -74,7 +84,7 @@ def getParts(ds, polenPartsMd):
 
         gotCount += 1
 
-        with open(ourPartPath, 'w') as f:
+        with open(partPath, 'w') as f:
             f.write(r.text)
 
     print "Got %d parts from %d metadata" % (gotCount, len(polenPartsMd))
