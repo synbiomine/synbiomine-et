@@ -59,7 +59,7 @@ def outputPartsToItemsXml(ds, parts):
 
         # Sequence in all virtualparts.org XML has a mangled CDATA tag.
         # Let's see if Newcastle fix this before taking demangling measures ourselves
-        partItem.addAttribute('sequence', part['Sequence'])
+        # partItem.addAttribute('sequence', part['Sequence'])
 
         partItem.addToAttribute('dataSets', dataSetItem)
         doc.addItem(partItem)
