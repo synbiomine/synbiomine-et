@@ -58,7 +58,7 @@ def outputPartsToItemsXml(ds, parts):
         partItem.addAttribute('designMethod', part['DesignMethod'])
 
         # Sequence in all virtualparts.org XML has a mangled CDATA tag.
-        # Let's see if Liverpool fix this before taking demangling measures ourselves
+        # Let's see if Newcastle fix this before taking demangling measures ourselves
         partItem.addAttribute('sequence', part['Sequence'])
 
         partItem.addToAttribute('dataSets', dataSetItem)
