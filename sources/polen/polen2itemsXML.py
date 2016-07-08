@@ -9,44 +9,6 @@ import intermyne.model as imm
 import intermyne.utils as imu
 import synbio.data as sbd
 
-###############
-### CLASSES ###
-###############
-class PolenPartMetadata:
-    def __init__(self, name, description, uri):
-        self.name = name
-        self.description = description
-        self.uri = uri
-
-#################
-### FUNCTIONS ###
-#################
-"""
-Given a dataset, retrieve the POLEN parts.
-"""
-def getPolenPartsMetadata(ds):
-    parts = {}
-
-    messagesPath = "%s/part-messages.json" % (ds.getRawPath())
-    with open(messagesPath) as f:
-        data = json.load(f)
-
-    for message in data['messages']:
-        content = message['content']
-
-        name = content['name']
-        description = content['description']
-
-        # At the moment, all parts come from virtualparts.org and the only uri we are given is for the sbol
-        # But for InterMine, we want the human oriented page which we can get by snipping 'sbol' off the end of the
-        # given uri
-        uri = os.path.basename(content['uri'])
-
-        # We assume that the part name is the fixed ID.  The last message contains the most uptodate data
-        parts[content['name']] = PolenPartMetadata(name, description, uri)
-
-    return parts
-
 """
 Given a set of parts, output InterMine items XML.
 """
@@ -86,5 +48,4 @@ args = parser.parse_args()
 dc = sbd.Collection(args.colPath)
 ds = dc.getSet('polen')
 
-polenPartsMetadata = getPolenPartsMetadata(ds)
 outputPartsToItemsXml(ds, polenPartsMetadata)
