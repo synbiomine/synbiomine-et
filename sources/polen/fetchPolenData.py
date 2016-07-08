@@ -66,14 +66,15 @@ def getParts(ds, polenPartsMd):
         uriComponents = uri.split('/')
         ourPartPath = "%s/%s.%s" % (ds.getRawPath(), uriComponents[-2], uriComponents[-1])
 
-        with open(ourPartPath, 'w') as f:
-            print "Fetching %s => %s" % (uri, ourPartPath)
-            r = requests.get(uri)
-            if r.status_code == 500:
-                print "*** Ignoring %s due to server status code %d" % (uri, r.status_code)
-                continue
+        print "Fetching %s => %s" % (uri, ourPartPath)
+        r = requests.get(uri)
+        if r.status_code == 500:
+            print "*** Ignoring %s due to server status code %d" % (uri, r.status_code)
+            continue
 
-            gotCount += 1
+        gotCount += 1
+
+        with open(ourPartPath, 'w') as f:
             f.write(r.text)
 
     print "Got %d parts from %d metadata" % (gotCount, len(polenPartsMd))
