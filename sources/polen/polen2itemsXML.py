@@ -34,6 +34,14 @@ def getParts(ds):
     for message in data['messages']:
         content = message['content']
 
+        name = content['name']
+        description = content['description']
+
+        # At the moment, all parts come from virtualparts.org and the only uri we are given is for the sbol
+        # But for InterMine, we want the human oriented page which we can get by snipping 'sbol' off the end of the
+        # given uri
+        uri = os.path.basename(content['uri']
+
         # We assume that the part name is the fixed ID.  The last message contains the most uptodate data
         parts[content['name']] = Part(content['name'], content['description'], content['uri'])
 
