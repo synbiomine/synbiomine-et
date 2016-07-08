@@ -22,23 +22,35 @@ class PolenPartMetadata:
 ### FUNCTIONS ###
 #################
 """
+Get the parts messages from POLEN
+"""
+def getPolenPartsMessages(ds):
+    partsUrl = 'http://synbio.ncl.ac.uk:8083/notification/messagesByTopic/Part/0/2147483647'
+    partsPath = '%s/part-messages.json' % (ds.getRawPath())
+
+    # We're going to write the messages json to a file as well as return it so that we have a record
+    print 'Retrieving part messages from %s to %s' % (partsUrl, partsPath)
+
+    with open(partsPath, 'w') as f:
+        # For convenience, we fetch all the parts at once.  2147483647 is the maximum polen will deal with before internal error
+        r = requests.get(partsUrl)
+        f.write(r.text)
+
+    return json.loads(r.text)
+
+"""
 Given a dataset, retrieve the POLEN parts.
 """
-def getPolenPartsMd(ds):
+def getPolenPartsMd(polenMessagesJson):
     partsMd = {}
 
-    messagesPath = "%s/part-messages.json" % (ds.getRawPath())
-    with open(messagesPath) as f:
-        data = json.load(f)
-
-    for message in data['messages']:
+    for message in polenMessagesJson['messages']:
         content = message['content']
 
         # We assume that the part name is the fixed ID.  The last message contains the most uptodate data
         partsMd[content['name']] = PolenPartMetadata(content['name'], content['description'], content['uri'])
 
     return partsMd
-
 
 """
 Given POLEN parts metadata, get the actual data files that we're interested in.
@@ -76,15 +88,6 @@ args = parser.parse_args()
 dc = sbd.Collection(args.colPath)
 ds = dc.getSet('polen')
 
-partsUrl = 'http://synbio.ncl.ac.uk:8083/notification/messagesByTopic/Part/0/2147483647'
-partsPath = '%s/part-messages.json' % (ds.getRawPath())
-
-print 'Retrieving part messages from %s to %s' % (partsUrl, partsPath)
-
-with open(partsPath, 'w') as f:
-    # For convenience, we fetch all the parts at once.  2147483647 is the maximum polen will deal with before internal error
-    r = requests.get(partsUrl)
-    f.write(r.text)
-
-polenPartsMetadata = getPolenPartsMd(ds)
+polenMessagesJson = getPolenPartsMessages(ds)
+polenPartsMetadata = getPolenPartsMd(polenMessagesJson)
 getParts(ds, polenPartsMetadata)
