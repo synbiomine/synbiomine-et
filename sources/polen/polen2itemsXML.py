@@ -12,7 +12,7 @@ import synbio.data as sbd
 ###############
 ### CLASSES ###
 ###############
-class Part:
+class PolenPartMetadata:
     def __init__(self, name, description, uri):
         self.name = name
         self.description = description
@@ -24,7 +24,7 @@ class Part:
 """
 Given a dataset, retrieve the POLEN parts.
 """
-def getParts(ds):
+def getPolenPartsMetadata(ds):
     parts = {}
 
     messagesPath = "%s/part-messages.json" % (ds.getRawPath())
@@ -43,7 +43,7 @@ def getParts(ds):
         uri = os.path.basename(content['uri'])
 
         # We assume that the part name is the fixed ID.  The last message contains the most uptodate data
-        parts[content['name']] = Part(name, description, uri)
+        parts[content['name']] = PolenPartMetadata(name, description, uri)
 
     return parts
 
@@ -86,5 +86,5 @@ args = parser.parse_args()
 dc = sbd.Collection(args.colPath)
 ds = dc.getSet('polen')
 
-parts = getParts(ds)
-outputPartsToItemsXml(ds, parts)
+polenPartsMetadata = getPolenPartsMetadata(ds)
+outputPartsToItemsXml(ds, polenPartsMetadata)
