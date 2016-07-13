@@ -96,17 +96,6 @@ for rawPartXmlPath in rawPartsXmlPaths:
         'Sequence' : partE.find('Sequence').text
     }
 
-    """
-    for childE in partE:
-        key, value = childE.tag, childE.text
-        print "%s:%s" % (key, value)
-        if key in data:
-            print "Unexpectedly found %s with value %s already present with value %s for %s.  Ignoring." % (name, value, data[key], rawPartXmlPath)
-            continue
-
-        data[key] = value
-    """
-
     parts[name] = data
 
 outputPartsToItemsXml(ds, parts)
