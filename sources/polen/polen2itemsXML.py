@@ -16,7 +16,7 @@ import synbio.data as sbd
 """
 Given a dataset, process all the POLEN parts xml here to our internal parts representations
 """
-def processXmlToParts(dataset):
+def processXmlToParts(ds):
     parts = {}
 
     rawPartsXmlPaths = glob.glob("%s/parts/*.xml" % ds.getRawPath())
@@ -29,14 +29,20 @@ def processXmlToParts(dataset):
             continue
 
         data = {}
+        properties = []
 
         for childE in partE:
             if childE.tag == 'Property':
-                continue
+                propertyComponents = {}
+                for propertyComponentE in childE:
+                    print "Adding %s:%s" % (propertyComponentE.tag, propertyComponentE.text)
+                    propertyComponents[propertyComponentE.tag] = propertyComponentE.text
+
+                properties.append(propertyComponents)
 
             data[childE.tag] = childE.text
 
-        parts[name] = data
+        parts[name] = { 'data': data, 'properties' : properties }
 
     return parts
 
@@ -44,6 +50,7 @@ def processXmlToParts(dataset):
 Given a set of parts, output InterMine items XML.
 """
 def outputPartsToItemsXml(ds, parts):
+
     model = ds.getCollection().getModel()
     doc = imm.Document(model)
 
@@ -59,26 +66,43 @@ def outputPartsToItemsXml(ds, parts):
     doc.addItem(dataSetItem)
 
     imu.printSection('Adding %d part items' % (len(parts)))
+
     for part in parts.values():
+        data = part['data']
         partItem = doc.createItem('Part')
-        partItem.addAttribute('name', part['Name'])
-        partItem.addAttribute('type', part['Type'])
-        partItem.addAttribute('description', part['Description'])
+        partItem.addAttribute('name', data['Name'])
+        partItem.addAttribute('type', data['Type'])
+        partItem.addAttribute('description', data['Description'])
 
         # XXX: Reconstructing the uri here is heavily less than ideal
-        partItem.addAttribute('uri', 'http://www.virtualparts.org/part/%s' % part['Name'])
+        partItem.addAttribute('uri', 'http://www.virtualparts.org/part/%s' % data['Name'])
 
-        partItem.addAttribute('organism', part['Organism'])
-        partItem.addAttribute('designMethod', part['DesignMethod'])
+        partItem.addAttribute('organism', data['Organism'])
+        partItem.addAttribute('designMethod', data['DesignMethod'])
 
         # Sequence in all virtualparts.org XML has a mangled CDATA tag.
         # Let's see if Newcastle fix this before taking demangling measures ourselves
-        # partItem.addAttribute('sequence', part['Sequence'])
+        # partItem.addAttribute('sequence', data['Sequence'])
+
+        for propertyComponents in part['properties']:
+            name = propertyComponents['Name']
+            value = propertyComponents['Value']
+
+            if name == 'has_function':
+                partItem.addToAttribute('functions', createGoTermItem(doc, value))
+            elif name == 'participates_in':
+                partItem.addToAttribute('participatesIn', createGoTermItem(doc, value))
 
         partItem.addToAttribute('dataSets', dataSetItem)
         doc.addItem(partItem)
 
     doc.write('%s/items.xml' % ds.getLoadPath())
+
+def createGoTermItem(doc, id):
+    goTermItem = doc.createItem('GOTerm')
+    goTermItem.addAttribute('identifier', id)
+    doc.addItem(goTermItem)
+    return goTermItem
 
 ############
 ### MAIN ###

@@ -462,6 +462,8 @@
   <attribute name="uri" type="java.lang.String"/>
   <attribute name="organism" type="java.lang.String"/>
   <attribute name="designMethod" type="java.lang.String"/>
+  <collection name="functions" referenced-type="GOTerm"/>
+  <collection name="participatesIn" referenced-type="GOTerm"/>
   <collection name="dataSets" referenced-type="DataSet"/>
 </class>
 <class name="Operon" extends="Region" is-interface="true">
