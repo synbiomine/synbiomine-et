@@ -10,19 +10,6 @@ import intermyne.model as imm
 import intermyne.utils as imu
 import synbio.data as sbd
 
-###############
-### CLASSES ###
-###############
-class Part:
-    def Part(self, name, displayName, type, description, sequence, organism, designMethod):
-        self.name = name
-        self.displayName = displayName
-        self.type = type
-        self.description = description
-        self.sequence = sequence
-        self.organism = organism
-        self.designMethod = designMethod
-
 #################
 ### FUNCTIONS ###
 #################
@@ -41,14 +28,13 @@ def processXmlToParts(dataset):
             print "When processing %s already found part with name %s.  Ignoring." % (rawPartXmlPath, name)
             continue
 
-        data = {
-            'Name' : name,
-            'Type' : partE.find('Type').text,
-            'Description' : partE.find('Description').text,
-            'Organism' : partE.find('Organism').text,
-            'DesignMethod' : partE.find('DesignMethod').text,
-            'Sequence' : partE.find('Sequence').text
-        }
+        data = {}
+
+        for childE in partE:
+            if childE.tag == 'Property':
+                continue
+
+            data[childE.tag] = childE.text
 
         parts[name] = data
 
