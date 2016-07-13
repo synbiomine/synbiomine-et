@@ -27,6 +27,34 @@ class Part:
 ### FUNCTIONS ###
 #################
 """
+Given a dataset, process all the POLEN parts xml here to our internal parts representations
+"""
+def processXmlToParts(dataset):
+    parts = {}
+
+    rawPartsXmlPaths = glob.glob("%s/parts/*.xml" % ds.getRawPath())
+    for rawPartXmlPath in rawPartsXmlPaths:
+        partE = et.parse(rawPartXmlPath).getroot()
+        name = partE.find('Name').text
+
+        if name in parts:
+            print "When processing %s already found part with name %s.  Ignoring." % (rawPartXmlPath, name)
+            continue
+
+        data = {
+            'Name' : name,
+            'Type' : partE.find('Type').text,
+            'Description' : partE.find('Description').text,
+            'Organism' : partE.find('Organism').text,
+            'DesignMethod' : partE.find('DesignMethod').text,
+            'Sequence' : partE.find('Sequence').text
+        }
+
+        parts[name] = data
+
+    return parts
+
+"""
 Given a set of parts, output InterMine items XML.
 """
 def outputPartsToItemsXml(ds, parts):
@@ -76,26 +104,4 @@ args = parser.parse_args()
 dc = sbd.Collection(args.colPath)
 ds = dc.getSet('polen')
 
-parts = {}
-
-rawPartsXmlPaths = glob.glob("%s/parts/*.xml" % ds.getRawPath())
-for rawPartXmlPath in rawPartsXmlPaths:
-    partE = et.parse(rawPartXmlPath).getroot()
-    name = partE.find('Name').text
-
-    if name in parts:
-        print "When processing %s already found part with name %s.  Ignoring." % (rawPartXmlPath, name)
-        continue
-
-    data = {
-        'Name' : name,
-        'Type' : partE.find('Type').text,
-        'Description' : partE.find('Description').text,
-        'Organism' : partE.find('Organism').text,
-        'DesignMethod' : partE.find('DesignMethod').text,
-        'Sequence' : partE.find('Sequence').text
-    }
-
-    parts[name] = data
-
-outputPartsToItemsXml(ds, parts)
+outputPartsToItemsXml(ds, processXmlToParts(ds))
