@@ -16,7 +16,7 @@ imu.handleSimpleSourceAddProcess(
         imp.Source(
             'go', 'go',
             [
-                { 'name':'src.data.file',        'location':'data/go/load/gene_ontology.obo' },
+                { 'name':'src.data.file',        'location':'data/go/load/go-basic.obo' },
             ])
     ],
     "writeGoProjectXml")
