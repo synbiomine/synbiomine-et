@@ -3,6 +3,7 @@ import sys
 
 sys.path.insert(1, os.path.dirname(os.path.abspath(__file__) + '/..'))
 import intermyne.model as imm
+import intermyne.utils as imu
 
 """
 Represents a collection of datasets
@@ -96,12 +97,22 @@ class Set:
         self._basePath = basePath
         self._rawPath = "%s/raw" % (self._basePath)
         self._loadPath = "%s/load" % (self._basePath)
+        self._logsPath = "%s/logs" % (self._basePath)
 
         if not os.path.exists(self._rawPath):
             os.mkdir(self._rawPath)
 
         if not os.path.exists(self._loadPath):
             os.mkdir(self._loadPath)
+
+        if not os.path.exists(self._logsPath):
+            os.mkdir(self._logsPath)
+
+    """
+    Start logging to the given log name.  This can be a path in which case only the basename will be used.
+    """
+    def startLogging(self, logName):
+        sys.stdout = imu.Logger("%s/%s.log" % (self._logsPath, os.path.basename(logName)))
 
     def getCollection(self):
         return self._parentCollection
