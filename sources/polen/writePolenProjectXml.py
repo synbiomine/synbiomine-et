@@ -16,7 +16,7 @@ imu.handleSimpleSourceAddProcess(
         imp.Source(
             'synbio-polen', 'synbio-polen',
             [
-                { 'name':'src.data.dir',        'location':'data/polen' },
+                { 'name':'src.data.dir',        'location':'data/polen/load' },
             ])
     ],
     "writePolenProjectXml")
