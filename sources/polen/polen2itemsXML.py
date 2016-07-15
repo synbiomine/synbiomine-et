@@ -100,7 +100,10 @@ def outputPartsToItemsXml(ds, parts):
 
 def createGoTermItem(doc, id):
     goTermItem = doc.createItem('GOTerm')
-    goTermItem.addAttribute('identifier', id)
+
+    # For some ineffable reason, virtualparts uses _ in their go term IDs rather than GO's own :
+    goTermItem.addAttribute('identifier', id.replace('_', ':'))
+
     doc.addItem(goTermItem)
     return goTermItem
 
