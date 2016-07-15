@@ -116,5 +116,6 @@ args = parser.parse_args()
 
 dc = sbd.Collection(args.colPath)
 ds = dc.getSet('polen')
+ds.startLogging(__file__)
 
 outputPartsToItemsXml(ds, processXmlToParts(ds))
