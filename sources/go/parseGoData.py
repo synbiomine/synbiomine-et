@@ -36,8 +36,8 @@ with open(goPath) as f:
                 fcIds.add(currentFcId)
             elif key == 'alt_id':
                 if value in synonymIds:
-                    print "WARNING: Already found synonym %s => %s when trying to set up %s => %s" % (value, synonymIds[value], value, currentFcId)
-                    continue
+                    print "ERROR: Already found synonym %s => %s when trying to set up %s => %s" % (value, synonymIds[value], value, currentFcId)
+                    sys.exit(2)
                 else:
                     synonymIds[value] = currentFcId
 
