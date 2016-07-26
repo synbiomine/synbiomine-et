@@ -18,7 +18,9 @@ dc = sbd.Collection(args.datasetPath)
 ds = dc.getSet('go')
 
 goPath = "%s/%s" % (ds.getLoadPath(), 'go-basic.obo')
-ids = set()
+fcIds = set()
+synonymIds = {}
+currentFcId = None
 
 with open(goPath) as f:
     for line in f:
@@ -26,10 +28,21 @@ with open(goPath) as f:
 
         if line.find(':') > -1:
             (key, value) = line.split(':', 1)
-            if key == 'id':
-                ids.add(value)
+            key = key.strip()
+            value = value.strip()
 
-for id in ids:
+            if key == 'id':
+                currentFcId = value
+                fcIds.add(currentFcId)
+            elif key == 'alt_id':
+                if value in synonymIds:
+                    print "WARNING: Already found synonym %s => %s when trying to set up %s => %s" % (value, synonymIds[value], value, currentFcId)
+                    continue
+                else:
+                    synonymIds[value] = currentFcId
+
+for id in fcIds:
     print id
 
-print "Got %d ids" % len(ids)
+print "Got %d first class ids" % len(fcIds)
+print "Got %d synonyms" % len(synonymIds)
