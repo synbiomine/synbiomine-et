@@ -22,8 +22,7 @@ def getSynonoyms(goOboPath):
                     fcIds.add(currentFcId)
                 elif key == 'alt_id':
                     if value in synIds:
-                        print "ERROR: Already found synonym %s => %s when trying to set up %s => %s" % (value, synIds[value], value, currentFcId)
-                        sys.exit(2)
+                        raise Exception('Already found synonym %s => %s when trying to set up %s => %s' % (value, synIds[value], value, currentFcId))
                     else:
                         synIds[value] = currentFcId
 
@@ -33,14 +32,15 @@ def getSynonoyms(goOboPath):
     print "Got %d first class ids" % len(fcIds)
     print "Got %d synonyms" % len(synIds)
 
-    for synId, fcId in synIds.iteritems():
-        print "%s => %s" % (synId, fcId)
+#    for synId, fcId in synIds.iteritems():
+#        print "%s => %s" % (synId, fcId)
 
     synAndFcCount = 0
     for synId in synIds.keys():
         if synId in fcIds:
             synAndFcCount += 1
 
-    print "Got %d synonyms that were also first-class IDs" % (synAndFcCount)
+    if synAndFcCount != 0:
+        raise Exception("Got %d synonyms that were also first-class IDs when expecting 0" % (synAndFcCount))
 
     return synIds

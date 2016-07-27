@@ -53,6 +53,7 @@ Given a set of parts, output InterMine items XML.
 """
 def outputPartsToItemsXml(ds, goDs, parts):
     # We need to get a dictionary of go synonyms so that we can resolve those used in virtualparts
+    imu.printSection('Loading GO synonyms')
     goSynonyms = go.getSynonoyms("%s/%s" % (goDs.getLoadPath(), 'go-basic.obo'))
 
     model = ds.getCollection().getModel()
@@ -69,7 +70,8 @@ def outputPartsToItemsXml(ds, goDs, parts):
     dataSetItem.addAttribute('dataSource', dataSourceItem)
     doc.addItem(dataSetItem)
 
-    imu.printSection('Adding %d part items' % (len(parts)))
+    imu.printSection('Adding part items')
+    print 'Adding %d parts' % (len(parts))
 
     for part in parts.values():
         data = part['data']
