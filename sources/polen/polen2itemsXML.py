@@ -9,6 +9,7 @@ import lxml.etree as et
 sys.path.insert(1, os.path.dirname(os.path.abspath(__file__)) + '/../../modules/python')
 import intermyne.model as imm
 import intermyne.utils as imu
+import jbio.sources.go as go
 import synbio.data as sbd
 
 #################
@@ -50,7 +51,9 @@ def processXmlToParts(ds):
 """
 Given a set of parts, output InterMine items XML.
 """
-def outputPartsToItemsXml(ds, parts):
+def outputPartsToItemsXml(ds, goDs, parts):
+    # We need to get a dictionary of go synonyms so that we can resolve those used in virtualparts
+    goSynonyms = go.getSynonoyms("%s/%s" % (goDs.getLoadPath(), 'go-basic.obo'))
 
     model = ds.getCollection().getModel()
     doc = imm.Document(model)
@@ -70,8 +73,9 @@ def outputPartsToItemsXml(ds, parts):
 
     for part in parts.values():
         data = part['data']
+        name = data['Name']
         partItem = doc.createItem('Part')
-        partItem.addAttribute('name', data['Name'])
+        partItem.addAttribute('name', name)
         partItem.addAttribute('type', data['Type'])
         partItem.addAttribute('description', data['Description'])
 
@@ -90,8 +94,21 @@ def outputPartsToItemsXml(ds, parts):
             value = propertyComponents['Value']
 
             if name == 'has_function':
+                # For some ineffable reason, virtualparts uses _ in their go term IDs rather than GO's own :
+                value = value.replace('_', ':')
+
+                if value in goSynonyms:
+                    print 'Replacing has_function GO synonym %s with %s for part %s' % (value, goSynonyms[value], name)
+                    value = goSynonyms[value]
                 partItem.addToAttribute('functions', createGoTermItem(doc, value))
+
             elif name == 'participates_in':
+                # For some ineffable reason, virtualparts uses _ in their go term IDs rather than GO's own :
+                value = value.replace('_', ':')
+
+                if value in goSynonyms:
+                    print 'Replacing participates_in GO synonym %s with %s for part %s' % (value, goSynonyms[value], name)
+                    value = goSynonyms[value]
                 partItem.addToAttribute('participatesIn', createGoTermItem(doc, value))
 
         partItem.addToAttribute('dataSets', dataSetItem)
@@ -101,10 +118,7 @@ def outputPartsToItemsXml(ds, parts):
 
 def createGoTermItem(doc, id):
     goTermItem = doc.createItem('GOTerm')
-
-    # For some ineffable reason, virtualparts uses _ in their go term IDs rather than GO's own :
-    goTermItem.addAttribute('identifier', id.replace('_', ':'))
-
+    goTermItem.addAttribute('identifier', id)
     doc.addItem(goTermItem)
     return goTermItem
 
@@ -119,4 +133,4 @@ dc = sbd.Collection(args.colPath)
 ds = dc.getSet('polen')
 ds.startLogging(__file__)
 
-outputPartsToItemsXml(ds, processXmlToParts(ds))
+outputPartsToItemsXml(ds, dc.getSet('go'), processXmlToParts(ds))
