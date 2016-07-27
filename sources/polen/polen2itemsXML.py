@@ -94,32 +94,27 @@ def outputPartsToItemsXml(ds, goDs, parts):
             value = propertyComponents['Value']
 
             if name == 'has_function':
-                # For some ineffable reason, virtualparts uses _ in their go term IDs rather than GO's own :
-                value = value.replace('_', ':')
-
-                if value in goSynonyms:
-                    print 'Replacing has_function GO synonym %s with %s for part %s' % (value, goSynonyms[value], name)
-                    value = goSynonyms[value]
-                partItem.addToAttribute('functions', createGoTermItem(doc, value))
-
+                partItem.addToAttribute('functions', createGoTermItem(doc, partItem, value, goSynonyms, 'has_function'))
             elif name == 'participates_in':
-                # For some ineffable reason, virtualparts uses _ in their go term IDs rather than GO's own :
-                value = value.replace('_', ':')
-
-                if value in goSynonyms:
-                    print 'Replacing participates_in GO synonym %s with %s for part %s' % (value, goSynonyms[value], name)
-                    value = goSynonyms[value]
-                partItem.addToAttribute('participatesIn', createGoTermItem(doc, value))
+                partItem.addToAttribute('participatesIn', createGoTermItem(doc, partItem, value, goSynonyms, 'participates_in'))
 
         partItem.addToAttribute('dataSets', dataSetItem)
         doc.addItem(partItem)
 
     doc.write('%s/items.xml' % ds.getLoadPath())
 
-def createGoTermItem(doc, id):
+def createGoTermItem(doc, partItem, id, goSynonyms, originalAttributeName):
+    # For some ineffable reason, virtualparts uses _ in their go term IDs rather than GO's own :
+    id = id.replace('_', ':')
+
+    if id in goSynonyms:
+        print 'Replacing %s synonym %s with %s for part %s' % (originalAttributeName, id, goSynonyms[id], partItem.getAttribute('name'))
+        id = goSynonyms[id]
+
     goTermItem = doc.createItem('GOTerm')
     goTermItem.addAttribute('identifier', id)
     doc.addItem(goTermItem)
+
     return goTermItem
 
 ############
