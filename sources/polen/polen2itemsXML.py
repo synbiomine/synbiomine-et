@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import glob
+import jargparse
 import os
 import sys
 import lxml.etree as et
@@ -110,7 +111,7 @@ def createGoTermItem(doc, id):
 ############
 ### MAIN ###
 ############
-parser = imu.ArgParser('Transform POLEN data into InterMine items XML')
+parser = jargparse.ArgParser('Transform POLEN data into InterMine items XML')
 parser.add_argument('colPath', help='path to the data collection')
 args = parser.parse_args()
 
