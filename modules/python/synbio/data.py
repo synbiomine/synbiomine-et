@@ -12,17 +12,8 @@ class Collection:
     def __init__(self, basePath):
         self.basePath = basePath
 
-        self._model = imm.Model('%s/intermine/genomic_model.xml' % self.basePath)
-
         self.genbankPath = '%s/genbank' % self.basePath
         self.selectedAssembliesPath = '%s/synbiomine_selected_assembly_summary_refseq.txt' % self.genbankPath
-
-        taxonsPath = '%s/taxons/taxons.txt' % self.basePath
-        self._taxons = self._parseTaxons(taxonsPath)
-
-    def _parseTaxons(self, taxonsPath):
-        with open(taxonsPath) as f:
-            self._taxons = set(f.read().strip().split())
 
     """
     Get the dataset in this collection with the given name.
@@ -39,6 +30,10 @@ class Collection:
     Get the InterMine model for this data collection.
     """
     def getModel(self):
+        # Lazy load the model so that scripts that don't need it can still run if it isn't present
+        if self._model == None:
+            self._model = imm.Model('%s/intermine/genomic_model.xml' % self.basePath)
+
         return self._model
 
     """
@@ -83,13 +78,21 @@ class Collection:
     Get the string list of taxons
     """
     def getTaxons(self):
-        return set(self.taxons)
+        # Lazy load the taxons so that scripts that don't need them can still run if it isn't present
+        if self._taxons == None:
+            self._parseTaxons('%s/taxons/taxons.txt' % self.basePath)
+
+        return set(self._taxons)
 
     """
     Get the taxons as a single ' ' separated string
     """
     def getTaxonsAsString(self):
-        return ' '.join(self.taxons)
+        return ' '.join(self.getTaxons())
+
+    def _parseTaxons(self, taxonsPath):
+        with open(taxonsPath) as f:
+            self._taxons = set(f.read().strip().split())
 
 class Set:
     def __init__(self, dc, basePath):
