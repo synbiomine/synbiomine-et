@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+import jargparse
 import json
 import os
 import requests
@@ -92,7 +93,7 @@ def getParts(ds, polenPartsMd):
 ############
 ### MAIN ###
 ############
-parser = imu.ArgParser('Fetch POLEN data into the data collection')
+parser = jargparse.ArgParser('Fetch POLEN data into the data collection')
 parser.add_argument('colPath', help='path to the data collection')
 args = parser.parse_args()
 
