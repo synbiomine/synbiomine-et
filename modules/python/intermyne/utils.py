@@ -5,7 +5,7 @@ import sys
 class Logger(object):
     def __init__(self, logPath):
         self.terminal = sys.stdout
-        self.log = open(logPath, "a")
+        self.log = open(logPath, 'a')
 
     def write(self, message):
         self.terminal.write(message)
@@ -37,10 +37,10 @@ def handleSimpleSourceAddProcess(sourceTypeNameInDataset, sources, logName):
 
     datasetPath = args.datasetPath
 
-    logPath = "%s/logs/%s.log" % (datasetPath, logName)
+    logPath = '%s/logs/%s.log' % (datasetPath, logName)
     sys.stdout = Logger(logPath)
 
-    imp.addSourcesToProject("%s/intermine/project.xml" % datasetPath, sources)
+    imp.addSourcesToProject('%s/intermine/project.xml' % datasetPath, sources)
 
 def printSection(text):
     print '~~~ %s ~~~' % text

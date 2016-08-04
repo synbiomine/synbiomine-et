@@ -98,9 +98,9 @@ class Set:
     def __init__(self, dc, basePath):
         self._parentCollection = dc
         self._basePath = basePath
-        self._rawPath = "%s/raw" % (self._basePath)
-        self._loadPath = "%s/load" % (self._basePath)
-        self._logsPath = "%s/logs" % (self._basePath)
+        self._rawPath = '%s/raw' % (self._basePath)
+        self._loadPath = '%s/load' % (self._basePath)
+        self._logsPath = '%s/logs' % (self._basePath)
 
         if not os.path.exists(self._rawPath):
             os.mkdir(self._rawPath)
@@ -115,7 +115,9 @@ class Set:
     Start logging to the given log name.  This can be a path in which case only the basename will be used.
     """
     def startLogging(self, logName):
-        sys.stdout = imu.Logger("%s/%s.log" % (self._logsPath, os.path.basename(logName)))
+        logPath = '%s/%s.log' % (self._logsPath, os.path.basename(logName))
+        os.remove(logPath)
+        sys.stdout = imu.Logger(logPath)
 
     def getCollection(self):
         return self._parentCollection
