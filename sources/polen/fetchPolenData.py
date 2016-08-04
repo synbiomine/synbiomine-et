@@ -59,13 +59,13 @@ def getPolenPartsMd(polenMessagesJson):
     return partsMd
 
 """
-Given POLEN parts metadata, get the actual data files that we're interested in.
+Given POLEN parts metadata, get the actual data files for a given component (currently 'parts' or 'interactions')
 """
-def getVPRepoParts(ds, polenPartsMd):
-    partsPath = '%s/parts' % ds.getRawPath()
+def getVPRepoComponents(ds, polenPartsMd, componentName, componentUriSuffix, componentNameUriIndex):
+    myComponentsPath = '%s/%s' % (ds.getRawPath(), componentName)
 
-    if not os.path.exists(partsPath):
-        os.mkdir(partsPath)
+    if not os.path.exists(myComponentsPath):
+        os.mkdir(myComponentsPath)
 
     gotCount = 0
 
@@ -73,11 +73,11 @@ def getVPRepoParts(ds, polenPartsMd):
         # At the moment, all parts come from virtualparts.org and the only uri we are given is for the sbol
         # But for InterMine, we want the actual part XML page which is given by replacing 'sbol' on the end of the uri
         # with 'xml'
-        uri = "%s/xml" % os.path.dirname(partMd.uri)
+        uri = '%s/%s' % (os.path.dirname(partMd.uri), componentUriSuffix)
         uriComponents = uri.split('/')
-        partPath = "%s/%s.%s" % (partsPath, uriComponents[-2], uriComponents[-1])
+        myComponentPath = "%s/%s.%s" % (myComponentsPath, uriComponents[componentNameUriIndex], uriComponents[-1])
 
-        print "Fetching %s => %s" % (uri, partPath)
+        print "Fetching %s => %s" % (uri, myComponentPath)
         r = requests.get(uri)
         if r.status_code == 500:
             print "*** Ignoring %s due to server status code %d" % (uri, r.status_code)
@@ -85,39 +85,10 @@ def getVPRepoParts(ds, polenPartsMd):
 
         gotCount += 1
 
-        with open(partPath, 'w') as f:
+        with open(myComponentPath, 'w') as f:
             f.write(r.text)
 
-    print "Got %d parts from %d metadata" % (gotCount, len(polenPartsMd))
-
-"""
-Given POLEN parts metadata, get the interactions data from virtualparts.org
-"""
-def getVPRepoInterations(ds, polenPartsMd):
-    interactionsPath = '%s/interactions' % ds.getRawPath()
-
-    if not os.path.exists(interactionsPath):
-        os.mkdir(interactionsPath)
-
-    gotCount = 0
-
-    for partMd in polenPartsMd.values():
-        uri = "%s/interactions/xml" % os.path.dirname(partMd.uri)
-        uriComponents = uri.split('/')
-        path = "%s/%s.%s" % (interactionsPath, uriComponents[-3], uriComponents[-1])
-
-        print "Fetching interactions %s => %s" % (uri, path)
-        r = requests.get(uri)
-        if r.status_code == 500:
-            print "*** Ignoring %s due to server status code %d" % (uri, r.status_code)
-            continue
-
-        gotCount += 1
-
-        with open(path, 'w') as f:
-            f.write(r.text)
-
-    print "Got %d interactions files from %d metadata" % (gotCount, len(polenPartsMd))
+    print "Got %d %s from %d metadata" % (gotCount, componentName, len(polenPartsMd))
 
 ############
 ### MAIN ###
@@ -132,5 +103,5 @@ ds.startLogging('fetchPolenData')
 
 polenMessagesJson = getPolenPartsMessages(ds)
 polenPartsMetadata = getPolenPartsMd(polenMessagesJson)
-getVPRepoParts(ds, polenPartsMetadata)
-getVPRepoInterations(ds, polenPartsMetadata)
+getVPRepoComponents(ds, polenPartsMetadata, 'parts', 'xml', -2)
+getVPRepoComponents(ds, polenPartsMetadata, 'interactions', 'interactions/xml', -3)
