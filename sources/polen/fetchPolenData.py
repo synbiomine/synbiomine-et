@@ -61,7 +61,7 @@ def getPolenPartsMd(polenMessagesJson):
 """
 Given POLEN parts metadata, get the actual data files for a given component (currently 'parts' or 'interactions')
 """
-def getVPRepoComponents(ds, polenPartsMd, componentName, componentUriSuffix, componentNameUriIndex):
+def getVPRepoComponents(ds, polenPartsMd, componentName, componentUriSuffix):
     myComponentsPath = '%s/%s' % (ds.getRawPath(), componentName)
 
     if not os.path.exists(myComponentsPath):
@@ -75,7 +75,10 @@ def getVPRepoComponents(ds, polenPartsMd, componentName, componentUriSuffix, com
         # with 'xml'
         uri = '%s/%s' % (os.path.dirname(partMd.uri), componentUriSuffix)
         uriComponents = uri.split('/')
-        myComponentPath = "%s/%s.%s" % (myComponentsPath, uriComponents[componentNameUriIndex], uriComponents[-1])
+        myComponentSuffixIndex = -1
+        myComponentSuffix = uriComponents[myComponentSuffixIndex]
+        myComponentName = uriComponents[myComponentSuffixIndex - 1 - componentUriSuffix.count('/')]
+        myComponentPath = "%s/%s.%s" % (myComponentsPath, myComponentName, myComponentSuffix)
 
         print "Fetching %s => %s" % (uri, myComponentPath)
         r = requests.get(uri)
@@ -103,5 +106,5 @@ ds.startLogging('fetchPolenData')
 
 polenMessagesJson = getPolenPartsMessages(ds)
 polenPartsMetadata = getPolenPartsMd(polenMessagesJson)
-getVPRepoComponents(ds, polenPartsMetadata, 'parts', 'xml', -2)
-getVPRepoComponents(ds, polenPartsMetadata, 'interactions', 'interactions/xml', -3)
+getVPRepoComponents(ds, polenPartsMetadata, 'parts', 'xml')
+getVPRepoComponents(ds, polenPartsMetadata, 'interactions', 'interactions/xml')
