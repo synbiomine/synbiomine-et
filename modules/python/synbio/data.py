@@ -116,7 +116,10 @@ class Set:
     """
     def startLogging(self, logName):
         logPath = '%s/%s.log' % (self._logsPath, os.path.basename(logName))
-        os.remove(logPath)
+
+        if os.path.exists(logPath):
+            os.remove(logPath)
+
         sys.stdout = imu.Logger(logPath)
 
     def getCollection(self):
