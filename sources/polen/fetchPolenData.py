@@ -61,7 +61,7 @@ def getPolenPartsMd(polenMessagesJson):
 """
 Given POLEN parts metadata, get the actual data files that we're interested in.
 """
-def getParts(ds, polenPartsMd):
+def getVPRepoParts(ds, polenPartsMd):
     partsPath = '%s/parts' % ds.getRawPath()
 
     if not os.path.exists(partsPath):
@@ -93,7 +93,7 @@ def getParts(ds, polenPartsMd):
 """
 Given POLEN parts metadata, get the interactions data from virtualparts.org
 """
-def getInterations(ds, polenPartsMd):
+def getVPRepoInterations(ds, polenPartsMd):
     interactionsPath = '%s/interactions' % ds.getRawPath()
 
     if not os.path.exists(interactionsPath):
@@ -132,5 +132,5 @@ ds.startLogging('fetchPolenData')
 
 polenMessagesJson = getPolenPartsMessages(ds)
 polenPartsMetadata = getPolenPartsMd(polenMessagesJson)
-getParts(ds, polenPartsMetadata)
-getInterations(ds, polenPartsMetadata)
+getVPRepoParts(ds, polenPartsMetadata)
+getVPRepoInterations(ds, polenPartsMetadata)
