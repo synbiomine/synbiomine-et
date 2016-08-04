@@ -119,8 +119,6 @@ def getInterations(ds, polenPartsMd):
 
     print "Got %d interactions files from %d metadata" % (gotCount, len(polenPartsMd))
 
-    pass
-
 ############
 ### MAIN ###
 ############
