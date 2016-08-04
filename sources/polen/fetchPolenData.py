@@ -62,7 +62,7 @@ def getPolenPartsMd(polenMessagesJson):
 Given POLEN parts metadata, get the actual data files that we're interested in.
 """
 def getParts(ds, polenPartsMd):
-    partsPath = "%s/parts" % ds.getRawPath()
+    partsPath = '%s/parts' % ds.getRawPath()
 
     if not os.path.exists(partsPath):
         os.mkdir(partsPath)
@@ -90,6 +90,37 @@ def getParts(ds, polenPartsMd):
 
     print "Got %d parts from %d metadata" % (gotCount, len(polenPartsMd))
 
+"""
+Given POLEN parts metadata, get the interactions data from virtualparts.org
+"""
+def getInterations(ds, polenPartsMd):
+    interactionsPath = '%s/interactions' % ds.getRawPath()
+
+    if not os.path.exists(interactionsPath):
+        os.mkdir(interactionsPath)
+
+    gotCount = 0
+
+    for partMd in polenPartsMd.values():
+        uri = "%s/interactions/xml" % os.path.dirname(partMd.uri)
+        uriComponents = uri.split('/')
+        path = "%s/%s.%s" % (interactionsPath, uriComponents[-3], uriComponents[-1])
+
+        print "Fetching interactions %s => %s" % (uri, path)
+        r = requests.get(uri)
+        if r.status_code == 500:
+            print "*** Ignoring %s due to server status code %d" % (uri, r.status_code)
+            continue
+
+        gotCount += 1
+
+        with open(path, 'w') as f:
+            f.write(r.text)
+
+    print "Got %d interactions files from %d metadata" % (gotCount, len(polenPartsMd))
+
+    pass
+
 ############
 ### MAIN ###
 ############
@@ -104,3 +135,4 @@ ds.startLogging('fetchPolenData')
 polenMessagesJson = getPolenPartsMessages(ds)
 polenPartsMetadata = getPolenPartsMd(polenMessagesJson)
 getParts(ds, polenPartsMetadata)
+getInterations(ds, polenPartsMetadata)
