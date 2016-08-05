@@ -26,7 +26,7 @@ def loadInteractionsXml(ds):
         # print "Processing interaction %s" % rawXmlPath
 
         with open(rawXmlPath) as f:
-            interactions = xmltodict.parse(f, force_list=('Interaction', 'Part', 'PartDetail', 'Parameter'))['Interactions']
+            interactions = xmltodict.parse(f, force_list=('Interaction', 'Part', 'PartDetail', 'Parameter')).itervalues().next()
 
         processCount = 0
 
@@ -53,7 +53,7 @@ def loadPartsXml(ds):
     rawPartsXmlPaths = glob.glob("%s/parts/*.xml" % ds.getRawPath())
     for rawPartXmlPath in rawPartsXmlPaths:
         with open(rawPartXmlPath) as f:
-            partE = xmltodict.parse(f, force_list=('Property',))['Part']
+            partE = xmltodict.parse(f, force_list=('Property',)).itervalues().next()
 
         name = partE['Name']
 
