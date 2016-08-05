@@ -4,7 +4,7 @@ import glob
 import jargparse
 import os
 import sys
-import lxml.etree as et
+import xmltodict
 
 sys.path.insert(1, os.path.dirname(os.path.abspath(__file__)) + '/../../modules/python')
 import intermyne.model as imm
@@ -23,28 +23,15 @@ def processXmlToParts(ds):
 
     rawPartsXmlPaths = glob.glob("%s/parts/*.xml" % ds.getRawPath())
     for rawPartXmlPath in rawPartsXmlPaths:
-        partE = et.parse(rawPartXmlPath).getroot()
-        name = partE.find('Name').text
+        with open(rawPartXmlPath) as f:
+            partE = xmltodict.parse(f, force_list=('Property',))['Part']
+
+        name = partE['Name']
 
         if name in parts:
-            print "When processing %s already found part with name %s.  Ignoring." % (rawPartXmlPath, name)
-            continue
-
-        data = {}
-        properties = []
-
-        for childE in partE:
-            if childE.tag == 'Property':
-                propertyComponents = {}
-                for propertyComponentE in childE:
-                    print "Adding %s:%s" % (propertyComponentE.tag, propertyComponentE.text)
-                    propertyComponents[propertyComponentE.tag] = propertyComponentE.text
-
-                properties.append(propertyComponents)
-
-            data[childE.tag] = childE.text
-
-        parts[name] = { 'data': data, 'properties' : properties }
+            print "When processing %s already found part with name %s" % (rawPartXmlPath, name)
+        else:
+            parts[name] = partE
 
     return parts
 
@@ -74,24 +61,24 @@ def outputPartsToItemsXml(ds, goDs, parts):
     print 'Adding %d parts' % (len(parts))
 
     for part in parts.values():
-        data = part['data']
-        name = data['Name']
+        name = part['Name']
         partItem = doc.createItem('Part')
         partItem.addAttribute('name', name)
-        partItem.addAttribute('type', data['Type'])
-        partItem.addAttribute('description', data['Description'])
+        partItem.addAttribute('type', part['Type'])
+        partItem.addAttribute('description', part['Description'])
 
         # XXX: Reconstructing the uri here is heavily less than ideal
-        partItem.addAttribute('uri', 'http://www.virtualparts.org/part/%s' % data['Name'])
+        partItem.addAttribute('uri', 'http://www.virtualparts.org/part/%s' % name)
 
-        partItem.addAttribute('organism', data['Organism'])
-        partItem.addAttribute('designMethod', data['DesignMethod'])
+        partItem.addAttribute('organism', part['Organism'])
+        partItem.addAttribute('designMethod', part['DesignMethod'])
 
         # Sequence in all virtualparts.org XML has a mangled CDATA tag.
         # Let's see if Newcastle fix this before taking demangling measures ourselves
         # partItem.addAttribute('sequence', data['Sequence'])
 
-        for propertyComponents in part['properties']:
+
+        for propertyComponents in part['Property']:
             name = propertyComponents['Name']
             value = propertyComponents['Value']
 

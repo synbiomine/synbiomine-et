@@ -11,9 +11,11 @@ Represents a collection of datasets
 class Collection:
     def __init__(self, basePath):
         self.basePath = basePath
-
         self.genbankPath = '%s/genbank' % self.basePath
         self.selectedAssembliesPath = '%s/synbiomine_selected_assembly_summary_refseq.txt' % self.genbankPath
+
+        self._model = None
+        self._taxons = None
 
     """
     Get the dataset in this collection with the given name.
