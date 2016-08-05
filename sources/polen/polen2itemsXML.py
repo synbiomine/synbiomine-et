@@ -67,13 +67,10 @@ def loadPartsXml(ds):
 """
 Given a set of parts, output InterMine items XML.
 """
-def outputPartsToItemsXml(ds, goDs, parts):
+def outputPartsToItemsXml(doc, ds, goDs, parts):
     # We need to get a dictionary of go synonyms so that we can resolve those used in virtualparts
     imu.printSection('Loading GO synonyms')
     goSynonyms = go.getSynonoyms("%s/%s" % (goDs.getLoadPath(), 'go-basic.obo'))
-
-    model = ds.getCollection().getModel()
-    doc = imm.Document(model)
 
     imu.printSection('Adding metadata items')
     dataSourceItem = doc.createItem('DataSource')
@@ -146,5 +143,8 @@ dc = sbd.Collection(args.colPath)
 ds = dc.getSet('polen')
 ds.startLogging(__file__)
 
-outputPartsToItemsXml(ds, dc.getSet('go'), loadPartsXml(ds))
+model = dc.getModel()
+doc = imm.Document(model)
+
+outputPartsToItemsXml(doc, ds, dc.getSet('go'), loadPartsXml(ds))
 loadInteractionsXml(ds)
