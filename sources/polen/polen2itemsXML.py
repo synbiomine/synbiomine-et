@@ -111,7 +111,6 @@ def outputPartsToItemsXml(doc, ds, goDs, datasetItem, parts):
         # Let's see if Newcastle fix this before taking demangling measures ourselves
         # partItem.addAttribute('sequence', data['Sequence'])
 
-
         for propertyComponents in part['Property']:
             name = propertyComponents['Name']
             value = propertyComponents['Value']
