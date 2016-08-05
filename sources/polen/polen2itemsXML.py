@@ -65,23 +65,31 @@ def loadPartsXml(ds):
     return parts
 
 """
-Given a set of parts, output InterMine items XML.
-"""
-def outputPartsToItemsXml(doc, ds, goDs, parts):
-    # We need to get a dictionary of go synonyms so that we can resolve those used in virtualparts
-    imu.printSection('Loading GO synonyms')
-    goSynonyms = go.getSynonoyms("%s/%s" % (goDs.getLoadPath(), 'go-basic.obo'))
+Add InterMine metdata items (data source, dataset) to items XML.
 
+Returns the dataset item.
+"""
+def outputMetadataToItemsXml(doc):
     imu.printSection('Adding metadata items')
     dataSourceItem = doc.createItem('DataSource')
     dataSourceItem.addAttribute('name', 'POLEN')
     dataSourceItem.addAttribute('url', 'http://intbio.ncl.ac.uk/?projects=polen')
     doc.addItem(dataSourceItem)
 
-    dataSetItem = doc.createItem('DataSet')
-    dataSetItem.addAttribute('name', 'POLEN Parts')
-    dataSetItem.addAttribute('dataSource', dataSourceItem)
-    doc.addItem(dataSetItem)
+    datasetItem = doc.createItem('DataSet')
+    datasetItem.addAttribute('name', 'POLEN Parts')
+    datasetItem.addAttribute('dataSource', dataSourceItem)
+    doc.addItem(datasetItem)
+
+    return datasetItem
+
+"""
+Given a set of parts, output InterMine items XML.
+"""
+def outputPartsToItemsXml(doc, ds, goDs, datasetItem, parts):
+    # We need to get a dictionary of go synonyms so that we can resolve those used in virtualparts
+    imu.printSection('Loading GO synonyms')
+    goSynonyms = go.getSynonoyms("%s/%s" % (goDs.getLoadPath(), 'go-basic.obo'))
 
     imu.printSection('Adding part items')
     print 'Adding %d parts' % (len(parts))
@@ -113,7 +121,7 @@ def outputPartsToItemsXml(doc, ds, goDs, parts):
             elif name == 'participates_in':
                 partItem.addToAttribute('participatesIn', createGoTermItem(doc, partItem, value, goSynonyms, 'participates_in'))
 
-        partItem.addToAttribute('dataSets', dataSetItem)
+        partItem.addToAttribute('dataSets', datasetItem)
         doc.addItem(partItem)
 
     doc.write('%s/items.xml' % ds.getLoadPath())
@@ -146,5 +154,6 @@ ds.startLogging(__file__)
 model = dc.getModel()
 doc = imm.Document(model)
 
-outputPartsToItemsXml(doc, ds, dc.getSet('go'), loadPartsXml(ds))
+dsItem = outputMetadataToItemsXml(doc)
+outputPartsToItemsXml(doc, ds, dc.getSet('go'), dsItem, loadPartsXml(ds))
 loadInteractionsXml(ds)
