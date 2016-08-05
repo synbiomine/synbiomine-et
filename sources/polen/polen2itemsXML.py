@@ -16,9 +16,38 @@ import synbio.data as sbd
 ### FUNCTIONS ###
 #################
 """
-Given a dataset, process all the POLEN parts xml here to our internal parts representations
+Given a dataset, load all the POLEN interactions xml to dicts
 """
-def processXmlToParts(ds):
+def loadInteractionsXml(ds):
+    items = {}
+
+    rawXmlPaths = glob.glob("%s/interactions/*.xml" % ds.getRawPath())
+    for rawXmlPath in rawXmlPaths:
+        # print "Processing interaction %s" % rawXmlPath
+
+        with open(rawXmlPath) as f:
+            interactions = xmltodict.parse(f, force_list=('Interaction', 'Part', 'PartDetail', 'Parameter'))['Interactions']
+
+        processCount = 0
+
+        if interactions is not None:
+            for interaction in interactions['Interaction']:
+                name = interaction['Name']
+
+                if name in items:
+                    print "When processing %s already found item with name %s" % (rawXmlPath, name)
+                else:
+                    items[name] = interaction
+                    processCount += 1
+
+        print "Processed %d interactions from %s" % (processCount, rawXmlPath)
+
+    return items
+
+"""
+Given a dataset, load all the POLEN parts xml to dicts
+"""
+def loadPartsXml(ds):
     parts = {}
 
     rawPartsXmlPaths = glob.glob("%s/parts/*.xml" % ds.getRawPath())
@@ -117,4 +146,5 @@ dc = sbd.Collection(args.colPath)
 ds = dc.getSet('polen')
 ds.startLogging(__file__)
 
-outputPartsToItemsXml(ds, dc.getSet('go'), processXmlToParts(ds))
+outputPartsToItemsXml(ds, dc.getSet('go'), loadPartsXml(ds))
+loadInteractionsXml(ds)
