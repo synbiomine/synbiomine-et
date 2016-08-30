@@ -25,7 +25,7 @@ pageNum = 1
 
 while True:
     url = 'http://virtualparts.org/parts/page/%d/xml' % pageNum
-    print "Fetching page %s" % url
+    # print "Fetching page %s" % url
     r = requests.get(url)
 
     # We're doing this processing so that we get individual parts files that we can compare with what we get when
@@ -34,6 +34,9 @@ while True:
 
     part_es = tree.findall('./Part')
     print 'Found %d parts in page %d' % (len(part_es), pageNum)
+
+    for part_e in part_es:
+        print 'Found part %s' % part_e.find('Name').text
 
     if len(part_es) <= 0:
         break
