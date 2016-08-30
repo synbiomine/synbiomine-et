@@ -22,6 +22,7 @@ ds.startLogging(__file__)
 
 # Uses api from http://virtualparts.org/repositorydocumentation
 pageNum = 1
+partsCount = 0
 
 while True:
     url = 'http://virtualparts.org/parts/page/%d/xml' % pageNum
@@ -33,14 +34,19 @@ while True:
     tree = ET.fromstring(r.text)
 
     part_es = tree.findall('./Part')
-    print 'Found %d parts in page %d' % (len(part_es), pageNum)
+    partsInPageCount = len(part_es)
+    partsCount += partsInPageCount
+
+    print 'Found %d parts in page %d' % (partsInPageCount, pageNum)
 
     for part_e in part_es:
         print 'Found part %s' % part_e.find('Name').text
 
-    if len(part_es) <= 0:
+    if partsInPageCount <= 0:
         break
     else:
         pageNum += 1
 
 # TODO: output each part in its own xml file
+
+print "Found %d parts in total" % partsCount
