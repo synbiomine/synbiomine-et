@@ -17,6 +17,11 @@ Fetch details for the given part
 """
 def fetchPartDetails(partName, partsPath):
     partPath = '%s/%s.xml' % (partsPath, partName)
+
+    if os.path.exists(partPath):
+        print 'Skipping fetch of part %s as we already have it' % partName
+        return
+
     url = 'http://virtualparts.org/part/%s/xml' % partName
     r = requests.get(url)
 
@@ -28,6 +33,11 @@ Fetch interactions for the given part
 """
 def fetchInteractions(partName, interactionsPath):
     partPath = '%s/%s.xml' % (interactionsPath, partName)
+
+    if os.path.exists(partPath):
+        print 'Skipping fetch of interaction %s as we already have it' % partName
+        return
+
     url = 'http://virtualparts.org/part/%s/interactions/xml' % partName
     r = requests.get(url)
 
