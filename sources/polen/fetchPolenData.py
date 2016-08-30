@@ -102,7 +102,7 @@ args = parser.parse_args()
 
 dc = sbd.Collection(args.colPath)
 ds = dc.getSet('polen')
-ds.startLogging('fetchPolenData')
+ds.startLogging(__file__)
 
 polenMessagesJson = getPolenPartsMessages(ds)
 polenPartsMetadata = getPolenPartsMd(polenMessagesJson)
