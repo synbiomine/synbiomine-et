@@ -9,6 +9,20 @@ import sys
 sys.path.insert(1, os.path.dirname(os.path.abspath(__file__)) + '/../../modules/python')
 import synbio.data as sbd
 
+#################
+### FUNCTIONS ###
+#################
+"""
+Fetch details for the given part
+"""
+def fetchPartDetails(partName, partsPath):
+    partPath = '%s/%s.xml' % (partsPath, partName)
+    partUrl = 'http://virtualparts.org/part/%s/xml' % partName
+    partRequest = requests.get(partUrl)
+
+    with open(partPath, 'w') as f:
+        f.write(partRequest.text)
+
 ############
 ### MAIN ###
 ############
@@ -52,12 +66,7 @@ while True:
 
         # Unfortunately the page xml only gives part summary information, not the detailed information that we want
         # So we need to request the xml for each part separately
-        partPath = '%s/%s.xml' % (partsPath, partName)
-        partUrl = 'http://virtualparts.org/part/%s/xml' % partName
-        partRequest = requests.get(partUrl)
-
-        with open(partPath, 'w') as f:
-            f.write(partRequest.text)
+        fetchPartDetails(partName, partsPath)
 
     if partsInPageCount <= 0:
         break
