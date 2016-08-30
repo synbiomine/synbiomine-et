@@ -16,6 +16,13 @@ import synbio.data as sbd
 ### FUNCTIONS ###
 #################
 """
+def loadItemsXml():
+    rawPartsXmlPaths = glob.glob("%s/parts/*.xml" % ds.getRawPath())
+    for rawPartXmlPath in rawPartsXmlPaths:
+        yield
+"""
+
+"""
 Given a dataset, load all the POLEN interactions xml to dicts
 """
 def loadInteractionsXml(ds):
@@ -47,7 +54,7 @@ def loadInteractionsXml(ds):
 """
 Given a dataset, load all the POLEN parts xml to dicts
 """
-def loadPartsXml(ds):
+def loadPartsFromXml(ds):
     parts = {}
 
     rawPartsXmlPaths = glob.glob("%s/parts/*.xml" % ds.getRawPath())
@@ -154,5 +161,5 @@ model = dc.getModel()
 doc = imm.Document(model)
 
 dsItem = outputMetadataToItemsXml(doc)
-outputPartsToItemsXml(doc, ds, dc.getSet('go'), dsItem, loadPartsXml(ds))
+outputPartsToItemsXml(doc, ds, dc.getSet('go'), dsItem, loadPartsFromXml(ds))
 loadInteractionsXml(ds)
