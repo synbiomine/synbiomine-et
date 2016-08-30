@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 import jargparse
-import xml.etree.ElementTree as ET
+from lxml import etree
 import os
 import requests
 import sys
@@ -20,6 +20,8 @@ dc = sbd.Collection(args.colPath)
 ds = dc.getSet('polen')
 ds.startLogging(__file__)
 
+partsPath = '%s/parts' % ds.getRawPath()
+
 # Uses api from http://virtualparts.org/repositorydocumentation
 pageNum = 1
 partsCount = 0
@@ -31,7 +33,7 @@ while True:
 
     # We're doing this processing so that we get individual parts files that we can compare with what we get when
     # we do individual parts requests from POLEN
-    tree = ET.fromstring(r.text)
+    tree = etree.fromstring(r.content)
 
     part_es = tree.findall('./Part')
     partsInPageCount = len(part_es)
@@ -40,13 +42,26 @@ while True:
     print 'Found %d parts in page %d' % (partsInPageCount, pageNum)
 
     for part_e in part_es:
-        print 'Found part %s' % part_e.find('Name').text
+        # Don't allow directory traversal by a part name
+        partName = part_e.find('Name').text
+        if partName != os.path.basename(partName):
+            print 'WARNING: Part name %s contains directory traversal.  Dropping' % (partName)
+            continue
+
+        print 'Found part %s' % partName
+
+        # Unfortunately the page xml only gives part summary information, not the detailed information that we want
+        # So we need to request the xml for each part separately
+        partPath = '%s/%s.xml' % (partsPath, partName)
+        partUrl = 'http://virtualparts.org/part/%s/xml' % partName
+        partRequest = requests.get(partUrl)
+
+        with open(partPath, 'w') as f:
+            f.write(partRequest.text)
 
     if partsInPageCount <= 0:
         break
     else:
         pageNum += 1
-
-# TODO: output each part in its own xml file
 
 print "Found %d parts in total" % partsCount
