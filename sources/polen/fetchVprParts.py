@@ -12,36 +12,17 @@ import synbio.data as sbd
 #################
 ### FUNCTIONS ###
 #################
-"""
-Fetch details for the given part
-"""
-def fetchPartDetails(partName, partsPath):
-    partPath = '%s/%s.xml' % (partsPath, partName)
+def fetchComponent(partName, componentName, componentsPath):
+    path = '%s/%s.xml' % (componentsPath, partName)
 
-    if os.path.exists(partPath):
-        print 'Skipping fetch of part %s as we already have it' % partName
+    if os.path.exists(path):
+        print 'Skipping fetch of %s %s as we already have it' % (partName, componentName)
         return
 
-    url = 'http://virtualparts.org/part/%s/xml' % partName
+    url = 'http://virtualparts.org/%s/%s/xml' % (componentName, partName)
     r = requests.get(url)
 
-    with open(partPath, 'w') as f:
-        f.write(r.text)
-
-"""
-Fetch interactions for the given part
-"""
-def fetchInteractions(partName, interactionsPath):
-    partPath = '%s/%s.xml' % (interactionsPath, partName)
-
-    if os.path.exists(partPath):
-        print 'Skipping fetch of interaction %s as we already have it' % partName
-        return
-
-    url = 'http://virtualparts.org/part/%s/interactions/xml' % partName
-    r = requests.get(url)
-
-    with open(partPath, 'w') as f:
+    with open(path, 'w') as f:
         f.write(r.text)
 
 ############
@@ -88,8 +69,8 @@ while True:
 
         # Unfortunately the page xml only gives part summary information, not the detailed information that we want
         # So we need to request the xml for each part separately
-        fetchPartDetails(partName, partsPath)
-        fetchInteractions(partName, interactionsPath)
+        fetchComponent(partName, 'part', partsPath)
+        fetchComponent(partName, 'interactions', interactionsPath)
 
     if partsInPageCount <= 0:
         break
