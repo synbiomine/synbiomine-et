@@ -80,7 +80,10 @@ def validateParts(parts):
     organismNames = set()
 
     for part in parts.values():
-        organismNames.add(part['Organism'])
+        if 'Organism' in part:
+            organismNames.add(part['Organism'])
+        else:
+            print 'Part %s has no organism data' % part['Name']
 
     print "Found distinct organism names:"
     for name in organismNames:
@@ -121,26 +124,36 @@ def outputPartsToItemsXml(doc, ds, goDs, datasetItem, parts):
         partItem = doc.createItem('Part')
         partItem.addAttribute('name', name)
         partItem.addAttribute('type', part['Type'])
-        partItem.addAttribute('description', part['Description'])
 
-        # XXX: Reconstructing the uri here is heavily less than ideal
+        if 'Description' in part:
+            partItem.addAttribute('description', part['Description'])
+
+        # XXX: Reconstructing the uri here is far from ideal
         partItem.addAttribute('uri', 'http://www.virtualparts.org/part/%s' % name)
 
-        partItem.addAttribute('organism', part['Organism'])
-        partItem.addAttribute('designMethod', part['DesignMethod'])
+        if 'Organism' in part:
+            partItem.addAttribute('organism', part['Organism'])
+        else:
+            print 'No Organism set for %s' % name
+
+        if 'DesignMethod' in part:
+            partItem.addAttribute('designMethod', part['DesignMethod'])
+        else:
+            print 'No DesignMethod set for %s' % name
 
         # Sequence in all virtualparts.org XML has a mangled CDATA tag.
         # Let's see if Newcastle fix this before taking demangling measures ourselves
         # partItem.addAttribute('sequence', data['Sequence'])
 
-        for propertyComponents in part['Property']:
-            name = propertyComponents['Name']
-            value = propertyComponents['Value']
+        if 'Property' in part:
+            for propertyComponents in part['Property']:
+                name = propertyComponents['Name']
+                value = propertyComponents['Value']
 
-            if name == 'has_function':
-                partItem.addToAttribute('functions', createGoTermItem(doc, partItem, value, goSynonyms, 'has_function'))
-            elif name == 'participates_in':
-                partItem.addToAttribute('participatesIn', createGoTermItem(doc, partItem, value, goSynonyms, 'participates_in'))
+                if name == 'has_function':
+                    partItem.addToAttribute('functions', createGoTermItem(doc, partItem, value, goSynonyms, 'has_function'))
+                elif name == 'participates_in':
+                    partItem.addToAttribute('participatesIn', createGoTermItem(doc, partItem, value, goSynonyms, 'participates_in'))
 
         partItem.addToAttribute('dataSets', datasetItem)
         doc.addItem(partItem)
