@@ -53,6 +53,8 @@ def loadInteractionsXml(ds):
 
 """
 Given a dataset, load all the POLEN parts xml to dicts
+
+Returns a dictionary <part-name>:<part>
 """
 def loadPartsFromXml(ds):
     parts = {}
@@ -70,6 +72,19 @@ def loadPartsFromXml(ds):
             parts[name] = partE
 
     return parts
+
+"""
+Make sure that the parts data conforms to our expectations
+"""
+def validateParts(parts):
+    organismNames = set()
+
+    for part in parts.values():
+        organismNames.add(part['Organism'])
+
+    print "Found distinct organism names:"
+    for name in organismNames:
+        print "[%s]" % name
 
 """
 Add InterMine metdata items (data source, dataset) to items XML.
@@ -157,9 +172,12 @@ dc = sbd.Collection(args.colPath)
 ds = dc.getSet('polen')
 ds.startLogging(__file__)
 
+parts = loadPartsFromXml(ds)
+validateParts(parts)
+
 model = dc.getModel()
 doc = imm.Document(model)
 
 dsItem = outputMetadataToItemsXml(doc)
-outputPartsToItemsXml(doc, ds, dc.getSet('go'), dsItem, loadPartsFromXml(ds))
+outputPartsToItemsXml(doc, ds, dc.getSet('go'), dsItem, parts)
 loadInteractionsXml(ds)
