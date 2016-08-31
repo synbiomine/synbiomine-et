@@ -26,8 +26,8 @@ def loadItemsXml():
 Given a dataset, load all the POLEN interactions xml to dicts
 """
 def loadInteractionsXml(ds):
-    imu.printSection('Processing interactions')
-    
+    imu.printSection('Processing VPR interactions')
+
     items = {}
 
     rawXmlPaths = glob.glob("%s/interactions/*.xml" % ds.getRawPath())
@@ -60,6 +60,8 @@ Given a dataset, load all the POLEN parts xml to dicts
 Returns a dictionary <part-name>:<part>
 """
 def loadPartsFromXml(ds):
+    imu.printSection('Loading VPR parts')
+
     parts = {}
 
     rawPartsXmlPaths = glob.glob("%s/parts/*.xml" % ds.getRawPath())
@@ -80,7 +82,7 @@ def loadPartsFromXml(ds):
 Make sure that the parts data conforms to our expectations
 """
 def validateParts(parts):
-    imu.printSection('Validating Virtual Parts Repository data')
+    imu.printSection('Validating VPR parts')
 
     organismNames = {}
 
@@ -107,6 +109,7 @@ Returns the dataset item.
 """
 def outputMetadataToItemsXml(doc):
     imu.printSection('Adding metadata items')
+    
     dataSourceItem = doc.createItem('DataSource')
     dataSourceItem.addAttribute('name', 'POLEN')
     dataSourceItem.addAttribute('url', 'http://intbio.ncl.ac.uk/?projects=polen')
