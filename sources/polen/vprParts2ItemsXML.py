@@ -134,7 +134,7 @@ def outputMetadataToItemsXml(doc):
 
     return datasetItem
 
-def addOrgAttributeToPartItem(part, partItem, orgItemsByName):
+def addOrgToPartItem(part, partItem, orgItemsByName):
     """
     Add the organism attribute to a part item
     :return:
@@ -219,7 +219,7 @@ def outputPartsToItemsXml(doc, ds, goDs, datasetItem, orgItemsByName, parts):
         # XXX: Reconstructing the uri here is far from ideal
         partItem.addAttribute('uri', 'http://www.virtualparts.org/part/%s' % name)
 
-        addOrgAttributeToPartItem(part, partItem, orgItemsByName)
+        addOrgToPartItem(part, partItem, orgItemsByName)
 
         if 'DesignMethod' in part:
             partItem.addAttribute('designMethod', part['DesignMethod'])
