@@ -77,17 +77,23 @@ def loadPartsFromXml(ds):
 Make sure that the parts data conforms to our expectations
 """
 def validateParts(parts):
-    organismNames = set()
+    organismNames = {}
 
     for part in parts.values():
         if 'Organism' in part:
-            organismNames.add(part['Organism'])
+            organismName = part['Organism']
+
+            if organismName in organismNames:
+                organismNames[organismName] += 1
+            else:
+                organismNames[organismName] = 1
+
         else:
             print 'Part %s has no organism data' % part['Name']
 
     print "Found distinct organism names:"
-    for name in organismNames:
-        print "[%s]" % name
+    for name, count in organismNames.iteritems():
+        print "%s: %d" % (name, count)
 
 """
 Add InterMine metdata items (data source, dataset) to items XML.
