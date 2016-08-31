@@ -100,7 +100,7 @@ def prettyPrintMetadataSizes(sizes):
 ############
 ### MAIN ###
 ############
-parser = jargparse.ArgParser('Display statistical information about the given InterMine database.  By default does not show tables with zero rows.')
+parser = jargparse.ArgParser('Display object and metadata counts for an InterMine database.  By default does not show tables with zero rows.')
 parser.add_argument('dbname', help='name of the database.')
 parser.add_argument('--dbuser', help='db user if this is different from the current')
 parser.add_argument('--dbhost', help='db host if this is not localhost')
