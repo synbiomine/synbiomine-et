@@ -155,7 +155,7 @@ def addOrgToPartItem(part, partItem, orgItemsByName):
 
     partItem.addAttribute('organism', orgItem)
 
-def addPropertyAttributesToPartItem(part, partItem, goSynonyms):
+def addPropertiesToPartItem(part, partItem, goSynonyms):
     """
     Add property attributes to the part item that we recognized
     :param part:
@@ -230,7 +230,7 @@ def outputPartsToItemsXml(doc, ds, goDs, datasetItem, orgItemsByName, parts):
         # Let's see if Newcastle fix this before taking demangling measures ourselves
         # partItem.addAttribute('sequence', data['Sequence'])
 
-        addPropertyAttributesToPartItem(part, partItem, goSynonyms)
+        addPropertiesToPartItem(part, partItem, goSynonyms)
 
         partItem.addToAttribute('dataSets', datasetItem)
         doc.addItem(partItem)
