@@ -77,6 +77,8 @@ def loadPartsFromXml(ds):
 Make sure that the parts data conforms to our expectations
 """
 def validateParts(parts):
+    imu.printSection('Validating Virtual Parts Repository data')
+    
     organismNames = {}
 
     for part in parts.values():
