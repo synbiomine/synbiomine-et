@@ -2,21 +2,12 @@
 
 # Show database statistical information
 
-import argparse
+import jargparse
 import datetime
 import json
 import psycopg2
 import sys
 import texttable
-
-###############
-### CLASSES ###
-###############
-class MyParser(argparse.ArgumentParser):
-    def error(self, message):
-        sys.stderr.write('error: %s\n' % message)
-        self.print_help()
-        sys.exit(2)
 
 ###################
 ### SUBROUTINES ###
@@ -109,7 +100,7 @@ def prettyPrintMetadataSizes(sizes):
 ############
 ### MAIN ###
 ############
-parser = MyParser('Display statistical information about the given InterMine database.  By default does not show tables with zero rows.')
+parser = jargparse.ArgParser('Display statistical information about the given InterMine database.  By default does not show tables with zero rows.')
 parser.add_argument('dbname', help='name of the database.')
 parser.add_argument('--dbuser', help='db user if this is different from the current')
 parser.add_argument('--dbhost', help='db host if this is not localhost')
