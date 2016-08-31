@@ -26,6 +26,8 @@ def loadItemsXml():
 Given a dataset, load all the POLEN interactions xml to dicts
 """
 def loadInteractionsXml(ds):
+    imu.printSection('Processing interactions')
+    
     items = {}
 
     rawXmlPaths = glob.glob("%s/interactions/*.xml" % ds.getRawPath())
@@ -42,12 +44,13 @@ def loadInteractionsXml(ds):
                 name = interaction['Name']
 
                 if name in items:
-                    print "When processing %s already found item with name %s" % (rawXmlPath, name)
+                    # print "When processing %s already found item with name %s" % (rawXmlPath, name)
+                    pass
                 else:
                     items[name] = interaction
                     processCount += 1
 
-        print "Processed %d interactions from %s" % (processCount, rawXmlPath)
+        # print "Processed %d interactions from %s" % (processCount, rawXmlPath)
 
     return items
 
@@ -78,7 +81,7 @@ Make sure that the parts data conforms to our expectations
 """
 def validateParts(parts):
     imu.printSection('Validating Virtual Parts Repository data')
-    
+
     organismNames = {}
 
     for part in parts.values():
