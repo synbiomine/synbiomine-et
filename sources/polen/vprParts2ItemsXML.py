@@ -170,9 +170,9 @@ def addPropertyAttributesToPartItem(part, partItem, goSynonyms):
             value = propertyComponents['Value']
 
             if name == 'has_function':
-                partItem.addToAttribute('functions', createGoTermItem(doc, partItem, value, goSynonyms, 'has_function'))
+                partItem.addToAttribute('functions', createGoTermItem(doc, partItem.getAttribute('name'), value, goSynonyms, 'has_function'))
             elif name == 'participates_in':
-                partItem.addToAttribute('participatesIn', createGoTermItem(doc, partItem, value, goSynonyms, 'participates_in'))
+                partItem.addToAttribute('participatesIn', createGoTermItem(doc, partItem.getAttribute('name'), value, goSynonyms, 'participates_in'))
 
 def outputPartsToItemsXml(doc, ds, goDs, datasetItem, orgItemsByName, parts):
     """
@@ -216,12 +216,12 @@ def outputPartsToItemsXml(doc, ds, goDs, datasetItem, orgItemsByName, parts):
 
     doc.write('%s/items.xml' % ds.getLoadPath())
 
-def createGoTermItem(doc, partItem, id, goSynonyms, originalAttributeName):
+def createGoTermItem(doc, partName, id, goSynonyms, originalAttributeName):
     # For some ineffable reason, virtualparts uses _ in their go term IDs rather than GO's own :
     id = id.replace('_', ':')
 
     if id in goSynonyms:
-        print 'Replacing %s synonym %s with %s for part %s' % (originalAttributeName, id, goSynonyms[id], partItem.getAttribute('name'))
+        print 'Replacing %s synonym %s with %s for part %s' % (originalAttributeName, id, goSynonyms[id], partName)
         id = goSynonyms[id]
 
     goTermItem = doc.createItem('GOTerm')
