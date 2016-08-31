@@ -217,6 +217,8 @@ def outputPartsToItemsXml(doc, ds, goDs, datasetItem, orgItemsByName, parts):
     doc.write('%s/items.xml' % ds.getLoadPath())
 
 def createGoTermItem(doc, partName, id, goSynonyms, originalAttributeName):
+    """Add a GOTerm item to a document and return"""
+    
     # For some ineffable reason, virtualparts uses _ in their go term IDs rather than GO's own :
     id = id.replace('_', ':')
 
