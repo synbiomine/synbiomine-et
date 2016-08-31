@@ -134,11 +134,13 @@ def outputMetadataToItemsXml(doc):
 
     return datasetItem
 
-def addOrgAttributeToPartItem(part, partItem):
+def addOrgAttributeToPartItem(part, partItem, orgItemsByName):
     """
     Add the organism attribute to a part item
     :return:
     """
+
+    name = part['Name']
 
     if 'Organism' in part:
         orgName = part['Organism']
@@ -152,6 +154,25 @@ def addOrgAttributeToPartItem(part, partItem):
         orgItem = orgItemsByName['Unknown']
 
     partItem.addAttribute('organism', orgItem)
+
+def addPropertyAttributesToPartItem(part, partItem, goSynonyms):
+    """
+    Add property attributes to the part item that we recognized
+    :param part:
+    :param partItem:
+    :param goSynonyms:
+    :return:
+    """
+
+    if 'Property' in part:
+        for propertyComponents in part['Property']:
+            name = propertyComponents['Name']
+            value = propertyComponents['Value']
+
+            if name == 'has_function':
+                partItem.addToAttribute('functions', createGoTermItem(doc, partItem, value, goSynonyms, 'has_function'))
+            elif name == 'participates_in':
+                partItem.addToAttribute('participatesIn', createGoTermItem(doc, partItem, value, goSynonyms, 'participates_in'))
 
 def outputPartsToItemsXml(doc, ds, goDs, datasetItem, orgItemsByName, parts):
     """
@@ -177,7 +198,7 @@ def outputPartsToItemsXml(doc, ds, goDs, datasetItem, orgItemsByName, parts):
         # XXX: Reconstructing the uri here is far from ideal
         partItem.addAttribute('uri', 'http://www.virtualparts.org/part/%s' % name)
 
-        addOrgAttributeToPartItem(part, partItem)
+        addOrgAttributeToPartItem(part, partItem, orgItemsByName)
 
         if 'DesignMethod' in part:
             partItem.addAttribute('designMethod', part['DesignMethod'])
@@ -188,15 +209,7 @@ def outputPartsToItemsXml(doc, ds, goDs, datasetItem, orgItemsByName, parts):
         # Let's see if Newcastle fix this before taking demangling measures ourselves
         # partItem.addAttribute('sequence', data['Sequence'])
 
-        if 'Property' in part:
-            for propertyComponents in part['Property']:
-                name = propertyComponents['Name']
-                value = propertyComponents['Value']
-
-                if name == 'has_function':
-                    partItem.addToAttribute('functions', createGoTermItem(doc, partItem, value, goSynonyms, 'has_function'))
-                elif name == 'participates_in':
-                    partItem.addToAttribute('participatesIn', createGoTermItem(doc, partItem, value, goSynonyms, 'participates_in'))
+        addPropertyAttributesToPartItem(part, partItem, goSynonyms)
 
         partItem.addToAttribute('dataSets', datasetItem)
         doc.addItem(partItem)
