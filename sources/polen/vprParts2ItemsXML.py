@@ -15,17 +15,11 @@ import synbio.data as sbd
 #################
 ### FUNCTIONS ###
 #################
-"""
-def loadItemsXml():
-    rawPartsXmlPaths = glob.glob("%s/parts/*.xml" % ds.getRawPath())
-    for rawPartXmlPath in rawPartsXmlPaths:
-        yield
-"""
-
-"""
-Given a dataset, load all the POLEN interactions xml to dicts
-"""
 def loadInteractionsXml(ds):
+    """
+    Given a dataset, load all the POLEN interactions xml to dicts
+    """
+
     imu.printSection('Processing VPR interactions')
 
     items = {}
@@ -54,12 +48,13 @@ def loadInteractionsXml(ds):
 
     return items
 
-"""
-Given a dataset, load all the POLEN parts xml to dicts
-
-Returns a dictionary <part-name>:<part>
-"""
 def loadPartsFromXml(ds):
+    """
+    Given a dataset, load all the POLEN parts xml to dicts
+
+    Returns a dictionary <part-name>:<part>
+    """
+
     imu.printSection('Loading VPR parts')
 
     parts = {}
@@ -78,10 +73,11 @@ def loadPartsFromXml(ds):
 
     return parts
 
-"""
-Make sure that the parts data conforms to our expectations
-"""
 def validateParts(parts):
+    """
+    Make sure that the parts data conforms to our expectations
+    """
+
     imu.printSection('Validating VPR parts')
 
     organismNames = {}
@@ -102,12 +98,13 @@ def validateParts(parts):
     for name, count in organismNames.iteritems():
         print "%s: %d" % (name, count)
 
-"""
-Add InterMine metdata items (data source, dataset) to items XML.
-
-Returns the dataset item.
-"""
 def outputMetadataToItemsXml(doc):
+    """
+    Add InterMine metdata items (data source, dataset) to items XML.
+
+    Returns the dataset item.
+    """
+
     imu.printSection('Adding metadata items')
     
     dataSourceItem = doc.createItem('DataSource')
@@ -122,10 +119,11 @@ def outputMetadataToItemsXml(doc):
 
     return datasetItem
 
-"""
-Given a set of parts, output InterMine items XML.
-"""
 def outputPartsToItemsXml(doc, ds, goDs, datasetItem, parts):
+    """
+    Given a set of parts, output InterMine items XML.
+    """
+
     # We need to get a dictionary of go synonyms so that we can resolve those used in virtualparts
     imu.printSection('Loading GO synonyms')
     goSynonyms = go.getSynonoyms("%s/%s" % (goDs.getLoadPath(), 'go-basic.obo'))
