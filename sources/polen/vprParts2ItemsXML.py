@@ -134,6 +134,25 @@ def outputMetadataToItemsXml(doc):
 
     return datasetItem
 
+def addOrgAttribute(part, partItem):
+    """
+    Add the organism attribute to a part item
+    :return:
+    """
+
+    if 'Organism' in part:
+        orgName = part['Organism']
+        if orgName in orgItemsByName:
+            orgItem = orgItemsByName[orgName]
+        else:
+            print 'Organism name [%s] for part %s not recognized, defaulting to Unknown' % (orgName, name)
+            orgItem = orgItemsByName['Unknown']
+    else:
+        print 'No Organism name found for part %s, defaulting to Unknown' % name
+        orgItem = orgItemsByName['Unknown']
+
+    partItem.addAttribute('organism', orgItem)
+
 def outputPartsToItemsXml(doc, ds, goDs, datasetItem, orgItemsByName, parts):
     """
     Given a set of parts, output InterMine items XML.
@@ -158,18 +177,7 @@ def outputPartsToItemsXml(doc, ds, goDs, datasetItem, orgItemsByName, parts):
         # XXX: Reconstructing the uri here is far from ideal
         partItem.addAttribute('uri', 'http://www.virtualparts.org/part/%s' % name)
 
-        if 'Organism' in part:
-            orgName = part['Organism']
-            if orgName in orgItemsByName:
-                orgItem = orgItemsByName[orgName]
-            else:
-                print 'Organism name [%s] for part %s not recognized, defaulting to Unknown' % (orgName, name)
-                orgItem = orgItemsByName['Unknown']
-        else:
-            print 'No Organism name found for part %s, defaulting to Unknown' % name
-            orgItem = orgItemsByName['Unknown']
-
-        partItem.addAttribute('organism', orgItem)
+        addOrgAttribute(part, partItem)
 
         if 'DesignMethod' in part:
             partItem.addAttribute('designMethod', part['DesignMethod'])
