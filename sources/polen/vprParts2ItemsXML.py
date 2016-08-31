@@ -186,6 +186,10 @@ def outputPartsToItemsXml(doc, ds, goDs, datasetItem, orgItemsByName, parts):
     imu.printSection('Adding part items')
     print 'Adding %d parts' % (len(parts))
 
+    # We need to keep track of the gene items we create in order to reuse them if there are references by more than 1
+    # VPR part
+    geneItems = {}
+
     for part in parts.values():
         name = part['Name']
         partItem = doc.createItem('Part')
@@ -194,6 +198,23 @@ def outputPartsToItemsXml(doc, ds, goDs, datasetItem, orgItemsByName, parts):
 
         if 'Description' in part:
             partItem.addAttribute('description', part['Description'])
+
+        if 'DisplayName' in part:
+            displayNameComponents = part['DisplayName'].split('||')
+            for geneId in displayNameComponents:
+                if geneId.startswith('BSU'):
+                    print 'Found locus %s for part %s' % (geneId, name)
+
+                    if not geneId in geneItems:
+                        geneItems[geneId] = createGeneItem(doc, geneId)
+
+                    geneItem = geneItems[geneId]
+                    partItem.addToAttribute('genes', geneItem)
+
+            # print 'Display name [%s] for part %s' % (part['DisplayName'], name)
+            # print 'First display name component [%s] for part %s' % (displayNameComponents[0], name)
+        else:
+            print 'No DisplayName found for part %s' % name
 
         # XXX: Reconstructing the uri here is far from ideal
         partItem.addAttribute('uri', 'http://www.virtualparts.org/part/%s' % name)
@@ -216,9 +237,16 @@ def outputPartsToItemsXml(doc, ds, goDs, datasetItem, orgItemsByName, parts):
 
     doc.write('%s/items.xml' % ds.getLoadPath())
 
+def createGeneItem(doc, id):
+    """Add a gene item to a document"""
+
+    geneItem = doc.createItem('Gene')
+    geneItem.addAttribute('primaryIdentifier', id)
+    return doc.addItem(geneItem)
+
 def createGoTermItem(doc, partName, id, goSynonyms, originalAttributeName):
-    """Add a GOTerm item to a document and return"""
-    
+    """Add a GOTerm item to a document"""
+
     # For some ineffable reason, virtualparts uses _ in their go term IDs rather than GO's own :
     id = id.replace('_', ':')
 
@@ -228,12 +256,10 @@ def createGoTermItem(doc, partName, id, goSynonyms, originalAttributeName):
 
     goTermItem = doc.createItem('GOTerm')
     goTermItem.addAttribute('identifier', id)
-    doc.addItem(goTermItem)
-
-    return goTermItem
+    return doc.addItem(goTermItem)
 
 def createOrgItem(doc, taxonId):
-    """Add an organism item to a document and return"""
+    """Add an organism item to a document"""
 
     orgItem = doc.createItem('Organism')
     orgItem.addAttribute('taxonId', taxonId)
