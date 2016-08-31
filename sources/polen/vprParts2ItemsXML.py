@@ -98,6 +98,21 @@ def validateParts(parts):
     for name, count in organismNames.iteritems():
         print "%s: %d" % (name, count)
 
+def outputOrgItems(doc, vprOrgNamesToTaxonIds):
+    """
+    Output org items to the given document
+
+    :param doc:
+    :param vprOrgNamesToTaxonIds:
+    :return: A dictionary of the items created, keyed by VPR organism name
+    """
+    items = {}
+
+    for name, taxonId in vprOrgNamesToTaxonIds.iteritems():
+        items[name] = createOrgItem(doc, taxonId)
+
+    return items
+
 def outputMetadataToItemsXml(doc):
     """
     Add InterMine metdata items (data source, dataset) to items XML.
@@ -119,7 +134,7 @@ def outputMetadataToItemsXml(doc):
 
     return datasetItem
 
-def outputPartsToItemsXml(doc, ds, goDs, datasetItem, parts):
+def outputPartsToItemsXml(doc, ds, goDs, datasetItem, orgItemsByName, parts):
     """
     Given a set of parts, output InterMine items XML.
     """
@@ -144,14 +159,22 @@ def outputPartsToItemsXml(doc, ds, goDs, datasetItem, parts):
         partItem.addAttribute('uri', 'http://www.virtualparts.org/part/%s' % name)
 
         if 'Organism' in part:
-            partItem.addAttribute('organism', part['Organism'])
+            orgName = part['Organism']
+            if orgName in orgItemsByName:
+                orgItem = orgItemsByName[orgName]
+            else:
+                print 'Organism name [%s] for part %s not recognized, defaulting to Unknown' % (orgName, name)
+                orgItem = orgItemsByName['Unknown']
         else:
-            print 'No Organism set for %s' % name
+            print 'No Organism name found for part %s, defaulting to Unknown' % name
+            orgItem = orgItemsByName['Unknown']
+
+        partItem.addAttribute('organism', orgItem)
 
         if 'DesignMethod' in part:
             partItem.addAttribute('designMethod', part['DesignMethod'])
         else:
-            print 'No DesignMethod set for %s' % name
+            print 'No DesignMethod set for part %s' % name
 
         # Sequence in all virtualparts.org XML has a mangled CDATA tag.
         # Let's see if Newcastle fix this before taking demangling measures ourselves
@@ -186,9 +209,24 @@ def createGoTermItem(doc, partItem, id, goSynonyms, originalAttributeName):
 
     return goTermItem
 
+def createOrgItem(doc, taxonId):
+    """Add an organism item to a document and return"""
+
+    orgItem = doc.createItem('Organism')
+    orgItem.addAttribute('taxonId', taxonId)
+    return doc.addItem(orgItem)
+
 ############
 ### MAIN ###
 ############
+VPR_ORG_NAMES_TO_TAXON_IDS = {
+    'Bacillus subtilis' : 1423,
+    'Bacillus subtilis 168' : 224308,
+    'Bacillus subtilis ATCC6633' : 96241,
+    'Escherichia coli': 562,
+    'Unknown': 0
+}
+
 parser = jargparse.ArgParser('Transform POLEN data into InterMine items XML')
 parser.add_argument('colPath', help='path to the data collection')
 args = parser.parse_args()
@@ -204,5 +242,6 @@ model = dc.getModel()
 doc = imm.Document(model)
 
 dsItem = outputMetadataToItemsXml(doc)
-outputPartsToItemsXml(doc, ds, dc.getSet('go'), dsItem, parts)
+orgItemsByName = outputOrgItems(doc, VPR_ORG_NAMES_TO_TAXON_IDS)
+outputPartsToItemsXml(doc, ds, dc.getSet('go'), dsItem, orgItemsByName, parts)
 loadInteractionsXml(ds)

@@ -17,10 +17,12 @@ class Document:
 
         Items can be changed after they are added (e.g. additional references added to a collection)
         :param item:
-        :return:
+        :return: the item appended
         """
 
         self._items.append(item)
+
+        return item
 
     def createItem(self, className):
         """
