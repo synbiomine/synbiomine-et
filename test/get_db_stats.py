@@ -2,11 +2,11 @@
 
 # Show database statistical information
 
+import argparse
 import jargparse
 import datetime
 import json
 import psycopg2
-import sys
 import texttable
 
 ###################
@@ -79,7 +79,9 @@ def generatePrettyPrintTable(headers):
 
 def prettyPrintCounts(counts):
   """Pretty print counts"""
-  
+
+  print 'OBJECT COUNTS\n'
+
   consoleTable = generatePrettyPrintTable(['Table', 'Entries'])
   
   for table in sorted(counts.keys()):
@@ -89,7 +91,9 @@ def prettyPrintCounts(counts):
   
 def prettyPrintMetadataSizes(sizes):
   """Pretty print metadata sizes"""
-  
+
+  print 'METADATA SIZES\n'
+
   consoleTable = generatePrettyPrintTable(['Name', 'Size'])
 
   for entry in sorted(sizes.keys()):
