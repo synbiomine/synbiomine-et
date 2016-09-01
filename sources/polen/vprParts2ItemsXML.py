@@ -242,7 +242,6 @@ ds = dc.getSet('polen')
 ds.startLogging(__file__)
 
 parts = vprim.loadPartsFromXml(ds)
-validateParts(parts)
 
 model = dc.getModel()
 doc = imm.Document(model)
