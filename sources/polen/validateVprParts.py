@@ -13,57 +13,29 @@ import synbio.data as sbd
 #################
 ### FUNCTIONS ###
 #################
-def validatePartOrgs(parts):
+def validatePartsProperty(parts, propName):
     """
-    Show organisms contained in VPR parts
+    Show counts for the given part property
     """
 
-    imu.printSection('Validating VPR part organisms')
+    imu.printSection('Validating VPR part %ss' % propName)
 
-    organismNames = {}
+    propValues = {}
 
     for part in parts.values():
-        if 'Organism' in part:
-            organismName = part['Organism']
+        if propName in part:
+            propValue = part[propName]
 
-            if organismName in organismNames:
-                organismNames[organismName] += 1
+            if propValue in propValues:
+                propValues[propValue] += 1
             else:
-                organismNames[organismName] = 1
+                propValues[propValue] = 1
 
         else:
-            print 'Part %s has no organism data' % part['Name']
+            print 'Part %s has no %s data' % (part['Name'], propName)
 
-    print "Found distinct organism names:"
-    for name, count in organismNames.iteritems():
-        print "%s: %d" % (name, count)
-
-def validatePartTypes(parts):
-    """
-    Show part types in VPR parts
-
-    :param parts:
-    :return:
-    """
-
-    imu.printSection('Validating VPR part types')
-
-    types = {}
-
-    for part in parts.values():
-        if 'Type' in part:
-            type = part['Type']
-
-            if type in types:
-                types[type] += 1
-            else:
-                types[type] = 1
-
-        else:
-            print 'Part %s has no type data' % part['Name']
-
-    print "Found distinct part names:"
-    for name, count in types.iteritems():
+    print 'Found distinct %s names:' % propName
+    for name, count in propValues.iteritems():
         print "%s: %d" % (name, count)
 
 ############
@@ -78,5 +50,5 @@ ds = dc.getSet('polen')
 ds.startLogging(__file__)
 
 parts = vprim.loadPartsFromXml(ds)
-validatePartOrgs(parts)
-validatePartTypes(parts)
+validatePartsProperty(parts, 'Type')
+validatePartsProperty(parts, 'Organism')
