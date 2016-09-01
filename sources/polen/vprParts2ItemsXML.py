@@ -134,6 +134,26 @@ def outputMetadataToItemsXml(doc):
 
     return datasetItem
 
+def addDisplayNameToPartItem(part, partItem, geneItems):
+    name = part['Name']
+
+    if 'DisplayName' in part:
+        displayNameComponents = part['DisplayName'].split('||')
+        for geneId in displayNameComponents:
+            if geneId.startswith('BSU'):
+                print 'Found locus %s for part %s' % (geneId, name)
+
+                if not geneId in geneItems:
+                    geneItems[geneId] = createGeneItem(doc, geneId)
+
+                geneItem = geneItems[geneId]
+                partItem.addToAttribute('genes', geneItem)
+
+        # print 'Display name [%s] for part %s' % (part['DisplayName'], name)
+        # print 'First display name component [%s] for part %s' % (displayNameComponents[0], name)
+    else:
+        print 'No DisplayName found for part %s' % name
+
 def addOrgToPartItem(part, partItem, orgItemsByName):
     """
     Add the organism attribute to a part item
@@ -199,22 +219,7 @@ def outputPartsToItemsXml(doc, ds, goDs, datasetItem, orgItemsByName, parts):
         if 'Description' in part:
             partItem.addAttribute('description', part['Description'])
 
-        if 'DisplayName' in part:
-            displayNameComponents = part['DisplayName'].split('||')
-            for geneId in displayNameComponents:
-                if geneId.startswith('BSU'):
-                    print 'Found locus %s for part %s' % (geneId, name)
-
-                    if not geneId in geneItems:
-                        geneItems[geneId] = createGeneItem(doc, geneId)
-
-                    geneItem = geneItems[geneId]
-                    partItem.addToAttribute('genes', geneItem)
-
-            # print 'Display name [%s] for part %s' % (part['DisplayName'], name)
-            # print 'First display name component [%s] for part %s' % (displayNameComponents[0], name)
-        else:
-            print 'No DisplayName found for part %s' % name
+        addDisplayNameToPartItem(part, partItem, geneItems)
 
         # XXX: Reconstructing the uri here is far from ideal
         partItem.addAttribute('uri', 'http://www.virtualparts.org/part/%s' % name)
