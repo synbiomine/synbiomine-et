@@ -34,9 +34,10 @@ def validatePartsProperty(parts, propName):
         else:
             print 'Part %s has no %s data' % (part['Name'], propName)
 
-    print 'Found distinct %s names:' % propName
+    print 'Found distinct %s values:' % propName
     for name, count in propValues.iteritems():
         print "%s: %d" % (name, count)
+    print
 
 ############
 ### MAIN ###
