@@ -5,10 +5,11 @@ sys.path.insert(1, os.path.dirname(os.path.abspath(__file__) + '/..'))
 import intermyne.model as imm
 import intermyne.utils as imu
 
-"""
-Represents a collection of datasets
-"""
 class Collection:
+    """
+    Represents a collection of datasets
+    """
+
     def __init__(self, basePath):
         self.basePath = basePath
         self.genbankPath = '%s/genbank' % self.basePath
@@ -17,10 +18,11 @@ class Collection:
         self._model = None
         self._taxons = None
 
-    """
-    Get the dataset in this collection with the given name.
-    """
     def getSet(self, name):
+        """
+        Get the dataset in this collection with the given name.
+        """
+
         path = "%s/%s" % (self.basePath, name)
 
         if not os.path.exists(path):
@@ -28,21 +30,23 @@ class Collection:
 
         return Set(self, path)
 
-    """
-    Get the InterMine model for this data collection.
-    """
     def getModel(self):
+        """
+        Get the InterMine model for this data collection.
+        """
+
         # Lazy load the model so that scripts that don't need it can still run if it isn't present
         if self._model == None:
             self._model = imm.Model('%s/intermine/genomic_model.xml' % self.basePath)
 
         return self._model
 
-    """
-    Get organisms present as first class entities in this dataset
-    Returns a dictionary of taxonId:int => name:string
-    """
     def getOrganisms(self):
+        """
+        Get organisms present as first class entities in this dataset
+        Returns a dictionary of taxonId:int => name:string
+        """
+
         orgs = {}
 
         """
@@ -76,20 +80,22 @@ class Collection:
 
         return orgs
 
-    """
-    Get the string list of taxons
-    """
     def getTaxons(self):
+        """
+        Get the string list of taxons
+        """
+
         # Lazy load the taxons so that scripts that don't need them can still run if it isn't present
         if self._taxons == None:
             self._parseTaxons('%s/taxons/taxons.txt' % self.basePath)
 
         return set(self._taxons)
 
-    """
-    Get the taxons as a single ' ' separated string
-    """
     def getTaxonsAsString(self):
+        """
+        Get the taxons as a single ' ' separated string
+        """
+
         return ' '.join(self.getTaxons())
 
     def _parseTaxons(self, taxonsPath):
@@ -113,10 +119,11 @@ class Set:
         if not os.path.exists(self._logsPath):
             os.mkdir(self._logsPath)
 
-    """
-    Start logging to the given log name.  This can be a path in which case only the basename will be used.
-    """
     def startLogging(self, logName):
+        """
+        Start logging to the given log name.  This can be a path in which case only the basename will be used.
+        """
+
         logPath = '%s/%s.log' % (self._logsPath, os.path.basename(logName))
 
         if os.path.exists(logPath):
