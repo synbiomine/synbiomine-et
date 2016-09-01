@@ -460,7 +460,7 @@
   <attribute name="description" type="java.lang.String"/>
   <attribute name="name" type="java.lang.String"/>
   <attribute name="uri" type="java.lang.String"/>
-  <attribute name="organism" referenced-type="Organism"/>
+  <reference name="organism" referenced-type="Organism"/>
   <attribute name="designMethod" type="java.lang.String"/>
   <attribute name="type" type="java.lang.String"/>
   <collection name="genes" referenced-type="Gene"/>
