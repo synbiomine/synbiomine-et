@@ -13,12 +13,12 @@ import synbio.data as sbd
 #################
 ### FUNCTIONS ###
 #################
-def validateParts(parts):
+def validatePartOrgs(parts):
     """
     Make sure that the parts data conforms to our expectations
     """
 
-    imu.printSection('Validating VPR parts')
+    imu.printSection('Validating VPR part organisms')
 
     organismNames = {}
 
@@ -50,4 +50,4 @@ ds = dc.getSet('polen')
 ds.startLogging(__file__)
 
 parts = vprim.loadPartsFromXml(ds)
-validateParts(parts)
+validatePartOrgs(parts)
