@@ -50,31 +50,6 @@ def loadInteractionsXml(ds):
 
     return items
 
-def validateParts(parts):
-    """
-    Make sure that the parts data conforms to our expectations
-    """
-
-    imu.printSection('Validating VPR parts')
-
-    organismNames = {}
-
-    for part in parts.values():
-        if 'Organism' in part:
-            organismName = part['Organism']
-
-            if organismName in organismNames:
-                organismNames[organismName] += 1
-            else:
-                organismNames[organismName] = 1
-
-        else:
-            print 'Part %s has no organism data' % part['Name']
-
-    print "Found distinct organism names:"
-    for name, count in organismNames.iteritems():
-        print "%s: %d" % (name, count)
-
 def outputOrgItems(doc, vprOrgNamesToTaxonIds):
     """
     Output org items to the given document
