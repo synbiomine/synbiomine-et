@@ -6,6 +6,8 @@ import os
 import sys
 import xmltodict
 
+import vprim
+
 sys.path.insert(1, os.path.dirname(os.path.abspath(__file__)) + '/../../modules/python')
 import intermyne.model as imm
 import intermyne.utils as imu
@@ -47,31 +49,6 @@ def loadInteractionsXml(ds):
         # print "Processed %d interactions from %s" % (processCount, rawXmlPath)
 
     return items
-
-def loadPartsFromXml(ds):
-    """
-    Given a dataset, load all the POLEN parts xml to dicts
-
-    Returns a dictionary <part-name>:<part>
-    """
-
-    imu.printSection('Loading VPR parts')
-
-    parts = {}
-
-    rawPartsXmlPaths = glob.glob("%s/parts/*.xml" % ds.getRawPath())
-    for rawPartXmlPath in rawPartsXmlPaths:
-        with open(rawPartXmlPath) as f:
-            partE = xmltodict.parse(f, force_list=('Property',)).itervalues().next()
-
-        name = partE['Name']
-
-        if name in parts:
-            print "When processing %s already found part with name %s" % (rawPartXmlPath, name)
-        else:
-            parts[name] = partE
-
-    return parts
 
 def validateParts(parts):
     """
@@ -289,7 +266,7 @@ dc = sbd.Collection(args.colPath)
 ds = dc.getSet('polen')
 ds.startLogging(__file__)
 
-parts = loadPartsFromXml(ds)
+parts = vprim.loadPartsFromXml(ds)
 validateParts(parts)
 
 model = dc.getModel()
