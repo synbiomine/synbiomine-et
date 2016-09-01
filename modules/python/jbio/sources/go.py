@@ -1,9 +1,8 @@
-import sys
-
-"""
-Extract the synonyms from a GO OBO file.
-"""
 def getSynonoyms(goOboPath):
+    """
+    Extract the synonyms from a GO OBO file.
+    """
+    
     fcIds = set()
     synIds = {}
     currentFcId = None
