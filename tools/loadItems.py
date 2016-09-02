@@ -19,3 +19,11 @@ with open(args.path) as f:
     items = xmltodict.parse(f, force_list=('attribute', 'collection', 'item', 'reference'))['items']['item']
 
 print 'Got %d items from %s' % (len(items), args.path)
+
+orgs = []
+
+for item in items:
+    if item['@class'] == 'Organism':
+        orgs.append(item)
+
+print 'Got %d organisms' % len(orgs)
