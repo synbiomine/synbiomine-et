@@ -127,12 +127,13 @@ def addOrgToPartItem(part, partItem, orgItemsByName):
 
     partItem.addAttribute('organism', orgItem)
 
-def addPropertiesToPartItem(part, partItem, goSynonyms):
+def addPropertiesToPartItem(part, partItem, goSynonyms, goItems):
     """
     Add property attributes to the part item that we recognized
     :param part:
     :param partItem:
     :param goSynonyms:
+    :param goItems:
     :return:
     """
 
@@ -142,9 +143,9 @@ def addPropertiesToPartItem(part, partItem, goSynonyms):
             value = propertyComponents['Value']
 
             if name == 'has_function':
-                partItem.addToAttribute('functions', createGoTermItem(doc, partItem.getAttribute('name'), value, goSynonyms, 'has_function'))
+                partItem.addToAttribute('functions', createGoTermItem(doc, partItem.getAttribute('name'), value, goSynonyms, goItems, 'has_function'))
             elif name == 'participates_in':
-                partItem.addToAttribute('participatesIn', createGoTermItem(doc, partItem.getAttribute('name'), value, goSynonyms, 'participates_in'))
+                partItem.addToAttribute('participatesIn', createGoTermItem(doc, partItem.getAttribute('name'), value, goSynonyms, goItems, 'participates_in'))
 
 def outputPartsToItemsXml(doc, ds, goDs, datasetItem, orgItemsByName, parts):
     """
@@ -158,9 +159,9 @@ def outputPartsToItemsXml(doc, ds, goDs, datasetItem, orgItemsByName, parts):
     imu.printSection('Adding part items')
     print 'Adding %d parts' % (len(parts))
 
-    # We need to keep track of the gene items we create in order to reuse them if there are references by more than 1
-    # VPR part
+    # We need to keep track of the certain items added to the document so that we can reuse them
     geneItems = {}
+    goItems = {}
 
     for part in parts.values():
         name = part['Name']
@@ -187,22 +188,15 @@ def outputPartsToItemsXml(doc, ds, goDs, datasetItem, orgItemsByName, parts):
         # Let's see if Newcastle fix this before taking demangling measures ourselves
         # partItem.addAttribute('sequence', data['Sequence'])
 
-        addPropertiesToPartItem(part, partItem, goSynonyms)
+        addPropertiesToPartItem(part, partItem, goSynonyms, goItems)
 
         partItem.addToAttribute('dataSets', datasetItem)
         doc.addItem(partItem)
 
     doc.write('%s/items.xml' % ds.getLoadPath())
 
-def createGeneItem(doc, id):
-    """Add a gene item to a document"""
-
-    geneItem = doc.createItem('Gene')
-    geneItem.addAttribute('primaryIdentifier', id)
-    return doc.addItem(geneItem)
-
-def createGoTermItem(doc, partName, id, goSynonyms, originalAttributeName):
-    """Add a GOTerm item to a document"""
+def createGoTermItem(doc, partName, id, goSynonyms, goItems, originalAttributeName):
+    """Return a GOTerm item for the document"""
 
     # For some ineffable reason, virtualparts uses _ in their go term IDs rather than GO's own :
     id = id.replace('_', ':')
@@ -211,9 +205,19 @@ def createGoTermItem(doc, partName, id, goSynonyms, originalAttributeName):
         print 'Replacing %s synonym %s with %s for part %s' % (originalAttributeName, id, goSynonyms[id], partName)
         id = goSynonyms[id]
 
-    goTermItem = doc.createItem('GOTerm')
-    goTermItem.addAttribute('identifier', id)
-    return doc.addItem(goTermItem)
+    if id not in goItems:
+        goTermItem = doc.createItem('GOTerm')
+        goTermItem.addAttribute('identifier', id)
+        goItems[id] = doc.addItem(goTermItem)
+
+    return goItems[id]
+
+def createGeneItem(doc, id):
+    """Add a gene item to a document"""
+
+    geneItem = doc.createItem('Gene')
+    geneItem.addAttribute('primaryIdentifier', id)
+    return doc.addItem(geneItem)
 
 def createOrgItem(doc, taxonId):
     """Add an organism item to a document"""
