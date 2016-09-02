@@ -16,6 +16,6 @@ parser.add_argument('path', help='path to the items file')
 args = parser.parse_args()
 
 with open(args.path) as f:
-    d = xmltodict.parse(f, force_list=('attribute', 'collection', 'item', 'reference'))
+    items = xmltodict.parse(f, force_list=('attribute', 'collection', 'item', 'reference'))['items']['item']
 
-print 'Got %d items from %s' % (len(d['items']['item']), args.path)
+print 'Got %d items from %s' % (len(items), args.path)
