@@ -61,7 +61,7 @@ def outputOrgItems(doc, vprOrgNamesToTaxonIds):
     items = {}
 
     for name, taxonId in vprOrgNamesToTaxonIds.iteritems():
-        items[name] = createOrgItem(doc, taxonId)
+        items[name] = createOrgItem(doc, taxonId, name)
 
     return items
 
@@ -219,11 +219,12 @@ def createGeneItem(doc, id):
     geneItem.addAttribute('primaryIdentifier', id)
     return doc.addItem(geneItem)
 
-def createOrgItem(doc, taxonId):
+def createOrgItem(doc, taxonId, name):
     """Add an organism item to a document"""
 
     orgItem = doc.createItem('Organism')
     orgItem.addAttribute('taxonId', taxonId)
+    orgItem.addAttribute('name', name)
     return doc.addItem(orgItem)
 
 ############
