@@ -27,3 +27,6 @@ for item in items:
         orgs.append(item)
 
 print 'Got %d organisms' % len(orgs)
+
+for org in orgs:
+    print '%d: %s' % (org['@taxonId'], org['@name'])
