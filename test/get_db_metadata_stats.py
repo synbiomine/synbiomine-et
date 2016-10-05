@@ -1,16 +1,16 @@
 #!/usr/bin/python
 
+import jargparse
 import psycopg2
 import os
 import sys
 
 sys.path.insert(1, os.path.dirname(os.path.abspath(__file__)) + '/../modules/python')
-import intermyne.utils as imu
 
 ############
 ### MAIN ###
 ############
-parser = imu.ArgParser('Show information about the intermine_metadata.')
+parser = jargparse.ArgParser('Show information about the intermine_metadata.')
 parser.add_argument('dbname', help='name of the database.')
 parser.add_argument('--dbuser', help='db user if this is different from the current')
 parser.add_argument('--dbhost', help='db host if this is not localhost')
