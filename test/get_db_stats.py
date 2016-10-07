@@ -60,9 +60,9 @@ def getMetadataSizes(conn, showEmpty = True):
 
     return results
 
-def outputJson(name, host, counts, metadataSizes, fileName):
+def outputJson(name, host, counts, metadataCounts, fileName):
     now = datetime.datetime.now()
-    jsonData = { 'name' : name, 'host' : host, 'date' : now.isoformat(), 'tables' : counts, 'metadata' : metadataSizes }
+    jsonData = { 'name' : name, 'host' : host, 'date' : now.isoformat(), 'tables' : counts, 'metadata' : metadataCounts }
 
     if fileName == None:
         fileName = "%s-%s-%s" % (name, host, now.isoformat())
@@ -77,8 +77,8 @@ def generatePrettyPrintTable(headers):
 
     return table
 
-def prettyPrintCounts(counts):
-    """Pretty print counts"""
+def prettyPrintDataCounts(counts):
+    """Pretty print data counts"""
 
     print 'OBJECT COUNTS\n'
 
@@ -89,15 +89,15 @@ def prettyPrintCounts(counts):
 
     print consoleTable.draw()
 
-def prettyPrintMetadataSizes(sizes):
+def prettyPrintMetadataCounts(counts):
     """Pretty print metadata sizes"""
 
     print 'METADATA SIZES\n'
 
     consoleTable = generatePrettyPrintTable(['Name', 'Size'])
 
-    for entry in sorted(sizes.keys()):
-        consoleTable.add_row([entry, sizes[entry]])
+    for entry in sorted(counts.keys()):
+        consoleTable.add_row([entry, counts[entry]])
 
     print consoleTable.draw()
 
@@ -110,7 +110,9 @@ parser.add_argument('--dbuser', help='db user if this is different from the curr
 parser.add_argument('--dbhost', help='db host if this is not localhost')
 parser.add_argument('--dbport', help='db port if this is not localhost')
 parser.add_argument('--dbpass', help='db password if this is required')
-parser.add_argument('-a', '--all', action="store_true", help='show tables with zero rows')
+parser.add_argument('-a', '--all', action='store_true', help='show tables with zero rows')
+parser.add_argument('-d', '--data', action='store_true', help='show data stats')
+parser.add_argument('-m', '--metadata', action='store_true', help='show metadata stats')
 parser.add_argument('-o', '--output', nargs='?', default=argparse.SUPPRESS, help='write results to file in JSON format.')
 args = parser.parse_args()
 
@@ -131,16 +133,25 @@ if args.dbport:
 if args.dbpass:
     connString += " password=%s" % args.dbpass
 
+dataCounts = None
+metadataCounts = None
+
 conn = psycopg2.connect(connString)
 
-counts = getCounts(conn, showEmpty = args.all)
-metadataSizes = getMetadataSizes(conn, showEmpty = args.all)
+if args.data or not args.metadata:
+    dataCounts = getCounts(conn, showEmpty = args.all)
+
+if args.metadata or not args.data:
+    metadataCounts = getMetadataSizes(conn, showEmpty = args.all)
 
 conn.close()
 
 if hasattr(args, 'output'):
-    outputJson(dbName, dbHost, counts, metadataSizes, args.output)
+    outputJson(dbName, dbHost, dataCounts, metadataCounts, args.output)
 else:
-    prettyPrintCounts(counts)
-    print
-    prettyPrintMetadataSizes(metadataSizes)
+    if dataCounts != None:
+        prettyPrintDataCounts(dataCounts)
+        print
+
+    if metadataCounts != None:
+        prettyPrintMetadataCounts(metadataCounts)
