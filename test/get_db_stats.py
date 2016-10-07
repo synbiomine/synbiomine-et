@@ -110,10 +110,10 @@ parser.add_argument('--dbuser', help='db user if this is different from the curr
 parser.add_argument('--dbhost', help='db host if this is not localhost')
 parser.add_argument('--dbport', help='db port if this is not localhost')
 parser.add_argument('--dbpass', help='db password if this is required')
-parser.add_argument('-a', '--all', action='store_true', help='show tables with zero rows')
 parser.add_argument('-d', '--data', action='store_true', help='show data stats')
 parser.add_argument('-m', '--metadata', action='store_true', help='show metadata stats')
 parser.add_argument('-o', '--output', nargs='?', default=argparse.SUPPRESS, help='write results to file in JSON format.')
+parser.add_argument('-z', '--zero', action='store_true', help='show data tables with zero rows')
 args = parser.parse_args()
 
 dbName = args.dbname
@@ -139,10 +139,10 @@ metadataCounts = None
 conn = psycopg2.connect(connString)
 
 if args.data or not args.metadata:
-    dataCounts = getCounts(conn, showEmpty = args.all)
+    dataCounts = getCounts(conn, showEmpty = args.zero)
 
 if args.metadata or not args.data:
-    metadataCounts = getMetadataSizes(conn, showEmpty = args.all)
+    metadataCounts = getMetadataSizes(conn, showEmpty = args.zero)
 
 conn.close()
 
