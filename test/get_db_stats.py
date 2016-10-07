@@ -9,9 +9,22 @@ import json
 import psycopg2
 import texttable
 
+#################
+### CONSTANTS ###
+#################
+EXPECTED_METADATA_ENTRIES \
+    = ['autocomplete', 'keyDefs', 'model', 'noNotXml', 'objectStoreSummary',
+       'osversion', 'search', 'search_directory', 'serialNumber']
+
 ###################
 ### SUBROUTINES ###
 ###################
+def checkMetadataEntries(metadataSizes):
+    """Check that we see all the metadata entries that we expect"""
+    for e in EXPECTED_METADATA_ENTRIES:
+        if e not in metadataSizes:
+            print 'WARNING: Metadata entry "%s" not found' % e
+
 def getCounts(conn, showEmpty = True):
     """Get counts of all InterMine database tables.
 
@@ -143,6 +156,7 @@ if args.data or not args.metadata:
 
 if args.metadata or not args.data:
     metadataCounts = getMetadataSizes(conn, showEmpty = args.zero)
+    checkMetadataEntries(metadataCounts)
 
 conn.close()
 
