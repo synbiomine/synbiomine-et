@@ -33,5 +33,12 @@ with open(partsSummaryPath + '/' + partsSummaryFilename, 'w') as f:
 
 partsSummary = json.loads(r.text)
 
+partIds = []
+
 for partSummary in partsSummary:
-    print(partSummary['displayID'])
+    partIds.append(partSummary['displayID'])
+
+for partId in partIds:
+    print(partId)
+
+print('Found %d parts' % len(partIds))
