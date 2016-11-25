@@ -28,14 +28,14 @@ def getSynonoyms(goOboPath):
 #    for id in fcIds:
 #        print id
 
-    print "Got %d first class ids" % len(fcIds)
-    print "Got %d synonyms" % len(synIds)
+    print("Got %d first class ids" % len(fcIds))
+    print("Got %d synonyms" % len(synIds))
 
 #    for synId, fcId in synIds.iteritems():
 #        print "%s => %s" % (synId, fcId)
 
     synAndFcCount = 0
-    for synId in synIds.keys():
+    for synId in list(synIds.keys()):
         if synId in fcIds:
             synAndFcCount += 1
 

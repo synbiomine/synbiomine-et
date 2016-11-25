@@ -1,5 +1,5 @@
 import argparse
-import project as imp
+from . import project as imp
 import sys
 
 class Logger(object):
@@ -7,12 +7,15 @@ class Logger(object):
         self.terminal = sys.stdout
         self.log = open(logPath, 'a')
 
+    def fileno(self):
+        return self.log.fileno()
+
+    def flush(self):
+        self.log.flush()
+
     def write(self, message):
         self.terminal.write(message)
         self.log.write(message)
-
-    def fileno(self):
-        return self.log.fileno()
 
 class ArgParser(argparse.ArgumentParser):
     def error(self, message):
@@ -43,4 +46,4 @@ def handleSimpleSourceAddProcess(sourceTypeNameInDataset, sources, logName):
     imp.addSourcesToProject('%s/intermine/project.xml' % datasetPath, sources)
 
 def printSection(text):
-    print '~~~ %s ~~~' % text
+    print('~~~ %s ~~~' % text)

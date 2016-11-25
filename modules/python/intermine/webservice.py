@@ -1,15 +1,15 @@
-from __future__ import unicode_literals
+
 
 from xml.dom import minidom
-import urllib
+import urllib.request, urllib.parse, urllib.error
 import base64
 from contextlib import closing
 
 try:
-    from urlparse import urlparse
+    from urllib.parse import urlparse
     from UserDict import DictMixin
-    from urllib import urlopen
-    from urllib import urlencode
+    from urllib.request import urlopen
+    from urllib.parse import urlencode
 except ImportError:
     from urllib.parse import urlparse
     from urllib.parse import urlencode
@@ -91,7 +91,7 @@ class Registry(DictMixin):
         data = opener.open(registry_url + Registry.MINES_PATH).read()
         mine_data = json.loads(data)
         self.__mine_dict = dict(( (mine["name"], mine) for mine in mine_data["mines"]))
-        self.__synonyms = dict(( (name.lower(), name) for name in self.__mine_dict.keys() ))
+        self.__synonyms = dict(( (name.lower(), name) for name in list(self.__mine_dict.keys()) ))
         self.__mine_cache = {}
 
     def __contains__(self, name):
@@ -119,7 +119,7 @@ class Registry(DictMixin):
         return iter(self.__mine_dict)
 
     def keys(self):
-        return self.__mine_dict.keys()
+        return list(self.__mine_dict.keys())
 
 def ensure_str(stringlike):
     if hasattr(stringlike, 'decode'):
@@ -478,7 +478,7 @@ class Service(object):
         if hasattr(term, 'encode'):
             term = term.encode('utf8')
         params = [('q', term)]
-        for facet, value in facets.items():
+        for facet, value in list(facets.items()):
             if hasattr(value, 'encode'):
                 value = value.encode('utf8')
             params.append(("facet_{0}".format(facet), value))

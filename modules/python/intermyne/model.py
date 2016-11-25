@@ -47,7 +47,7 @@ class Document:
             itemTag = etree.SubElement(itemsTag, "item",
                                        attrib={"id": item._id, "class": item._className, "implements": ""})
 
-            for name, value in item._attrs.iteritems():
+            for name, value in item._attrs.items():
                 if isinstance(value, list):
                     collectionTag = etree.SubElement(itemTag, "collection", attrib={"name": name})
                     for referencedItem in value:

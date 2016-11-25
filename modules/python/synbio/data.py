@@ -26,7 +26,7 @@ class Collection:
         path = "%s/%s" % (self.basePath, name)
 
         if not os.path.exists(path):
-            os.mkdir(path)
+            os.makedirs(path)
 
         return Set(self, path)
 
@@ -72,7 +72,7 @@ class Collection:
         with open(self.selectedAssembliesPath) as f:
             for line in f:
                 line = line.strip()
-                print 'line: [%s]' % line
+                print('line: [%s]' % line)
                 # assemblyId, bioproject, biosample, wgs_master, refseq_category, taxonId, species_taxonId, organism_name, intraspecific_name, isolate, version_status, assembly_level, release_type, genome_rep, seq_rel_date, asm_name, submitter, gbrs_paired_asm, paired_asm_comp = line.split('\t')
                 components = line.split('\t')
 

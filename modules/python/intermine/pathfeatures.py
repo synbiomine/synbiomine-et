@@ -112,8 +112,8 @@ class SortOrderList(object):
         return len(self.sort_orders) == 0
     def __len__(self):
         return len(self.sort_orders)
-    def next(self):
-        return self.sort_orders.next()
+    def __next__(self):
+        return next(self.sort_orders)
     def __iter__(self):
         return iter(self.sort_orders)
 

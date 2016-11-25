@@ -7,7 +7,7 @@ except ImportError: # pragma: no cover
         raise ImportError("Could not find any JSON module to import - "
             + "please install simplejson or jsonlib to continue")
 
-import urllib
+import urllib.request, urllib.parse, urllib.error
 import re
 import copy
 import base64
@@ -23,12 +23,12 @@ logging.basicConfig()
 try:
     # Python 2.x imports
     from UserDict import UserDict
-    from urllib import urlencode
-    from urllib2 import urlopen
-    from urllib2 import HTTPError
-    from urllib2 import Request
-    from urlparse import urlparse
-    import httplib
+    from urllib.parse import urlencode
+    from urllib.request import urlopen
+    from urllib.error import HTTPError
+    from urllib.request import Request
+    from urllib.parse import urlparse
+    import http.client
 except ImportError:
     # Python 3.x imports
     from urllib.parse import urlencode
@@ -62,7 +62,7 @@ class EnrichmentLine(UserDict):
     def __getattr__(self, name):
         if name is not None:
             key_name = name.replace('_', '-')
-            if key_name in self.keys():
+            if key_name in list(self.keys()):
                 return self.data[key_name]
         raise AttributeError(name)
 
@@ -101,12 +101,12 @@ class ResultObject(object):
 
     def __str__(self):
         dont_show = set(["objectId", "class"])
-        return "%s(%s)" % (self._cld.name, ",  ".join("%s = %r" % (k, v) for k, v in self._data.items()
+        return "%s(%s)" % (self._cld.name, ",  ".join("%s = %r" % (k, v) for k, v in list(self._data.items())
             if not isinstance(v, dict) and not isinstance(v, list) and k not in dont_show))
 
     def __repr__(self):
         dont_show = set(["objectId", "class"])
-        return "%s(%s)" % (self._cld.name, ", ".join("%s = %r" % (k, getattr(self, k)) for k in self._data.keys()
+        return "%s(%s)" % (self._cld.name, ", ".join("%s = %r" % (k, getattr(self, k)) for k in list(self._data.keys())
             if k not in dont_show))
 
     def __getattr__(self, name):
@@ -241,7 +241,7 @@ class ResultRow(object):
 
     def to_d(self):
         """Return a dictionary view of this row"""
-        return dict(self.items())
+        return dict(list(self.items()))
 
     def items(self):
         return [(view, self[view]) for view in self.views]
@@ -278,7 +278,7 @@ class TableResultRow(ResultRow):
         if isinstance(key, int):
             return self.data[key]["value"]
         elif isinstance(key, slice):
-            vals = map(lambda x: x["value"], self.data[key])
+            vals = [x["value"] for x in self.data[key]]
             return vals
         else:
             index = self._get_index_for(key)
@@ -286,7 +286,7 @@ class TableResultRow(ResultRow):
 
     def to_l(self):
         """Return a list view of this row"""
-        return map(lambda x: x["value"], self.data)
+        return [x["value"] for x in self.data]
 
 def encode_str(s):
     return s.encode('utf8') if hasattr(s, 'encode') else s
@@ -295,7 +295,7 @@ def decode_binary(b):
     return b.decode('utf8') if hasattr(b, 'decode') else b
 
 def encode_dict(input_d):
-    return dict((encode_str(k), encode_str(v)) for k, v in input_d.items())
+    return dict((encode_str(k), encode_str(v)) for k, v in list(input_d.items()))
 
 class ResultIterator(object):
     """
@@ -407,9 +407,9 @@ class ResultIterator(object):
 
     def __next__(self):
         """2.x to 3.x bridge"""
-        return self.next()
+        return next(self)
 
-    def next(self):
+    def __next__(self):
         """
         Returns the next row, in the appropriate format
 
@@ -418,7 +418,7 @@ class ResultIterator(object):
         if self._it is None:
             self._it = iter(self)
         try:
-            return self._it.next()
+            return next(self._it)
         except StopIteration:
             self._it = None
             raise StopIteration
@@ -449,9 +449,9 @@ class FlatFileIterator(object):
 
     def __next__(self):
         """2.x to 3.x bridge"""
-        return self.next()
+        return next(self)
 
-    def next(self):
+    def __next__(self):
         """Return a parsed line of data"""
         line = decode_binary(next(self.connection)).strip()
         if line.startswith("[ERROR]"):
@@ -490,9 +490,9 @@ class JSONIterator(object):
 
     def __next__(self):
         """2.6.x-3.x bridge"""
-        return self.next()
+        return next(self)
 
-    def next(self):
+    def __next__(self):
         """Returns a parsed row of data"""
         if self._is_finished:
             raise StopIteration
@@ -564,9 +564,9 @@ class JSONIterator(object):
             return next_row
 
 def encode_headers(headers):
-    return dict((k.encode('ascii') if isinstance(k, unicode) else k, \
-                 v.encode('ascii') if isinstance(v, unicode) else v) \
-                 for k, v in headers.items())
+    return dict((k.encode('ascii') if isinstance(k, str) else k, \
+                 v.encode('ascii') if isinstance(v, str) else v) \
+                 for k, v in list(headers.items()))
 
 class InterMineURLOpener(object):
     """
