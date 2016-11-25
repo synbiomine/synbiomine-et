@@ -28,7 +28,7 @@ ds.startLogging(__file__)
 partsSummaryPath = ds.getRawPath()
 
 r = requests.get('http://synbis.bg.ic.ac.uk/synbisapi/searchlist/datasheet')
-with open(partsSummaryPath + '/' + partsSummaryFilename, 'w') as f:
+with open(partsSummaryPath + partsSummaryFilename, 'w') as f:
     f.write(r.text)
 
 partsSummary = json.loads(r.text)
@@ -38,7 +38,15 @@ partIds = []
 for partSummary in partsSummary:
     partIds.append(partSummary['displayID'])
 
-for partId in partIds:
-    print(partId)
-
 print('Found %d part IDs' % len(partIds))
+
+partsPath = ds.getRawPath() + 'parts/'
+os.mkdir(partsPath)
+
+for partId in partIds:
+    partUrl = 'http://synbis.bg.ic.ac.uk/synbisapi/datasheet/' + partId
+    print('Fetching %s' % partUrl)
+
+    r = requests.get(partUrl)
+    with open(partsPath + partId + '.xml', 'w') as f:
+        f.write(r.text)
