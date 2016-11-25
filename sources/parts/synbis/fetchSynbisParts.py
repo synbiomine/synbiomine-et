@@ -41,4 +41,4 @@ for partSummary in partsSummary:
 for partId in partIds:
     print(partId)
 
-print('Found %d parts' % len(partIds))
+print('Found %d part IDs' % len(partIds))
