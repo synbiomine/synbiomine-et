@@ -3,38 +3,32 @@
 import os
 import sys
 
-sys.path.insert(1, os.path.dirname(os.path.abspath(__file__)) + '/../modules/python')
+sys.path.insert(1, os.path.dirname(os.path.abspath(__file__)) + '/../../modules/python')
 import intermyne.project as imp
 import intermyne.utils as imu
-import synbio.dataset as sbds
+import synbio.data as sbd
 
 ############
 ### MAIN ###
 ############
 parser = imu.ArgParser('Add Uniprot source entries to InterMine SynBioMine project XML.')
-parser.add_argument('datasetPath', help='path to the dataset location.')
+parser.add_argument('colPath', help='path to the dataset collection.')
 parser.add_argument('-v', '--verbose', action="store_true", help="verbose output")
 args = parser.parse_args()
 
-datasetPath = args.datasetPath
-ds = sbds.Dataset(datasetPath)
+dc = sbd.Collection(args.colPath)
+ds = dc.getSet('uniprot')
+ds.startLogging(__file__)
+
 uniprotDataPath = 'data/current/uniprot'
 
-logPath = "%s/logs/writeOrthoDbProjectXml.log" % datasetPath
-sys.stdout = imu.Logger(logPath)
-projectXmlPath = "%s/intermine/project.xml" % datasetPath
-taxonsPath = "%s/taxons/taxons.txt" % datasetPath
-
-with open(taxonsPath) as f:
-    taxons = f.read().strip()
-
 imp.addSourcesToProject(
-    "%s/intermine/project.xml" % datasetPath,
+    dc.getProjectXmlPath(),
     [
         imp.Source('uniprot', 'uniprot',
         [
             { 'name':'src.data.dir',        'location':uniprotDataPath },
-            { 'name':'uniprot.organisms',   'value':taxons }
+            { 'name':'uniprot.organisms',   'value':dc.getTaxonsAsString() }
         ],
         dump=True),
 
@@ -42,7 +36,7 @@ imp.addSourcesToProject(
             'uniprot-fasta', 'fasta',
             [
                 { 'name':'src.data.dir',            'location':uniprotDataPath },
-                { 'name':'fasta.taxonId',           'value':ds.getTaxonsAsString() },
+                { 'name':'fasta.taxonId',           'value':dc.getTaxonsAsString() },
                 { 'name':'fasta.className',         'value':'org.intermine.model.bio.Protein' },
                 { 'name':'fasta.classAttribute',    'value':'primaryAccession' },
                 { 'name':'fasta.dataSetTitle',      'value':'UniProt data set' },

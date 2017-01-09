@@ -98,6 +98,9 @@ class Collection:
 
         return ' '.join(self.getTaxons())
 
+    def getProjectXmlPath(self):
+        return self.basePath + '/intermine/project.xml'
+
     def _parseTaxons(self, taxonsPath):
         with open(taxonsPath) as f:
             self._taxons = set(f.read().strip().split())
