@@ -16,11 +16,5 @@ class Logger(object):
         self.terminal.write(message)
         self.log.write(message)
 
-class ArgParser(argparse.ArgumentParser):
-    def error(self, message):
-        sys.stderr.write('error: %s\n' % message)
-        self.print_help()
-        sys.exit(2)
-
 def printSection(text):
     print('~~~ %s ~~~' % text)
