@@ -3,15 +3,15 @@
 import os
 import sys
 
-sys.path.insert(1, os.path.dirname(os.path.abspath(__file__)) + '/../modules/python')
+sys.path.insert(1, os.path.dirname(os.path.abspath(__file__)) + '/../../modules/python')
 import intermyne.project as imp
-import intermyne.utils as imu
+import synbio.utils as sbu
 
 ############
 ### MAIN ###
 ############
-imu.handleSimpleSourceAddProcess(
-    "InterPro",
+sbu.handleSimpleSourceAddProcess(
+    'interpro',
     [
         imp.Source(
             'interpro', 'interpro',
@@ -25,5 +25,4 @@ imu.handleSimpleSourceAddProcess(
                 { 'name':'src.data.dir',            'location':'/micklem/data/interpro/match_complete' },
                 { 'name':'src.data.dir.includes',   'value':'protein2ipr.dat' }
             ])
-    ],
-    "writeInterProProjectXml")
+    ])
