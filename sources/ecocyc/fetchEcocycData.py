@@ -4,7 +4,7 @@ import os
 import shutil
 import sys
 
-sys.path.insert(1, os.path.dirname(os.path.abspath(__file__)) + '/../modules/python')
+sys.path.insert(1, os.path.dirname(os.path.abspath(__file__)) + '/../../modules/python')
 import intermyne.utils as imu
 
 ############
