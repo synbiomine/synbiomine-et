@@ -1,38 +1,33 @@
 #!/usr/bin/env python
 
+import jargparse
 import os
 import sys
 
-sys.path.insert(1, os.path.dirname(os.path.abspath(__file__)) + '/../modules/python')
+sys.path.insert(1, os.path.dirname(os.path.abspath(__file__)) + '/../../modules/python')
 import intermyne.project as imp
-import intermyne.utils as imu
-import synbio.dataset as sbds
+import synbio.data as sbd
 
 ############
 ### MAIN ###
 ############
-parser = imu.ArgParser('Add OrthoDB source entry to InterMine SynBioMine project XML.')
-parser.add_argument('datasetPath', help='path to the dataset location.')
-parser.add_argument('orthoDbDataPath', help='path to the OrthoDB data')
+parser = jargparse.ArgParser('Add orthodb source entries to InterMine SynBioMine project XML.')
+parser.add_argument('colPath', help='path to the dataset collection.')
 parser.add_argument('-v', '--verbose', action="store_true", help="verbose output")
 args = parser.parse_args()
 
-datasetPath = args.datasetPath
-ds = sbds.Dataset(datasetPath)
-orthoDbDataPath = args.orthoDbDataPath
-
-logPath = "%s/logs/writeOrthoDbProjectXml.log" % datasetPath
-sys.stdout = imu.Logger(logPath)
-projectXmlPath = "%s/intermine/project.xml" % datasetPath
+dc = sbd.Collection(args.colPath)
+ds = dc.getSet('orthodb')
+ds.startLogging(__file__)
 
 imp.addSourcesToProject(
-    "%s/intermine/project.xml" % datasetPath,
+    dc.getProjectXmlPath(),
     [
         imp.Source(
             'orthodb', 'orthodb',
             [
-                { 'name':'src.data.dir',        'location':orthoDbDataPath },
-                { 'name':'orthodb.organisms',   'value':ds.getTaxonsAsString() }
+                { 'name':'src.data.dir',        'location':'/micklem/data/orthodb/current' },
+                { 'name':'orthodb.organisms',   'value':dc.getTaxonsAsString() }
             ],
             dump=True)
     ])
