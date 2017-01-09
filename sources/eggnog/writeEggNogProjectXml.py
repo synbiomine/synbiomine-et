@@ -12,7 +12,6 @@ import synbio.utils as sbu
 ############
 sbu.handleSimpleSourceAddProcess(
     'eggnog',
-    'EggNOG',
     [
         imp.Source(
             'eggnog-functional-categories', 'synbio-funccat',

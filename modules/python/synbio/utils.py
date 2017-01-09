@@ -2,17 +2,16 @@ import jargparse
 import intermyne.project as imp
 from . import data as sbd
 
-def handleSimpleSourceAddProcess(datasetName, sourceNameInProjectXml, sources):
+def handleSimpleSourceAddProcess(datasetName, sources):
     """
     Handle a simple source add process.  Anything more complicated will need to handle its own arg parsing, etc.
 
-    :param sourceTypeNameInDataset:
+    :param datasetName:
     :param sources:
-    :param logName:
     :return:
     """
 
-    parser = jargparse.ArgParser('Add %s source entries to InterMine SynBioMine project XML.' % sourceNameInProjectXml)
+    parser = jargparse.ArgParser('Add %s source entries to InterMine SynBioMine project XML.' % datasetName)
     parser.add_argument('colPath', help='path to the data collection.')
     parser.add_argument('-v', '--verbose', action="store_true", help="verbose output")
     args = parser.parse_args()
