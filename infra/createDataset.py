@@ -46,4 +46,4 @@ shutil.copy(modelPath, datasetModelPath)
 
 os.symlink(os.path.basename(datasetPath), newDatasetSymlinkPath)
 
-print "Created dataset structure at %s, link %s" % (datasetPath, newDatasetSymlink)
+print "Created dataset structure at %s, symlinked %s" % (datasetPath, newDatasetSymlink)
