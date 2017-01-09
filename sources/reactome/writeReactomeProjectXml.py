@@ -3,15 +3,15 @@
 import os
 import sys
 
-sys.path.insert(1, os.path.dirname(os.path.abspath(__file__)) + '/../modules/python')
+sys.path.insert(1, os.path.dirname(os.path.abspath(__file__)) + '/../../modules/python')
 import intermyne.project as imp
-import intermyne.utils as imu
+import synbio.utils as sbu
 
 ############
 ### MAIN ###
 ############
-imu.handleSimpleSourceAddProcess(
-    "Reactome",
+sbu.handleSimpleSourceAddProcess(
+    'reactome',
     [
         imp.Source(
             'reactome', 'reactome',
@@ -22,5 +22,4 @@ imu.handleSimpleSourceAddProcess(
                 { 'name':'reactome.datasetname',    'value':'Reactome data set'},
                 { 'name':'reactome.curated',        'value':'false'}
             ])
-    ],
-    "writeReactomeProjectXml")
+    ])
