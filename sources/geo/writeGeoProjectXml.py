@@ -3,15 +3,15 @@
 import os
 import sys
 
-sys.path.insert(1, os.path.dirname(os.path.abspath(__file__)) + '/../modules/python')
+sys.path.insert(1, os.path.dirname(os.path.abspath(__file__)) + '/../../modules/python')
 import intermyne.project as imp
-import intermyne.utils as imu
+import synbio.utils as sbu
 
 ############
 ### MAIN ###
 ############
-imu.handleSimpleSourceAddProcess(
-    "GEO",
+sbu.handleSimpleSourceAddProcess(
+    'geo',
     [
         imp.Source(
             'faith-GEOSeries-EcoliK12', 'synbio-GEOSeries',
@@ -23,5 +23,4 @@ imu.handleSimpleSourceAddProcess(
             [
                 { 'name':'src.data.dir',        'location':'data/current/geo/nicolas-2012' },
             ])
-    ],
-    "writeGeoProjectXml")
+    ])
