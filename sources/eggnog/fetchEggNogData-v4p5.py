@@ -41,6 +41,6 @@ ds = dc.getSet('eggnog')
 ds.startLogging(__file__)
 
 eggNogUrlStub = "http://eggnogdb.embl.de/download/eggnog_4.5/"
-files = set(['eggnog4.functional_categories.txt', 'data/bactNOG/bactNOG.annotations.tsv.gz', 'data/bactNOG/bactNOG.members.tsv.gz'])
+files = {'eggnog4.functional_categories.txt', 'data/bactNOG/bactNOG.annotations.tsv.gz', 'data/bactNOG/bactNOG.members.tsv.gz'}
 
 assemblePrereqFiles(ds.getLoadPath(), eggNogUrlStub, files)
