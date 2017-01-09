@@ -5,10 +5,10 @@ import os
 import re
 import sys
 
-sys.path.insert(1, os.path.dirname(os.path.abspath(__file__)) + '/../modules/python')
+sys.path.insert(1, os.path.dirname(os.path.abspath(__file__)) + '/../../modules/python')
 import intermyne.model as IM
 import intermyne.utils as imu
-import synbio.dataset as sbds
+import synbio.data as sbd
 
 #################
 ### FUNCTIONS ###
@@ -183,26 +183,22 @@ def addGeneItems(doc, groupItems, membersPath, taxons):
 ### MAIN ###
 ############
 parser = imu.ArgParser('Take files from EggNOG and produce Functional Categories, EggNOG orthology groups and map bacterial genes to these.')
-parser.add_argument('datasetPath', help='path to the dataset.')
+parser.add_argument('colPath', help='path to the data collection.')
 parser.add_argument('-v', '--verbose', action='store_true', help='be verbose')
 args = parser.parse_args()
 
 beVerbose = args.verbose
-datasetPath = args.datasetPath
-ds = sbds.Dataset(datasetPath)
-eggNogPath = '%s/eggnog' % datasetPath
-modelPath = '%s/intermine/genomic_model.xml' % datasetPath
 
-itemsPath = '%s/eggnog/eggnog-items.xml' % datasetPath
-logPath = '%s/logs/eggNog-v4p5-2ItemsXML.log' % datasetPath
+dc = sbd.Collection(args.colPath)
+ds = dc.getSet('eggnog')
+ds.startLogging(__file__)
 
-eggNogAnnotationsPath = "%s/data/bactNOG/bactNOG.annotations.tsv.gz" % eggNogPath
-eggNogFuncCatsPath = "%s/eggnog4.functional_categories.txt" % eggNogPath
-eggNogMembersPath = "%s/data/bactNOG/bactNOG.members.tsv.gz" % eggNogPath
+rawPath = ds.getRawPath()
+eggNogAnnotationsPath = "%s/data/bactNOG/bactNOG.annotations.tsv.gz" % rawPath
+eggNogFuncCatsPath = "%s/eggnog4.functional_categories.txt" % rawPath
+eggNogMembersPath = "%s/data/bactNOG/bactNOG.members.tsv.gz" % rawPath
 
-sys.stdout = imu.Logger(logPath)
-
-model = IM.Model(modelPath)
+model = dc.getModel()
 doc = IM.Document(model)
 
 imu.printSection("Adding data source and data set items")
@@ -219,9 +215,9 @@ groupItems = addGroupItems(doc, groupDataSetItem, funcCatItems, eggNogAnnotation
 print "Added %d EggNOG group items" % len(groupItems)
 
 imu.printSection("Adding gene and organism items")
-organismItems, geneItems = addGeneItems(doc, groupItems, eggNogMembersPath, ds.getTaxons())
+organismItems, geneItems = addGeneItems(doc, groupItems, eggNogMembersPath, dc.getTaxons())
 print "Added %d organism items" % len(organismItems)
 print "Added %d gene items" % len(geneItems)
 
 imu.printSection("Writing InterMine item XML")
-doc.write(itemsPath)
+doc.write(ds.getLoadPath() + '/items.xml')
