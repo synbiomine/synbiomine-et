@@ -3,25 +3,24 @@
 import os
 import sys
 
-sys.path.insert(1, os.path.dirname(os.path.abspath(__file__)) + '/../modules/python')
+sys.path.insert(1, os.path.dirname(os.path.abspath(__file__)) + '/../../modules/python')
 import intermyne.project as imp
-import intermyne.utils as imu
+import synbio.utils as sbu
 
 ############
 ### MAIN ###
 ############
-imu.handleSimpleSourceAddProcess(
-    "path2model",
+sbu.handleSimpleSourceAddProcess(
+    'path2model',
     [
         imp.Source(
             'pathway2model-Bsub168', 'synbio-reaction',
             [
-                { 'name':'src.data.dir',        'location':'data/current/path2model/Bsub168' },
+                { 'name':'src.data.dir',        'location':'data/current/path2model/load/Bsub168' },
             ]),
         imp.Source(
             'pathway2model-EcoliMG1655', 'synbio-reaction',
             [
-                { 'name':'src.data.dir',        'location':'data/current/path2model/EcoliMG1655' },
+                { 'name':'src.data.dir',        'location':'data/current/path2model/load/EcoliMG1655' },
             ])
-    ],
-    "writePath2ModelProjectXml")
+    ])
