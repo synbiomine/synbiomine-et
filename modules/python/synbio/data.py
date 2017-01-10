@@ -138,7 +138,17 @@ class Set:
         return self._parentCollection
 
     def getLoadPath(self):
+        """
+        Return the path where InterMine Item XML is placed for loading by InterMine.
+        Will always terminate with a /
+        :return:
+        """
         return self._loadPath
 
     def getRawPath(self):
+        """
+        Get the path for raw data files before transformation into InterMine Items XML (if done for this dataset)
+        Will always terminate with a /
+        :return:
+        """
         return self._rawPath
