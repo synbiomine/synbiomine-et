@@ -1,39 +1,34 @@
 #!/usr/bin/env python
 
+import jargparse
 import os
 import sys
 
-sys.path.insert(1, os.path.dirname(os.path.abspath(__file__)) + '/../modules/python')
+sys.path.insert(1, os.path.dirname(os.path.abspath(__file__)) + '/../../modules/python')
 import intermyne.project as imp
-import intermyne.utils as imu
-import synbio.dataset as sbds
+import synbio.data as sbd
 
 ############
 ### MAIN ###
 ############
-parser = imu.ArgParser('Add PubMed source entry to InterMine SynBioMine project XML.')
-parser.add_argument('datasetPath', help='path to the dataset location.')
-parser.add_argument('pubMedDataPath', help='path to gene2pubmed file.')
+parser = jargparse.ArgParser('Add PubMed source entries to InterMine SynBioMine project XML.')
+parser.add_argument('colPath', help='path to the dataset collection.')
 parser.add_argument('-v', '--verbose', action="store_true", help="verbose output")
 args = parser.parse_args()
 
-datasetPath = args.datasetPath
-ds = sbds.Dataset(datasetPath)
-pubMedDataPath = args.pubMedDataPath
-
-logPath = "%s/logs/writeOrthoDbProjectXml.log" % datasetPath
-sys.stdout = imu.Logger(logPath)
-projectXmlPath = "%s/intermine/project.xml" % datasetPath
+dc = sbd.Collection(args.colPath)
+ds = dc.getSet('pubmed')
+ds.startLogging(__file__)
 
 imp.addSourcesToProject(
-    "%s/intermine/project.xml" % datasetPath,
+    dc.getProjectXmlPath(),
     [
         imp.Source(
             'pubmed-gene', 'pubmed-gene',
             [
-                { 'name':'src.data.dir',            'location':os.path.dirname(pubMedDataPath) },
+                { 'name':'src.data.dir',            'location':'/micklem/data/pubmed' },
                 { 'name':'src.data.dir.includes',   'value':'gene2pubmed' },
-                { 'name':'pubmed.organisms',        'value':ds.getTaxonsAsString() }
+                { 'name':'pubmed.organisms',        'value':dc.getTaxonsAsString() }
             ]),
 
         imp.Source(
