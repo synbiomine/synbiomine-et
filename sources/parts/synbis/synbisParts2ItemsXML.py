@@ -8,7 +8,28 @@ from rdflib.namespace import RDF
 import sys
 
 sys.path.insert(1, os.path.dirname(os.path.abspath(__file__)) + '/../../../modules/python')
+import intermyne.metadata as immd
+import intermyne.model as imm
 import synbio.data as sbd
+
+#################
+### FUNCITONS ###
+#################
+def addPartItem(doc, componentUrl, graph, datasetItem):
+    partItem = doc.createItem('Part')
+    partItem.addToAttribute('dataSets', datasetItem)
+
+    query = 'SELECT ?p ?o WHERE { <%s> ?p ?o . }' % componentUrl
+    print(query)
+    rows = g.query(query)
+    #print(sum(1 for _ in rows))
+    for p, o in rows:
+        if p == rdflib.term.URIRef('http://sbols.org/v2#displayId'):
+            partItem.addAttribute('name', o)
+
+    doc.addItem(partItem)
+
+    return partItem
 
 ############
 ### MAIN ###
@@ -22,8 +43,13 @@ dc = sbd.Collection(args.colPath)
 ds = dc.getSet('parts/synbis')
 ds.startLogging(__file__)
 
-partsPath = ds.getRawPath() + 'parts/'
+model = dc.getModel()
+doc = imm.Document(model)
+dataSourceItem = immd.addDataSource(doc, 'SynBIS', 'http://synbis.bg.ic.ac.uk')
+dataSetItem = immd.addDataSet(doc, 'SYNBIS parts', dataSourceItem)
 
+parts = {}
+partsPath = ds.getRawPath() + 'parts/'
 for partsFilename in glob.glob(partsPath + '*.xml'):
 # for partsFilename in os.listdir(partsPath):
 # for partsFilename in ['apFAB101.xml']:
@@ -39,9 +65,10 @@ for partsFilename in glob.glob(partsPath + '*.xml'):
         for componentDefinition in componentDefinitions:
             # print(componentDefinition)
             for componentUrl, _, _ in componentDefinitions:
-                print(componentUrl)
+                if componentUrl not in parts:
+                    print('Adding %s to parts list' % componentUrl)
+                    parts[componentUrl] = addPartItem(doc, componentUrl, g, dataSetItem)
+                else:
+                    print('Skipping %s as already in parts list' % componentUrl)
 
-        query = 'SELECT ?p ?o WHERE { <%s> ?p ?o . }' % componentUrl
-        print(query)
-        rows = g.query(query)
-        print(sum(1 for _ in rows))
+doc.write(ds.getLoadPath() + 'items.xml')
