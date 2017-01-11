@@ -20,7 +20,7 @@ def addPartItem(doc, componentUrl, graph, datasetItem):
     partItem.addToAttribute('dataSets', datasetItem)
 
     query = 'SELECT ?p ?o WHERE { <%s> ?p ?o . }' % componentUrl
-    print(query)
+    # print(query)
     rows = g.query(query)
 
     for p, o in rows:
@@ -51,12 +51,9 @@ dataSourceItem = immd.addDataSource(doc, 'SynBIS', 'http://synbis.bg.ic.ac.uk')
 dataSetItem = immd.addDataSet(doc, 'SYNBIS parts', dataSourceItem)
 
 parts = {}
-partsPath = ds.getRawPath() + 'parts/'
-for partsFilename in glob.glob(partsPath + '*.xml'):
-# for partsFilename in os.listdir(partsPath):
-# for partsFilename in ['apFAB101.xml']:
-    print('Analyzing ' + partsFilename)
-    with open(partsFilename) as f:
+for partsPath in glob.glob(ds.getRawPath() + 'parts/*.xml'):
+    print('Analyzing ' + partsPath)
+    with open(partsPath) as f:
         g = rdflib.Graph()
         g.load(f)
         # print(g.serialize(format='turtle').decode('unicode_escape'))
@@ -70,7 +67,7 @@ for partsFilename in glob.glob(partsPath + '*.xml'):
                 if componentUrl not in parts:
                     print('Adding %s to parts list' % componentUrl)
                     parts[componentUrl] = addPartItem(doc, componentUrl, g, dataSetItem)
-                else:
-                    print('Skipping %s as already in parts list' % componentUrl)
+                # else:
+                    # print('Skipping %s as already in parts list' % componentUrl)
 
 doc.write(ds.getLoadPath() + 'items.xml')
