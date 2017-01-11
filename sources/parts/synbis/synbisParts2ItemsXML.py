@@ -22,10 +22,12 @@ def addPartItem(doc, componentUrl, graph, datasetItem):
     query = 'SELECT ?p ?o WHERE { <%s> ?p ?o . }' % componentUrl
     print(query)
     rows = g.query(query)
-    #print(sum(1 for _ in rows))
+
     for p, o in rows:
         if p == rdflib.term.URIRef('http://sbols.org/v2#displayId'):
             partItem.addAttribute('name', o)
+        elif p == rdflib.term.URIRef('http://sbols.org/v2#persistentIdentity'):
+            partItem.addAttribute('uri', o)
 
     doc.addItem(partItem)
 
