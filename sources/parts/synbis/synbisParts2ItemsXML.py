@@ -33,7 +33,15 @@ for partsFilename in glob.glob(partsPath + '*.xml'):
         g.load(f)
         # print(g.serialize(format='turtle').decode('unicode_escape'))
         componentDefinitions = g.triples((None, RDF.type, rdflib.term.URIRef('http://sbols.org/v2#ComponentDefinition')))
+        # rows = g.query('SELECT ?s ?p ?o WHERE { ?s a sbol:ComponentDefinition . }')
         # componentDefinitions = g.triples((None, rdflib.namespace.RDF.type, None))
         #print(sum(1 for _ in componentDefinitions))
         for componentDefinition in componentDefinitions:
-            print(componentDefinition)
+            # print(componentDefinition)
+            for componentUrl, _, _ in componentDefinitions:
+                print(componentUrl)
+
+        query = 'SELECT ?p ?o WHERE { <%s> ?p ?o . }' % componentUrl
+        print(query)
+        rows = g.query(query)
+        print(sum(1 for _ in rows))
