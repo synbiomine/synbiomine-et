@@ -21,7 +21,7 @@ def addPartItem(doc, componentUrl, graph, datasetItem):
 
     query = 'SELECT ?p ?o WHERE { <%s> ?p ?o . }' % componentUrl
     # print(query)
-    rows = g.query(query)
+    rows = graph.query(query)
 
     for p, o in rows:
         if p == rdflib.term.URIRef('http://sbols.org/v2#displayId'):
