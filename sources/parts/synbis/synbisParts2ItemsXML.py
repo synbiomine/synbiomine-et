@@ -2,6 +2,7 @@
 
 import jargparse
 import os
+import rdflib
 import sys
 
 sys.path.insert(1, os.path.dirname(os.path.abspath(__file__)) + '/../../../modules/python')
@@ -19,7 +20,10 @@ dc = sbd.Collection(args.colPath)
 ds = dc.getSet('parts/synbis')
 ds.startLogging(__file__)
 
-partsPath = ds.getRawPath() + 'parts'
+partsPath = ds.getRawPath() + 'parts/'
 
 for partsFilename in os.listdir(partsPath):
     print('Analyzing ' + partsFilename)
+    with open(partsPath + partsFilename) as f:
+        g = rdflib.Graph()
+        g.load(f)
