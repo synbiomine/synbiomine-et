@@ -38,6 +38,7 @@ def addPartItem(doc, componentUrl, graph, datasetItem):
 ############
 parser = jargparse.ArgParser('Take raw data downloaded from synbis and turn into InterMine Item XML.')
 parser.add_argument('colPath', help='path to the data collection.')
+parser.add_argument('-d', '--dummy', action='store_true', help='dummy run, do not store anything')
 parser.add_argument('-v', '--verbose', action='store_true', help='be verbose')
 args = parser.parse_args()
 
@@ -70,4 +71,5 @@ for partsPath in glob.glob(ds.getRawPath() + 'parts/*.xml'):
                 # else:
                     # print('Skipping %s as already in parts list' % componentUrl)
 
-doc.write(ds.getLoadPath() + 'items.xml')
+if not args.dummy:
+    doc.write(ds.getLoadPath() + 'items.xml')
