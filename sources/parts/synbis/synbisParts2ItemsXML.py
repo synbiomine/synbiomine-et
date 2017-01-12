@@ -35,6 +35,8 @@ def addPartItem(doc, componentUrl, graph, soTermItems, dsItem):
             if soTerm not in soTermItems:
                 soTermItems[soTerm] = addSoTermItem(doc, soTerm)
             partItem.addAttribute('role', soTerm)
+        elif p == rdflib.term.URIRef('http://sbols.org/v2#type'):
+            partItem.addAttribute('type', o)
 
     doc.addItem(partItem)
 
