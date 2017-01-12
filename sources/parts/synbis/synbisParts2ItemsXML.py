@@ -46,6 +46,8 @@ def addPartItem(doc, componentUrl, graph, organismItems, soTermItems, dsItem):
                 if o not in organismItems:
                     organismItems[o] = addOrganismItem(doc, o)
                 partItem.addAttribute('organism', organismItems[o])
+        elif p == rdflib.term.URIRef('http://synbis.bg.ic.ac.uk/origin'):
+            partItem.addAttribute('origin', o)
 
     doc.addItem(partItem)
 
