@@ -463,6 +463,7 @@
   <reference name="organism" referenced-type="Organism"/>
   <attribute name="designMethod" type="java.lang.String"/>
   <attribute name="type" type="java.lang.String"/>
+  <attribute name="role" referenced-type="SOTerm"/>
   <collection name="genes" referenced-type="Gene"/>
   <collection name="functions" referenced-type="GOTerm"/>
   <collection name="participatesIn" referenced-type="GOTerm"/>

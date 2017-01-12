@@ -15,9 +15,10 @@ import synbio.data as sbd
 #################
 ### FUNCITONS ###
 #################
-def addPartItem(doc, componentUrl, graph, datasetItem):
+def addPartItem(doc, componentUrl, graph, soTermItems, dsItem):
+
     partItem = doc.createItem('Part')
-    partItem.addToAttribute('dataSets', datasetItem)
+    partItem.addToAttribute('dataSets', dsItem)
 
     query = 'SELECT ?p ?o WHERE { <%s> ?p ?o . }' % componentUrl
     # print(query)
@@ -28,10 +29,24 @@ def addPartItem(doc, componentUrl, graph, datasetItem):
             partItem.addAttribute('name', o)
         elif p == rdflib.term.URIRef('http://sbols.org/v2#persistentIdentity'):
             partItem.addAttribute('uri', o)
+        elif p == rdflib.term.URIRef('http://sbols.org/v2#role'):
+            soTerm = o.split('/')[-1]
+            print('Got SOTerm [%s]' % soTerm)
+            if soTerm not in soTermItems:
+                soTermItems[soTerm] = addSoTermItem(doc, soTerm)
+            partItem.addAttribute('role', soTerm)
 
     doc.addItem(partItem)
 
     return partItem
+
+def addSoTermItem(doc, id):
+
+    item = doc.createItem('SOTerm')
+    item.addAttribute('identifier', id)
+    doc.addItem(item)
+
+    return item
 
 ############
 ### MAIN ###
@@ -51,7 +66,9 @@ doc = imm.Document(model)
 dataSourceItem = immd.addDataSource(doc, 'SynBIS', 'http://synbis.bg.ic.ac.uk')
 dataSetItem = immd.addDataSet(doc, 'SYNBIS parts', dataSourceItem)
 
-parts = {}
+partItems = {}
+soTermItems = {}
+
 for partsPath in glob.glob(ds.getRawPath() + 'parts/*.xml'):
     print('Analyzing ' + partsPath)
     with open(partsPath) as f:
@@ -65,9 +82,9 @@ for partsPath in glob.glob(ds.getRawPath() + 'parts/*.xml'):
         for componentDefinition in componentDefinitions:
             # print(componentDefinition)
             for componentUrl, _, _ in componentDefinitions:
-                if componentUrl not in parts:
+                if componentUrl not in partItems:
                     print('Adding %s to parts list' % componentUrl)
-                    parts[componentUrl] = addPartItem(doc, componentUrl, g, dataSetItem)
+                    partItems[componentUrl] = addPartItem(doc, componentUrl, g, soTermItems, dataSetItem)
                 # else:
                     # print('Skipping %s as already in parts list' % componentUrl)
 
