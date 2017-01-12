@@ -15,7 +15,7 @@ import synbio.data as sbd
 #################
 ### FUNCITONS ###
 #################
-def addPartItem(doc, componentUrl, graph, soTermItems, dsItem):
+def addPartItem(doc, componentUrl, graph, organismItems, soTermItems, dsItem):
 
     partItem = doc.createItem('Part')
     partItem.addToAttribute('dataSets', dsItem)
@@ -25,6 +25,7 @@ def addPartItem(doc, componentUrl, graph, soTermItems, dsItem):
     rows = graph.query(query)
 
     for p, o in rows:
+        o = str(o)
         if p == rdflib.term.URIRef('http://sbols.org/v2#displayId'):
             partItem.addAttribute('name', o)
         elif p == rdflib.term.URIRef('http://sbols.org/v2#persistentIdentity'):
@@ -34,16 +35,39 @@ def addPartItem(doc, componentUrl, graph, soTermItems, dsItem):
             print('Got SOTerm [%s]' % soTerm)
             if soTerm not in soTermItems:
                 soTermItems[soTerm] = addSoTermItem(doc, soTerm)
-            partItem.addAttribute('role', soTerm)
+            partItem.addAttribute('role', soTermItems[soTerm])
+        elif p == rdflib.term.URIRef('http://sbols.org/v2#sequence'):
+            partItem.addAttribute('sequence', o)
         elif p == rdflib.term.URIRef('http://sbols.org/v2#type'):
             partItem.addAttribute('type', o)
+        elif p == rdflib.term.URIRef('http://synbis.bg.ic.ac.uk/nativeFrom'):
+            print('Got organism [%s]' % o)
+            if o != '':
+                if o not in organismItems:
+                    organismItems[o] = addOrganismItem(doc, o)
+                partItem.addAttribute('organism', organismItems[o])
 
     doc.addItem(partItem)
 
     return partItem
 
-def addSoTermItem(doc, id):
+def addOrganismItem(doc, synbisName):
+    SYNBIS_NATIVEFROM_NAMES_TO_TAXON_IDS = {
+        'E. coli': 562
+    }
 
+    item = doc.createItem('Organism')
+    if synbisName in SYNBIS_NATIVEFROM_NAMES_TO_TAXON_IDS:
+        taxonId = SYNBIS_NATIVEFROM_NAMES_TO_TAXON_IDS[synbisName]
+    else:
+        taxonId = 0
+
+    item.addAttribute('taxonId', taxonId)
+    doc.addItem(item)
+
+    return item
+
+def addSoTermItem(doc, id):
     item = doc.createItem('SOTerm')
     item.addAttribute('identifier', id)
     doc.addItem(item)
@@ -69,6 +93,7 @@ dataSourceItem = immd.addDataSource(doc, 'SynBIS', 'http://synbis.bg.ic.ac.uk')
 dataSetItem = immd.addDataSet(doc, 'SYNBIS parts', dataSourceItem)
 
 partItems = {}
+organismItems = {}
 soTermItems = {}
 
 for partsPath in glob.glob(ds.getRawPath() + 'parts/*.xml'):
@@ -86,7 +111,7 @@ for partsPath in glob.glob(ds.getRawPath() + 'parts/*.xml'):
             for componentUrl, _, _ in componentDefinitions:
                 if componentUrl not in partItems:
                     print('Adding %s to parts list' % componentUrl)
-                    partItems[componentUrl] = addPartItem(doc, componentUrl, g, soTermItems, dataSetItem)
+                    partItems[componentUrl] = addPartItem(doc, componentUrl, g, organismItems, soTermItems, dataSetItem)
                 # else:
                     # print('Skipping %s as already in parts list' % componentUrl)
 
