@@ -116,6 +116,17 @@ def addSoTermItem(doc, id):
 
     return item
 
+def addRdfItems(type, doc, graph):
+    imItems = {}
+    rdfItems = graph.triples((None, RDF.type, rdflib.term.URIRef(type)))
+    for url, _, _ in rdfItems:
+        url = str(url)
+        if url not in imItems:
+            print('Adding %s to imItems' % url)
+            imItems[url] = addSequenceItem(doc, url, graph)
+
+    return imItems
+
 ############
 ### MAIN ###
 ############
@@ -135,7 +146,6 @@ dataSourceItem = immd.addDataSource(doc, 'SynBIS', 'http://synbis.bg.ic.ac.uk')
 dataSetItem = immd.addDataSet(doc, 'SYNBIS parts', dataSourceItem)
 
 partItems = {}
-sequenceItems = {}
 organismItems = {}
 soTermItems = {}
 
@@ -146,12 +156,7 @@ for partsPath in glob.glob(ds.getRawPath() + 'parts/*.xml'):
         g.load(f)
         # print(g.serialize(format='turtle').decode('unicode_escape'))
 
-        sequences = g.triples((None, RDF.type, rdflib.term.URIRef('http://sbols.org/v2#Sequence')))
-        for url, _, _ in sequences:
-            url = str(url)
-            if url not in sequenceItems:
-                print('Adding %s to sequences' % url)
-                sequenceItems[url] = addSequenceItem(doc, url, g)
+        sequenceItems = addRdfItems('http://sbols.org/v2#Sequence', doc, g)
 
         componentDefinitions = g.triples((None, RDF.type, rdflib.term.URIRef('http://sbols.org/v2#ComponentDefinition')))
         # rows = g.query('SELECT ?s ?p ?o WHERE { ?s a sbol:ComponentDefinition . }')
