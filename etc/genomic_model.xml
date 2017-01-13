@@ -530,19 +530,24 @@
 </class>
 <class name="ChromosomalTransposition" extends="ChromosomeStructureVariation" is-interface="true"></class>
 <class name="Minus35Signal" extends="Region" is-interface="true"></class>
-<class name="Part" is-interface="true">
+
+<class name="SynBioPart" is-interface="true">
   <attribute name="description" type="java.lang.String"/>
   <attribute name="name" type="java.lang.String"/>
   <attribute name="uri" type="java.lang.String"/>
-  <reference name="organism" referenced-type="Organism"/>
+  <reference name="originatingOrganism" referenced-type="Organism"/>
   <attribute name="designMethod" type="java.lang.String"/>
   <attribute name="type" type="java.lang.String"/>
   <attribute name="rnapSpecies" type="java.lang.String"/>
   <attribute name="rnapSigmaFactor" type="java.lang.Integer"/>
   <attribute name="role" referenced-type="SOTerm"/>
+  <attribute name="sequence" referenced-type="SynBioSequence"/>
   <collection name="genes" referenced-type="Gene"/>
   <collection name="functions" referenced-type="GOTerm"/>
   <collection name="participatesIn" referenced-type="GOTerm"/>
   <collection name="dataSets" referenced-type="DataSet"/>
+</class>
+<class name="SynBioSequence" extends="Sequence" is-interface="true">
+  <attribute name="encoding" type="java.lang.String"/>
 </class>
 </model>

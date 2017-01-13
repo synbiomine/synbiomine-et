@@ -29,7 +29,7 @@ def addPartItem(doc, componentUrl, graph, organismItems, soTermItems, dsItem):
         'http://synbis.bg.ic.ac.uk/rnapSigmaFactor':'rnapSigmaFactor'
     }
 
-    partItem = doc.createItem('Part')
+    partItem = doc.createItem('SynBioPart')
     partItem.addToAttribute('dataSets', dsItem)
 
     query = 'SELECT ?p ?o WHERE { <%s> ?p ?o . }' % componentUrl
