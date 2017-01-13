@@ -17,6 +17,18 @@ import synbio.data as sbd
 #################
 def addPartItem(doc, componentUrl, graph, organismItems, soTermItems, dsItem):
 
+    partItemMap = {
+        'http://sbols.org/v2#displayId':'name',
+        'http://sbols.org/v2#persistentIdentity':'uri',
+        'http://sbols.org/v2#role':'role',
+        'http://sbols.org/v2#sequence':'sequence',
+        'http://sbols.org/v2#type':'type',
+        'http://synbis.bg.ic.ac.uk/nativeFrom':'organism',
+        'http://synbis.bg.ic.ac.uk/origin':'origin',
+        'http://synbis.bg.ic.ac.uk/rnapSpecies':'rnapSpecies',
+        'http://synbis.bg.ic.ac.uk/rnapSigmaFactor':'rnapSigmaFactor'
+    }
+
     partItem = doc.createItem('Part')
     partItem.addToAttribute('dataSets', dsItem)
 
@@ -26,32 +38,23 @@ def addPartItem(doc, componentUrl, graph, organismItems, soTermItems, dsItem):
 
     for p, o in rows:
         o = str(o)
-        if p == rdflib.term.URIRef('http://sbols.org/v2#displayId'):
-            partItem.addAttribute('name', o)
-        elif p == rdflib.term.URIRef('http://sbols.org/v2#persistentIdentity'):
-            partItem.addAttribute('uri', o)
-        elif p == rdflib.term.URIRef('http://sbols.org/v2#role'):
-            soTerm = o.split('/')[-1]
-            print('Got SOTerm [%s]' % soTerm)
-            if soTerm not in soTermItems:
-                soTermItems[soTerm] = addSoTermItem(doc, soTerm)
-            partItem.addAttribute('role', soTermItems[soTerm])
-        elif p == rdflib.term.URIRef('http://sbols.org/v2#sequence'):
-            partItem.addAttribute('sequence', o)
-        elif p == rdflib.term.URIRef('http://sbols.org/v2#type'):
-            partItem.addAttribute('type', o)
-        elif p == rdflib.term.URIRef('http://synbis.bg.ic.ac.uk/nativeFrom'):
-            print('Got organism [%s]' % o)
-            if o != '':
-                if o not in organismItems:
-                    organismItems[o] = addOrganismItem(doc, o)
-                partItem.addAttribute('organism', organismItems[o])
-        elif p == rdflib.term.URIRef('http://synbis.bg.ic.ac.uk/origin'):
-            partItem.addAttribute('origin', o)
-        elif p == rdflib.term.URIRef('http://synbis.bg.ic.ac.uk/rnapSpecies'):
-            partItem.addAttribute('rnapSpecies', o)
-        elif p == rdflib.term.URIRef('http://synbis.bg.ic.ac.uk/rnapSigmaFactor'):
-            partItem.addAttribute('rnapSigmaFactor', o)
+        p = str(p)
+
+        if p in partItemMap:
+            if p == 'http://sbols.org/v2#role':
+                soTerm = o.split('/')[-1]
+                print('Got SOTerm [%s]' % soTerm)
+                if soTerm not in soTermItems:
+                    soTermItems[soTerm] = addSoTermItem(doc, soTerm)
+                partItem.addAttribute('role', soTermItems[soTerm])
+            elif p == rdflib.term.URIRef('http://synbis.bg.ic.ac.uk/nativeFrom'):
+                print('Got organism [%s]' % o)
+                if o != '':
+                    if o not in organismItems:
+                        organismItems[o] = addOrganismItem(doc, o)
+                    partItem.addAttribute('organism', organismItems[o])
+            else:
+                partItem.addAttribute(partItemMap[p], o)
 
     doc.addItem(partItem)
 
