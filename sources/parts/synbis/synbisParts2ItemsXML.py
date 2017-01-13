@@ -55,10 +55,38 @@ def addPartItem(doc, componentUrl, graph, organismItems, soTermItems, dsItem):
                     partItem.addAttribute('organism', organismItems[o])
             else:
                 partItem.addAttribute(partItemMap[p], o)
+        else:
+            print('Ignoring (%s, %s) as not found in item map' % (p, o))
 
     doc.addItem(partItem)
 
     return partItem
+
+def addSequenceItem(doc, url, graph):
+
+    itemMap = {
+        'http://sbols.org/v2#encoding':'encoding',
+        'http://sbols.org/v2#elements':'residues'
+    }
+
+    item = doc.createItem('SynBioSequence')
+
+    query = 'SELECT ?p ?o WHERE { <%s> ?p ?o . }' % url
+    rows = graph.query(query)
+
+    for p, o in rows:
+        o = str(o)
+        p = str(p)
+
+    if p in itemMap:
+        item.addAttribute(itemMap[p], o)
+    else:
+        print('Ignoring (%s, %s) as not found in item map' % (p, o))
+
+    doc.addItem(item)
+
+    return item
+
 
 def addOrganismItem(doc, synbisName):
     SYNBIS_NATIVEFROM_NAMES_TO_TAXON_IDS = {
@@ -102,6 +130,7 @@ dataSourceItem = immd.addDataSource(doc, 'SynBIS', 'http://synbis.bg.ic.ac.uk')
 dataSetItem = immd.addDataSet(doc, 'SYNBIS parts', dataSourceItem)
 
 partItems = {}
+sequenceItems = {}
 organismItems = {}
 soTermItems = {}
 
@@ -111,6 +140,13 @@ for partsPath in glob.glob(ds.getRawPath() + 'parts/*.xml'):
         g = rdflib.Graph()
         g.load(f)
         # print(g.serialize(format='turtle').decode('unicode_escape'))
+
+        sequences = g.triples((None, RDF.type, rdflib.term.URIRef('http://sbols.org/v2#Sequence')))
+        for url, _, _ in sequences:
+            if url not in sequenceItems:
+                print('Adding %s to sequences' % url)
+                sequenceItems[url] = addSequenceItem(doc, url, g)
+
         componentDefinitions = g.triples((None, RDF.type, rdflib.term.URIRef('http://sbols.org/v2#ComponentDefinition')))
         # rows = g.query('SELECT ?s ?p ?o WHERE { ?s a sbol:ComponentDefinition . }')
         # componentDefinitions = g.triples((None, rdflib.namespace.RDF.type, None))

@@ -549,5 +549,6 @@
 </class>
 <class name="SynBioSequence" extends="Sequence" is-interface="true">
   <attribute name="encoding" type="java.lang.String"/>
+  <attribute name="residues" type="org.intermine.objectstore.query.ClobAccess"/>
 </class>
 </model>
