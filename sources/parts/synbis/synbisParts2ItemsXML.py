@@ -47,7 +47,7 @@ def addPartItem(doc, componentUrl, graph, organismItems, soTermItems, dsItem):
                 if soTerm not in soTermItems:
                     soTermItems[soTerm] = addSoTermItem(doc, soTerm)
                 partItem.addAttribute('role', soTermItems[soTerm])
-            elif p == rdflib.term.URIRef('http://synbis.bg.ic.ac.uk/nativeFrom'):
+            elif p == 'http://synbis.bg.ic.ac.uk/nativeFrom':
                 print('Got organism [%s]' % o)
                 if o != '':
                     if o not in organismItems:
