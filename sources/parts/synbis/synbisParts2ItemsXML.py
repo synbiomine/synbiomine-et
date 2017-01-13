@@ -151,14 +151,12 @@ for partsPath in glob.glob(ds.getRawPath() + 'parts/*.xml'):
         # rows = g.query('SELECT ?s ?p ?o WHERE { ?s a sbol:ComponentDefinition . }')
         # componentDefinitions = g.triples((None, rdflib.namespace.RDF.type, None))
         #print(sum(1 for _ in componentDefinitions))
-        for componentDefinition in componentDefinitions:
-            # print(componentDefinition)
-            for componentUrl, _, _ in componentDefinitions:
-                if componentUrl not in partItems:
-                    print('Adding %s to parts list' % componentUrl)
-                    partItems[componentUrl] = addPartItem(doc, componentUrl, g, organismItems, soTermItems, dataSetItem)
-                # else:
-                    # print('Skipping %s as already in parts list' % componentUrl)
+        for componentUrl, _, _ in componentDefinitions:
+            if componentUrl not in partItems:
+                print('Adding %s to parts list' % componentUrl)
+                partItems[componentUrl] = addPartItem(doc, componentUrl, g, organismItems, soTermItems, dataSetItem)
+            # else:
+                # print('Skipping %s as already in parts list' % componentUrl)
 
 if not args.dummy:
     doc.write(ds.getLoadPath() + 'items.xml')
