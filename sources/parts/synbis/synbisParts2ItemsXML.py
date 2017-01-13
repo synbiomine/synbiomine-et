@@ -48,6 +48,10 @@ def addPartItem(doc, componentUrl, graph, organismItems, soTermItems, dsItem):
                 partItem.addAttribute('organism', organismItems[o])
         elif p == rdflib.term.URIRef('http://synbis.bg.ic.ac.uk/origin'):
             partItem.addAttribute('origin', o)
+        elif p == rdflib.term.URIRef('http://synbis.bg.ic.ac.uk/rnapSpecies'):
+            partItem.addAttribute('rnapSpecies', o)
+        elif p == rdflib.term.URIRef('http://synbis.bg.ic.ac.uk/rnapSigmaFactor'):
+            partItem.addAttribute('rnapSigmaFactor', o)
 
     doc.addItem(partItem)
 
