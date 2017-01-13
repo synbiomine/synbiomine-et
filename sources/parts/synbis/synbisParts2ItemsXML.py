@@ -15,7 +15,7 @@ import synbio.data as sbd
 #################
 ### FUNCITONS ###
 #################
-def addPartItem(doc, componentUrl, graph, organismItems, soTermItems, dsItem):
+def addPartItem(doc, componentUrl, graph, organismItems, sequenceItems, soTermItems, dsItem):
 
     partItemMap = {
         'http://sbols.org/v2#displayId':'name',
@@ -53,6 +53,11 @@ def addPartItem(doc, componentUrl, graph, organismItems, soTermItems, dsItem):
                     if o not in organismItems:
                         organismItems[o] = addOrganismItem(doc, o)
                     partItem.addAttribute('organism', organismItems[o])
+            elif p == 'http://sbols.org/v2#sequence':
+                if o in sequenceItems:
+                    partItem.addAttribute('sequence', sequenceItems[o])
+                else:
+                    raise Exception('Sequence %s specified for %s but no matching InterMine sequence item exists' % (o, componentUrl))
             else:
                 partItem.addAttribute(partItemMap[p], o)
         else:
@@ -143,6 +148,7 @@ for partsPath in glob.glob(ds.getRawPath() + 'parts/*.xml'):
 
         sequences = g.triples((None, RDF.type, rdflib.term.URIRef('http://sbols.org/v2#Sequence')))
         for url, _, _ in sequences:
+            url = str(url)
             if url not in sequenceItems:
                 print('Adding %s to sequences' % url)
                 sequenceItems[url] = addSequenceItem(doc, url, g)
@@ -152,9 +158,10 @@ for partsPath in glob.glob(ds.getRawPath() + 'parts/*.xml'):
         # componentDefinitions = g.triples((None, rdflib.namespace.RDF.type, None))
         #print(sum(1 for _ in componentDefinitions))
         for componentUrl, _, _ in componentDefinitions:
+            componentUrl = str(componentUrl)
             if componentUrl not in partItems:
                 print('Adding %s to parts list' % componentUrl)
-                partItems[componentUrl] = addPartItem(doc, componentUrl, g, organismItems, soTermItems, dataSetItem)
+                partItems[componentUrl] = addPartItem(doc, componentUrl, g, organismItems, sequenceItems, soTermItems, dataSetItem)
             # else:
                 # print('Skipping %s as already in parts list' % componentUrl)
 
