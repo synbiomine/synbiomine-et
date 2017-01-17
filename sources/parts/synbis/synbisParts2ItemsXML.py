@@ -139,7 +139,8 @@ partItemMap = {
     'http://synbis.bg.ic.ac.uk/nativeFrom'              :['organism', lambda o: getOrgItemForSynbisNativeFrom(o, organismItems)],
     'http://synbis.bg.ic.ac.uk/origin'                  :'origin',
     'http://synbis.bg.ic.ac.uk/rnapSpecies'             :'rnapSpecies',
-    'http://synbis.bg.ic.ac.uk/rnapSigmaFactor'         :'rnapSigmaFactor'
+    'http://synbis.bg.ic.ac.uk/rnapSigmaFactor'         :'rnapSigmaFactor',
+    'http://synbis.bg.ic.ac.uk/inducer'                 :'inducer'
 }
 
 for partsPath in glob.glob(ds.getRawPath() + 'parts/*.xml'):
