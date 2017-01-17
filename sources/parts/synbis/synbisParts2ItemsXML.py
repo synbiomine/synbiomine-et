@@ -17,19 +17,35 @@ import synbio.data as sbd
 #################
 ### FUNCITONS ###
 #################
+def getSoTermItemForSbolRole(o, soTermItems):
+    soTerm = o.split('/')[-1]
+    print('Got SOTerm [%s]' % soTerm)
+    if soTerm not in soTermItems:
+        soTermItems[soTerm] = addSoTermItem(doc, soTerm)
+    return soTermItems[soTerm]
+
+def getOrgItemForSynbisNativeFrom(o, orgItems):
+    print('Got organism [%s]' % o)
+    if o != '':
+        if o not in organismItems:
+            organismItems[o] = addOrganismItem(doc, o)
+        return organismItems[o]
+    else:
+        return None
+
 def addPartItem(doc, componentUrl, graph, organismItems, sequenceItems, soTermItems, dsItem):
 
     partItemMap = {
-        'http://www.w3.org/1999/02/22-rdf-syntax-ns#type':None,
-        'http://sbols.org/v2#displayId':'name',
-        'http://sbols.org/v2#persistentIdentity':'uri',
-        'http://sbols.org/v2#role':'role',
-        'http://sbols.org/v2#sequence':'sequence',
-        'http://sbols.org/v2#type':'type',
-        'http://synbis.bg.ic.ac.uk/nativeFrom':'organism',
-        'http://synbis.bg.ic.ac.uk/origin':'origin',
-        'http://synbis.bg.ic.ac.uk/rnapSpecies':'rnapSpecies',
-        'http://synbis.bg.ic.ac.uk/rnapSigmaFactor':'rnapSigmaFactor'
+        'http://www.w3.org/1999/02/22-rdf-syntax-ns#type'   :None,
+        'http://sbols.org/v2#displayId'                     :'name',
+        'http://sbols.org/v2#persistentIdentity'            :'uri',
+        'http://sbols.org/v2#role'                          :['role', lambda o: getSoTermItemForSbolRole(o, soTermItems)],
+        'http://sbols.org/v2#sequence'                      :'sequence',
+        'http://sbols.org/v2#type'                          :'type',
+        'http://synbis.bg.ic.ac.uk/nativeFrom'              :['organism', lambda o: getOrgItemForSynbisNativeFrom(o, organismItems)],
+        'http://synbis.bg.ic.ac.uk/origin'                  :'origin',
+        'http://synbis.bg.ic.ac.uk/rnapSpecies'             :'rnapSpecies',
+        'http://synbis.bg.ic.ac.uk/rnapSigmaFactor'         :'rnapSigmaFactor'
     }
 
     partItem = doc.createItem('SynBioPart')
@@ -48,18 +64,10 @@ def addPartItem(doc, componentUrl, graph, organismItems, sequenceItems, soTermIt
 
             if imAttrName == None:
                 pass
-            elif p == 'http://sbols.org/v2#role':
-                soTerm = o.split('/')[-1]
-                print('Got SOTerm [%s]' % soTerm)
-                if soTerm not in soTermItems:
-                    soTermItems[soTerm] = addSoTermItem(doc, soTerm)
-                partItem.addAttribute(imAttrName, soTermItems[soTerm])
-            elif p == 'http://synbis.bg.ic.ac.uk/nativeFrom':
-                print('Got organism [%s]' % o)
-                if o != '':
-                    if o not in organismItems:
-                        organismItems[o] = addOrganismItem(doc, o)
-                    partItem.addAttribute(imAttrName, organismItems[o])
+            elif type(imAttrName) is list:
+                imAttrValue = imAttrName[1](o)
+                if imAttrValue != None:
+                    partItem.addAttribute(imAttrName[0], imAttrName[1](o))
             elif p == 'http://sbols.org/v2#sequence':
                 if o in sequenceItems:
                     partItem.addAttribute(imAttrName, sequenceItems[o])
