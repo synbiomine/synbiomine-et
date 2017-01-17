@@ -33,10 +33,11 @@ def getOrgItemForSynbisNativeFrom(o, orgItems):
     else:
         return None
 
-def addPartItem(doc, componentUrl, graph, partItemMap, dsItem):
+def addTopLevelItem(doc, name, componentUrl, graph, itemMap, dsItem=None):
 
-    partItem = doc.createItem('SynBioPart')
-    partItem.addToAttribute('dataSets', dsItem)
+    item = doc.createItem(name)
+    if dsItem != None:
+        item.addToAttribute('dataSets', dsItem)
 
     query = 'SELECT ?p ?o WHERE { <%s> ?p ?o . }' % componentUrl
     # print(query)
@@ -46,44 +47,19 @@ def addPartItem(doc, componentUrl, graph, partItemMap, dsItem):
         o = str(o)
         p = str(p)
 
-        if p in partItemMap:
-            imAttrName = partItemMap[p]
+        if p in itemMap:
+            imAttrName = itemMap[p]
 
             if imAttrName == None:
                 pass
             elif type(imAttrName) is list:
                 imAttrValue = imAttrName[1](o)
                 if imAttrValue != None:
-                    partItem.addAttribute(imAttrName[0], imAttrValue)
+                    item.addAttribute(imAttrName[0], imAttrValue)
             else:
-                partItem.addAttribute(imAttrName, o)
+                item.addAttribute(imAttrName, o)
         else:
             print(Fore.YELLOW + 'WARNING: Ignoring (%s, %s) as not found in item map' % (p, o) + Fore.RESET)
-
-    doc.addItem(partItem)
-
-    return partItem
-
-def addSequenceItem(doc, url, graph, itemMap):
-
-    item = doc.createItem('SynBioSequence')
-
-    query = 'SELECT ?p ?o WHERE { <%s> ?p ?o . }' % url
-    rows = graph.query(query)
-
-    for p, o in rows:
-        o = str(o)
-        p = str(p)
-
-        if p in itemMap:
-            imAttrName = itemMap[p]
-            if imAttrName == None:
-                pass
-            else:
-                print('Adding %s:%s' % (itemMap[p], o))
-                item.addAttribute(itemMap[p], o)
-        else:
-            print('Ignoring (%s, %s) as not found in item map' % (p, o))
 
     doc.addItem(item)
 
@@ -171,8 +147,8 @@ for partsPath in glob.glob(ds.getRawPath() + 'parts/*.xml'):
         g.load(f)
         # print(g.serialize(format='turtle').decode('unicode_escape'))
 
-        addRdfItems('http://sbols.org/v2#Sequence', g, sequenceItems, lambda url, graph: addSequenceItem(doc, url, graph, sequenceItemMap))
-        addRdfItems('http://sbols.org/v2#ComponentDefinition', g, partItems, lambda url, graph: addPartItem(doc, url, graph, partItemMap, dataSetItem))
+        addRdfItems('http://sbols.org/v2#Sequence', g, sequenceItems, lambda url, graph: addTopLevelItem(doc, 'SynBioSequence', url, graph, sequenceItemMap))
+        addRdfItems('http://sbols.org/v2#ComponentDefinition', g, partItems, lambda url, graph: addTopLevelItem(doc, 'SynBioPart', url, graph, partItemMap, dsItem=dataSetItem))
 
 if not args.dummy:
     doc.write(ds.getLoadPath() + 'items.xml')
