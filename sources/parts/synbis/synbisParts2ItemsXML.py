@@ -4,6 +4,7 @@ import glob
 import jargparse
 import os
 import rdflib
+from colorama import Fore, Back, Style
 from rdflib.namespace import RDF
 import sys
 
@@ -62,7 +63,7 @@ def addPartItem(doc, componentUrl, graph, organismItems, sequenceItems, soTermIt
             else:
                 partItem.addAttribute(partItemMap[p], o)
         else:
-            print('Ignoring (%s, %s) as not found in item map' % (p, o))
+            print(Fore.YELLOW + 'WARNING: Ignoring (%s, %s) as not found in item map' % (p, o) + Fore.RESET)
 
     doc.addItem(partItem)
 
