@@ -33,20 +33,7 @@ def getOrgItemForSynbisNativeFrom(o, orgItems):
     else:
         return None
 
-def addPartItem(doc, componentUrl, graph, organismItems, sequenceItems, soTermItems, dsItem):
-
-    partItemMap = {
-        'http://www.w3.org/1999/02/22-rdf-syntax-ns#type'   :None,
-        'http://sbols.org/v2#displayId'                     :'name',
-        'http://sbols.org/v2#persistentIdentity'            :'uri',
-        'http://sbols.org/v2#role'                          :['role', lambda o: getSoTermItemForSbolRole(o, soTermItems)],
-        'http://sbols.org/v2#sequence'                      :['sequence', lambda o: sequenceItems[o]],
-        'http://sbols.org/v2#type'                          :'type',
-        'http://synbis.bg.ic.ac.uk/nativeFrom'              :['organism', lambda o: getOrgItemForSynbisNativeFrom(o, organismItems)],
-        'http://synbis.bg.ic.ac.uk/origin'                  :'origin',
-        'http://synbis.bg.ic.ac.uk/rnapSpecies'             :'rnapSpecies',
-        'http://synbis.bg.ic.ac.uk/rnapSigmaFactor'         :'rnapSigmaFactor'
-    }
+def addPartItem(doc, componentUrl, graph, partItemMap, dsItem):
 
     partItem = doc.createItem('SynBioPart')
     partItem.addToAttribute('dataSets', dsItem)
@@ -67,7 +54,7 @@ def addPartItem(doc, componentUrl, graph, organismItems, sequenceItems, soTermIt
             elif type(imAttrName) is list:
                 imAttrValue = imAttrName[1](o)
                 if imAttrValue != None:
-                    partItem.addAttribute(imAttrName[0], imAttrName[1](o))
+                    partItem.addAttribute(imAttrName[0], imAttrValue)
             else:
                 partItem.addAttribute(imAttrName, o)
         else:
@@ -94,14 +81,15 @@ def addSequenceItem(doc, url, graph):
         o = str(o)
         p = str(p)
 
-    if p in itemMap:
-        imAttrName = itemMap[p]
-        if imAttrName == None:
-            pass
+        if p in itemMap:
+            imAttrName = itemMap[p]
+            if imAttrName == None:
+                pass
+            else:
+                print('Adding %s:%s' % (itemMap[p], o))
+                item.addAttribute(itemMap[p], o)
         else:
-            item.addAttribute(itemMap[p], o)
-    else:
-        print('Ignoring (%s, %s) as not found in item map' % (p, o))
+            print('Ignoring (%s, %s) as not found in item map' % (p, o))
 
     doc.addItem(item)
 
@@ -163,6 +151,19 @@ sequenceItems = {}
 organismItems = {}
 soTermItems = {}
 
+partItemMap = {
+    'http://www.w3.org/1999/02/22-rdf-syntax-ns#type'   :None,
+    'http://sbols.org/v2#displayId'                     :'name',
+    'http://sbols.org/v2#persistentIdentity'            :'uri',
+    'http://sbols.org/v2#role'                          :['role', lambda o: getSoTermItemForSbolRole(o, soTermItems)],
+    'http://sbols.org/v2#sequence'                      :['sequence', lambda o: sequenceItems[o]],
+    'http://sbols.org/v2#type'                          :'type',
+    'http://synbis.bg.ic.ac.uk/nativeFrom'              :['organism', lambda o: getOrgItemForSynbisNativeFrom(o, organismItems)],
+    'http://synbis.bg.ic.ac.uk/origin'                  :'origin',
+    'http://synbis.bg.ic.ac.uk/rnapSpecies'             :'rnapSpecies',
+    'http://synbis.bg.ic.ac.uk/rnapSigmaFactor'         :'rnapSigmaFactor'
+}
+
 for partsPath in glob.glob(ds.getRawPath() + 'parts/*.xml'):
     imu.printSection('Analyzing ' + partsPath)
     with open(partsPath) as f:
@@ -171,7 +172,7 @@ for partsPath in glob.glob(ds.getRawPath() + 'parts/*.xml'):
         # print(g.serialize(format='turtle').decode('unicode_escape'))
 
         addRdfItems('http://sbols.org/v2#Sequence', g, sequenceItems, lambda url, graph: addSequenceItem(doc, url, graph))
-        addRdfItems('http://sbols.org/v2#ComponentDefinition', g, partItems, lambda url, graph: addPartItem(doc, url, graph, organismItems, sequenceItems, soTermItems, dataSetItem))
+        addRdfItems('http://sbols.org/v2#ComponentDefinition', g, partItems, lambda url, graph: addPartItem(doc, url, graph, partItemMap, dataSetItem))
 
 if not args.dummy:
     doc.write(ds.getLoadPath() + 'items.xml')
