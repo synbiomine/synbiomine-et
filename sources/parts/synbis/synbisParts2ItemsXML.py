@@ -140,7 +140,8 @@ partItemMap = {
     'http://synbis.bg.ic.ac.uk/origin'                  :'origin',
     'http://synbis.bg.ic.ac.uk/rnapSpecies'             :'rnapSpecies',
     'http://synbis.bg.ic.ac.uk/rnapSigmaFactor'         :'rnapSigmaFactor',
-    'http://synbis.bg.ic.ac.uk/inducer'                 :'inducer'
+    'http://synbis.bg.ic.ac.uk/inducer'                 :'inducer',
+    'http://synbis.bg.ic.ac.uk/regulatoryElement'       :'regulatoryElement'
 }
 
 for partsPath in glob.glob(ds.getRawPath() + 'parts/*.xml'):

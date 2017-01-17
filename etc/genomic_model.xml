@@ -541,6 +541,7 @@
   <attribute name="rnapSpecies" type="java.lang.String"/>
   <attribute name="rnapSigmaFactor" type="java.lang.Integer"/>
   <attribute name="inducer" type="java.lang.String"/>
+  <attribute name="regulatoryElement" type="java.lang.String"/>
   <attribute name="role" referenced-type="SOTerm"/>
   <attribute name="sequence" referenced-type="SynBioSequence"/>
   <collection name="genes" referenced-type="Gene"/>
