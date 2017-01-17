@@ -40,7 +40,7 @@ def addPartItem(doc, componentUrl, graph, organismItems, sequenceItems, soTermIt
         'http://sbols.org/v2#displayId'                     :'name',
         'http://sbols.org/v2#persistentIdentity'            :'uri',
         'http://sbols.org/v2#role'                          :['role', lambda o: getSoTermItemForSbolRole(o, soTermItems)],
-        'http://sbols.org/v2#sequence'                      :'sequence',
+        'http://sbols.org/v2#sequence'                      :['sequence', lambda o: sequenceItems[o]],
         'http://sbols.org/v2#type'                          :'type',
         'http://synbis.bg.ic.ac.uk/nativeFrom'              :['organism', lambda o: getOrgItemForSynbisNativeFrom(o, organismItems)],
         'http://synbis.bg.ic.ac.uk/origin'                  :'origin',
@@ -68,11 +68,6 @@ def addPartItem(doc, componentUrl, graph, organismItems, sequenceItems, soTermIt
                 imAttrValue = imAttrName[1](o)
                 if imAttrValue != None:
                     partItem.addAttribute(imAttrName[0], imAttrName[1](o))
-            elif p == 'http://sbols.org/v2#sequence':
-                if o in sequenceItems:
-                    partItem.addAttribute(imAttrName, sequenceItems[o])
-                else:
-                    raise Exception('Sequence %s specified for %s but no matching InterMine sequence item exists' % (o, componentUrl))
             else:
                 partItem.addAttribute(imAttrName, o)
         else:
