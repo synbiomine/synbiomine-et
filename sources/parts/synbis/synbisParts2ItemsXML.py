@@ -116,14 +116,14 @@ def addSoTermItem(doc, id):
 
     return item
 
-def addRdfItems(type, doc, graph):
+def addRdfItems(type, graph, addFunc):
     imItems = {}
     rdfItems = graph.triples((None, RDF.type, rdflib.term.URIRef(type)))
     for url, _, _ in rdfItems:
         url = str(url)
         if url not in imItems:
             print('Adding %s to imItems' % url)
-            imItems[url] = addSequenceItem(doc, url, graph)
+            imItems[url] = addFunc(url)
 
     return imItems
 
@@ -156,7 +156,7 @@ for partsPath in glob.glob(ds.getRawPath() + 'parts/*.xml'):
         g.load(f)
         # print(g.serialize(format='turtle').decode('unicode_escape'))
 
-        sequenceItems = addRdfItems('http://sbols.org/v2#Sequence', doc, g)
+        sequenceItems = addRdfItems('http://sbols.org/v2#Sequence', g, lambda url: addSequenceItem(doc, url, g))
 
         componentDefinitions = g.triples((None, RDF.type, rdflib.term.URIRef('http://sbols.org/v2#ComponentDefinition')))
         # rows = g.query('SELECT ?s ?p ?o WHERE { ?s a sbol:ComponentDefinition . }')
