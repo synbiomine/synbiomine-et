@@ -64,13 +64,7 @@ def addPartItem(doc, componentUrl, graph, partItemMap, dsItem):
 
     return partItem
 
-def addSequenceItem(doc, url, graph):
-
-    itemMap = {
-        'http://www.w3.org/1999/02/22-rdf-syntax-ns#type':None,
-        'http://sbols.org/v2#encoding':'encoding',
-        'http://sbols.org/v2#elements':'residues'
-    }
+def addSequenceItem(doc, url, graph, itemMap):
 
     item = doc.createItem('SynBioSequence')
 
@@ -151,6 +145,12 @@ sequenceItems = {}
 organismItems = {}
 soTermItems = {}
 
+sequenceItemMap = {
+    'http://www.w3.org/1999/02/22-rdf-syntax-ns#type':None,
+    'http://sbols.org/v2#encoding':'encoding',
+    'http://sbols.org/v2#elements':'residues'
+}
+
 partItemMap = {
     'http://www.w3.org/1999/02/22-rdf-syntax-ns#type'   :None,
     'http://sbols.org/v2#displayId'                     :'name',
@@ -171,7 +171,7 @@ for partsPath in glob.glob(ds.getRawPath() + 'parts/*.xml'):
         g.load(f)
         # print(g.serialize(format='turtle').decode('unicode_escape'))
 
-        addRdfItems('http://sbols.org/v2#Sequence', g, sequenceItems, lambda url, graph: addSequenceItem(doc, url, graph))
+        addRdfItems('http://sbols.org/v2#Sequence', g, sequenceItems, lambda url, graph: addSequenceItem(doc, url, graph, sequenceItemMap))
         addRdfItems('http://sbols.org/v2#ComponentDefinition', g, partItems, lambda url, graph: addPartItem(doc, url, graph, partItemMap, dataSetItem))
 
 if not args.dummy:
