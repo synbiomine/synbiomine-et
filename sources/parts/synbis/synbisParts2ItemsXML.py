@@ -24,6 +24,7 @@ def getSoTermItemForSbolRole(o, soTermItems):
         soTermItems[soTerm] = addSoTermItem(doc, soTerm)
     return soTermItems[soTerm]
 
+
 def getOrgItemForSynbisNativeFrom(o, orgItems):
     print('Got organism [%s]' % o)
     if o != '':
@@ -33,13 +34,22 @@ def getOrgItemForSynbisNativeFrom(o, orgItems):
     else:
         return None
 
+
 def addTopLevelItem(doc, name, componentUrl, graph, itemMap, dsItem=None):
 
     item = doc.createItem(name)
     if dsItem != None:
         item.addToAttribute('dataSets', dsItem)
 
-    query = 'SELECT ?p ?o WHERE { <%s> ?p ?o . }' % componentUrl
+    addPropertiesFromRdfItem(graph, componentUrl, itemMap, item)
+
+    doc.addItem(item)
+    return item
+
+
+def addPropertiesFromRdfItem(graph, rdfItemUrl, itemMap, item):
+
+    query = 'SELECT ?p ?o WHERE { <%s> ?p ?o . }' % rdfItemUrl
     # print(query)
     rows = graph.query(query)
 
@@ -61,9 +71,6 @@ def addTopLevelItem(doc, name, componentUrl, graph, itemMap, dsItem=None):
         else:
             print(Fore.YELLOW + 'WARNING: Ignoring (%s, %s) as not found in item map' % (p, o) + Fore.RESET)
 
-    doc.addItem(item)
-
-    return item
 
 def addOrganismItem(doc, synbisName):
     SYNBIS_NATIVEFROM_NAMES_TO_TAXON_IDS = {
@@ -81,12 +88,14 @@ def addOrganismItem(doc, synbisName):
 
     return item
 
+
 def addSoTermItem(doc, id):
     item = doc.createItem('SOTerm')
     item.addAttribute('identifier', id)
     doc.addItem(item)
 
     return item
+
 
 def addRdfItems(type, graph, imItems, addFunc):
     imu.printSection('Adding items for RDF nodes of type %s' % type)
