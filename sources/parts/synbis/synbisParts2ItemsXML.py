@@ -20,6 +20,7 @@ import synbio.data as sbd
 def addPartItem(doc, componentUrl, graph, organismItems, sequenceItems, soTermItems, dsItem):
 
     partItemMap = {
+        'http://www.w3.org/1999/02/22-rdf-syntax-ns#type':None,
         'http://sbols.org/v2#displayId':'name',
         'http://sbols.org/v2#persistentIdentity':'uri',
         'http://sbols.org/v2#role':'role',
@@ -43,25 +44,29 @@ def addPartItem(doc, componentUrl, graph, organismItems, sequenceItems, soTermIt
         p = str(p)
 
         if p in partItemMap:
-            if p == 'http://sbols.org/v2#role':
+            imAttrName = partItemMap[p]
+
+            if imAttrName == None:
+                pass
+            elif p == 'http://sbols.org/v2#role':
                 soTerm = o.split('/')[-1]
                 print('Got SOTerm [%s]' % soTerm)
                 if soTerm not in soTermItems:
                     soTermItems[soTerm] = addSoTermItem(doc, soTerm)
-                partItem.addAttribute('role', soTermItems[soTerm])
+                partItem.addAttribute(imAttrName, soTermItems[soTerm])
             elif p == 'http://synbis.bg.ic.ac.uk/nativeFrom':
                 print('Got organism [%s]' % o)
                 if o != '':
                     if o not in organismItems:
                         organismItems[o] = addOrganismItem(doc, o)
-                    partItem.addAttribute('organism', organismItems[o])
+                    partItem.addAttribute(imAttrName, organismItems[o])
             elif p == 'http://sbols.org/v2#sequence':
                 if o in sequenceItems:
-                    partItem.addAttribute('sequence', sequenceItems[o])
+                    partItem.addAttribute(imAttrName, sequenceItems[o])
                 else:
                     raise Exception('Sequence %s specified for %s but no matching InterMine sequence item exists' % (o, componentUrl))
             else:
-                partItem.addAttribute(partItemMap[p], o)
+                partItem.addAttribute(imAttrName, o)
         else:
             print(Fore.YELLOW + 'WARNING: Ignoring (%s, %s) as not found in item map' % (p, o) + Fore.RESET)
 
@@ -72,6 +77,7 @@ def addPartItem(doc, componentUrl, graph, organismItems, sequenceItems, soTermIt
 def addSequenceItem(doc, url, graph):
 
     itemMap = {
+        'http://www.w3.org/1999/02/22-rdf-syntax-ns#type':None,
         'http://sbols.org/v2#encoding':'encoding',
         'http://sbols.org/v2#elements':'residues'
     }
@@ -86,7 +92,11 @@ def addSequenceItem(doc, url, graph):
         p = str(p)
 
     if p in itemMap:
-        item.addAttribute(itemMap[p], o)
+        imAttrName = itemMap[p]
+        if imAttrName == None:
+            pass
+        else:
+            item.addAttribute(itemMap[p], o)
     else:
         print('Ignoring (%s, %s) as not found in item map' % (p, o))
 
