@@ -123,6 +123,8 @@ soTermItems = {}
 
 sequenceItemMap = {
     'http://www.w3.org/1999/02/22-rdf-syntax-ns#type':None,
+    'http://sbols.org/v2#persistentIdentity':None,
+    'http://sbols.org/v2#displayId':None,
     'http://sbols.org/v2#encoding':'encoding',
     'http://sbols.org/v2#elements':'residues'
 }
