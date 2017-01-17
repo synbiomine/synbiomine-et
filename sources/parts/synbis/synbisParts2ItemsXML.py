@@ -10,6 +10,7 @@ import sys
 sys.path.insert(1, os.path.dirname(os.path.abspath(__file__)) + '/../../../modules/python')
 import intermyne.metadata as immd
 import intermyne.model as imm
+import intermyne.utils as imu
 import synbio.data as sbd
 
 #################
@@ -92,7 +93,6 @@ def addSequenceItem(doc, url, graph):
 
     return item
 
-
 def addOrganismItem(doc, synbisName):
     SYNBIS_NATIVEFROM_NAMES_TO_TAXON_IDS = {
         'E. coli': 562
@@ -116,16 +116,15 @@ def addSoTermItem(doc, id):
 
     return item
 
-def addRdfItems(type, graph, addFunc):
-    imItems = {}
+def addRdfItems(type, graph, imItems, addFunc):
+    imu.printSection('Adding items for RDF nodes of type %s' % type)
+
     rdfItems = graph.triples((None, RDF.type, rdflib.term.URIRef(type)))
     for url, _, _ in rdfItems:
         url = str(url)
         if url not in imItems:
             print('Adding %s to imItems' % url)
-            imItems[url] = addFunc(url)
-
-    return imItems
+            imItems[url] = addFunc(url, graph)
 
 ############
 ### MAIN ###
@@ -146,29 +145,19 @@ dataSourceItem = immd.addDataSource(doc, 'SynBIS', 'http://synbis.bg.ic.ac.uk')
 dataSetItem = immd.addDataSet(doc, 'SYNBIS parts', dataSourceItem)
 
 partItems = {}
+sequenceItems = {}
 organismItems = {}
 soTermItems = {}
 
 for partsPath in glob.glob(ds.getRawPath() + 'parts/*.xml'):
-    print('Analyzing ' + partsPath)
+    imu.printSection('Analyzing ' + partsPath)
     with open(partsPath) as f:
         g = rdflib.Graph()
         g.load(f)
         # print(g.serialize(format='turtle').decode('unicode_escape'))
 
-        sequenceItems = addRdfItems('http://sbols.org/v2#Sequence', g, lambda url: addSequenceItem(doc, url, g))
-
-        componentDefinitions = g.triples((None, RDF.type, rdflib.term.URIRef('http://sbols.org/v2#ComponentDefinition')))
-        # rows = g.query('SELECT ?s ?p ?o WHERE { ?s a sbol:ComponentDefinition . }')
-        # componentDefinitions = g.triples((None, rdflib.namespace.RDF.type, None))
-        #print(sum(1 for _ in componentDefinitions))
-        for componentUrl, _, _ in componentDefinitions:
-            componentUrl = str(componentUrl)
-            if componentUrl not in partItems:
-                print('Adding %s to parts list' % componentUrl)
-                partItems[componentUrl] = addPartItem(doc, componentUrl, g, organismItems, sequenceItems, soTermItems, dataSetItem)
-            # else:
-                # print('Skipping %s as already in parts list' % componentUrl)
+        addRdfItems('http://sbols.org/v2#Sequence', g, sequenceItems, lambda url, graph: addSequenceItem(doc, url, graph))
+        addRdfItems('http://sbols.org/v2#ComponentDefinition', g, partItems, lambda url, graph: addPartItem(doc, url, graph, organismItems, sequenceItems, soTermItems, dataSetItem))
 
 if not args.dummy:
     doc.write(ds.getLoadPath() + 'items.xml')
