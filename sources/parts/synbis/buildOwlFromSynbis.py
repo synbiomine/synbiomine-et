@@ -75,7 +75,7 @@ for instance, _, type in typeTriples:
         imPropName = generateImName(str(p))
         if imPropName not in imProps:
             print('Adding [%s]' % p)
-            imProps[imPropName] = typs.new_class(p, (owlready.Property,), kwds = {'ontology':onto})
+            imProps[imPropName] = typs.new_class(imPropName, (owlready.Property,), kwds = {'ontology':onto})
         imProp = imProps[imPropName]
         imTypeName = generateImName(type)
         imType = imTypes[imTypeName]
