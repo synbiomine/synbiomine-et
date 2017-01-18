@@ -3,7 +3,7 @@
 import glob
 import jargparse
 import os
-import owlready as owr
+import owlready
 import rdflib
 from rdflib.namespace import RDF
 import sys
@@ -45,12 +45,16 @@ dc = sbd.Collection(args.colPath)
 ds = dc.getSet('parts/synbis')
 ds.startLogging(__file__)
 
+onto = owlready.Ontology('http://intermine.org/synbiomine/synbis.owl')
+
 graph = rdflib.Graph()
 
 for partsPath in glob.glob(ds.getRawPath() + 'parts/*.xml'):
     imu.printSection('Analyzing ' + partsPath)
     with open(partsPath) as f:
         graph.load(f)
+
+# print(graph.serialize(format='turtle').decode('unicode_escape'))
 
 types = {}
 
@@ -59,12 +63,10 @@ for _, _, type in typeTriples:
     if type not in types:
         types[type] = 1
 
-for type, _ in sorted(types.items()):
-    print(', '.join((type, generateImTypeName(type))))
+for typeName, _ in sorted(types.items()):
+    imTypeName = generateImTypeName(typeName);
+    print(', '.join((typeName, imTypeName)))
 
-# print(g.serialize(format='turtle').decode('unicode_escape'))
+    typs.new_class(imTypeName, (owlready.Thing,), kwds = { "ontology" : onto })
 
-"""
-onto = owr.Ontology('http://dummy.owl')
-print(owr.to_owl(onto))
-"""
+print(owlready.to_owl(onto))
