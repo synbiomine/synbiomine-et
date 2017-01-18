@@ -54,8 +54,8 @@ def addPropertiesFromRdfItem(graph, rdfItemUrl, itemMap, item):
     rows = graph.query(query)
 
     for p, o in rows:
-        o = str(o)
         p = str(p)
+        o = str(o)
 
         if p in itemMap:
             imAttrName = itemMap[p]
@@ -63,9 +63,13 @@ def addPropertiesFromRdfItem(graph, rdfItemUrl, itemMap, item):
             if imAttrName == None:
                 pass
             elif type(imAttrName) is list:
-                imAttrValue = imAttrName[1](o)
-                if imAttrValue != None:
-                    item.addAttribute(imAttrName[0], imAttrValue)
+                key, value = imAttrName
+                if key == None:
+                    value(graph, o, item)
+                else:
+                    imAttrValue = value(o)
+                    if imAttrValue != None:
+                        item.addAttribute(key, imAttrValue)
             else:
                 item.addAttribute(imAttrName, o)
         else:
@@ -98,14 +102,20 @@ def addSoTermItem(doc, id):
 
 
 def addRdfItems(type, graph, imItems, addFunc):
+    rdfItems = graph.triples((None, RDF.type, rdflib.term.URIRef(type)))
+
     imu.printSection('Adding items for RDF nodes of type %s' % type)
 
-    rdfItems = graph.triples((None, RDF.type, rdflib.term.URIRef(type)))
+    count = processed = 0
     for url, _, _ in rdfItems:
+        count += 1
         url = str(url)
         if url not in imItems:
             print('Adding %s to imItems' % url)
             imItems[url] = addFunc(url, graph)
+            processed += 1
+
+    print('Added %d items out of %d' % (processed, count))
 
 ############
 ### MAIN ###
@@ -125,6 +135,7 @@ doc = imm.Document(model)
 dataSourceItem = immd.addDataSource(doc, 'SynBIS', 'http://synbis.bg.ic.ac.uk')
 dataSetItem = immd.addDataSet(doc, 'SYNBIS parts', dataSourceItem)
 
+sheetItems = {}
 partItems = {}
 sequenceItems = {}
 organismItems = {}
@@ -153,6 +164,15 @@ partItemMap = {
     'http://synbis.bg.ic.ac.uk/regulatoryElement'       :'regulatoryElement'
 }
 
+datasheetMap = {
+    'http://sbols.org/v2#version':'version',
+    'http://synbis.bg.ic.ac.uk/collectionLocation':'collectionLocation',
+    'http://synbis.bg.ic.ac.uk/collector':'collector',
+    'http://synbis.bg.ic.ac.uk/componentDefinition':[None, lambda g, rdfItemUrl, imItem : addPropertiesFromRdfItem(g, rdfItemUrl, partItemMap, imItem)],
+    'http://synbis.bg.ic.ac.uk/curationLocation':'curationLocation',
+    'http://synbis.bg.ic.ac.uk/curator':'curator'
+}
+
 for partsPath in glob.glob(ds.getRawPath() + 'parts/*.xml'):
     imu.printSection('Analyzing ' + partsPath)
     with open(partsPath) as f:
@@ -161,7 +181,8 @@ for partsPath in glob.glob(ds.getRawPath() + 'parts/*.xml'):
         # print(g.serialize(format='turtle').decode('unicode_escape'))
 
         addRdfItems('http://sbols.org/v2#Sequence', g, sequenceItems, lambda url, graph: addTopLevelItem(doc, 'SynBioSequence', url, graph, sequenceItemMap))
-        addRdfItems('http://sbols.org/v2#ComponentDefinition', g, partItems, lambda url, graph: addTopLevelItem(doc, 'SynBioPart', url, graph, partItemMap, dsItem=dataSetItem))
+        addRdfItems('http://synbis.bg.ic.ac.uk/Datasheet', g, sheetItems, lambda url, graph: addTopLevelItem(doc, 'SynBioPart', url, graph, datasheetMap, dsItem=dataSetItem))
+        # addRdfItems('http://sbols.org/v2#ComponentDefinition', g, partItems, lambda url, graph: addTopLevelItem(doc, 'SynBioPart', url, graph, partItemMap, dsItem=dataSetItem))
 
 if not args.dummy:
     doc.write(ds.getLoadPath() + 'items.xml')
