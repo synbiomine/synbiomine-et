@@ -65,6 +65,7 @@ for partsPath in glob.glob(ds.getRawPath() + 'parts/*.xml'):
 # print(graph.serialize(format='turtle').decode('unicode_escape'))
 
 types = {}
+owlProps = {}
 
 typeTriples = graph.triples((None, RDF.type, None))
 for instance, _, type in typeTriples:
@@ -76,10 +77,13 @@ for instance, _, type in typeTriples:
 for typeName, props in sorted(types.items()):
     imTypeName = generateImName(typeName)
     print(', '.join((typeName, imTypeName)))
+    owlType = typs.new_class(imTypeName, (owlready.Thing,), kwds = { 'ontology':onto })
 
     for p in props:
         print('  ' + p)
+        if p not in owlProps:
+            owlProps[p] = typs.new_class(p, (owlready.Property,), kwds = { 'ontology':onto })
+        owlProp = owlProps[p]
+        owlProp.domain.append(owlType)
 
-    typs.new_class(imTypeName, (owlready.Thing,), kwds = { 'ontology' : onto })
-
-# print(owlready.to_owl(onto))
+print(owlready.to_owl(onto))
