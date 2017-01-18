@@ -17,14 +17,6 @@ import synbio.data as sbd
 #################
 ### FUNCTIONS ###
 #################
-def addPropertiesFromRdf(graph, props, instance):
-    triples = graph.triples((instance, None, None))
-    for _, p, _ in triples:
-        if p not in props:
-            print('Adding [%s]' % p)
-            props[generateImName(str(p))] = 1
-
-
 def generateImName(rdfName):
     """
     We're gonna do something super hacky and generate InterMine names from RDF URLs by welding the first dotted part
@@ -65,25 +57,37 @@ for partsPath in glob.glob(ds.getRawPath() + 'parts/*.xml'):
 # print(graph.serialize(format='turtle').decode('unicode_escape'))
 
 types = {}
-owlProps = {}
+imTypes = {}
+imProps = {}
 
 typeTriples = graph.triples((None, RDF.type, None))
+
+for _, _, type in typeTriples:
+    imTypeName = generateImName(type)
+    if imTypeName not in imTypes:
+        imTypes[imTypeName] = typs.new_class(imTypeName, (owlready.Thing,), kwds = {'ontology':onto})
+
+typeTriples = graph.triples((None, RDF.type, None))
+
 for instance, _, type in typeTriples:
-    if type not in types:
-        types[type] = {}
-    props = types[type]
-    addPropertiesFromRdf(graph, props, instance)
+    instanceTriples = graph.triples((instance, None, None))
+    for _, p, o in instanceTriples:
+        imPropName = generateImName(str(p))
+        if imPropName not in imProps:
+            print('Adding [%s]' % p)
+            #if isinstance(p, rdflib.term.URIRef):
+            #   print('PING')
+            imProps[imPropName] = typs.new_class(p, (owlready.Property,), kwds = {'ontology':onto})
+        imProp = imProps[imPropName]
+        imTypeName = generateImName(type)
+        imType = imTypes[imTypeName]
 
-for typeName, props in sorted(types.items()):
-    imTypeName = generateImName(typeName)
-    print(', '.join((typeName, imTypeName)))
-    owlType = typs.new_class(imTypeName, (owlready.Thing,), kwds = { 'ontology':onto })
-
-    for p in props:
-        print('  ' + p)
-        if p not in owlProps:
-            owlProps[p] = typs.new_class(p, (owlready.Property,), kwds = { 'ontology':onto })
-        owlProp = owlProps[p]
-        owlProp.domain.append(owlType)
+        # Add domain if necessary
+        if imType not in imProp.domain:
+            imProp.domain.append(imType)
+        """
+        else:
+            print('Found OWL type %s for %s' % (imPropName, instance))
+        """
 
 print(owlready.to_owl(onto))
