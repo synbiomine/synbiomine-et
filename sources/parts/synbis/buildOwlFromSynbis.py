@@ -5,6 +5,7 @@ import jargparse
 import os
 import owlready as owr
 import rdflib
+from rdflib.namespace import RDF
 import sys
 
 sys.path.insert(1, os.path.dirname(os.path.abspath(__file__)) + '/../../../modules/python')
@@ -24,14 +25,26 @@ dc = sbd.Collection(args.colPath)
 ds = dc.getSet('parts/synbis')
 ds.startLogging(__file__)
 
-g = rdflib.Graph()
+graph = rdflib.Graph()
 
 for partsPath in glob.glob(ds.getRawPath() + 'parts/*.xml'):
     imu.printSection('Analyzing ' + partsPath)
     with open(partsPath) as f:
-        g.load(f)
+        graph.load(f)
 
-print(g.serialize(format='turtle').decode('unicode_escape'))
+types = {}
 
+typeTriples = graph.triples((None, RDF.type, None))
+for _, _, type in typeTriples:
+    if type not in types:
+        types[type] = 1
+
+for type, _ in sorted(types.items()):
+    print(type)
+
+# print(g.serialize(format='turtle').decode('unicode_escape'))
+
+"""
 onto = owr.Ontology('http://dummy.owl')
 print(owr.to_owl(onto))
+"""
