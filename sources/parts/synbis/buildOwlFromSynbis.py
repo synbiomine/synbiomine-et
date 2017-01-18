@@ -75,8 +75,6 @@ for instance, _, type in typeTriples:
         imPropName = generateImName(str(p))
         if imPropName not in imProps:
             print('Adding [%s]' % p)
-            #if isinstance(p, rdflib.term.URIRef):
-            #   print('PING')
             imProps[imPropName] = typs.new_class(p, (owlready.Property,), kwds = {'ontology':onto})
         imProp = imProps[imPropName]
         imTypeName = generateImName(type)
@@ -89,5 +87,18 @@ for instance, _, type in typeTriples:
         else:
             print('Found OWL type %s for %s' % (imPropName, instance))
         """
+
+        # Add range if necessary
+        if isinstance(o, rdflib.term.URIRef):
+            #print('PING')
+            objectTypeTriples = graph.triples((instance, RDF.type, None))
+            objectTypeName = next(objectTypeTriples)[2]
+            objectImTypeName = generateImName(objectTypeName)
+            if objectImTypeName in imTypes:
+                #print('Got %s' % objectImTypeName)
+                objectImType = imTypes[objectImTypeName]
+
+                if objectImType not in imProp.range:
+                    imProp.range.append(objectImType)
 
 print(owlready.to_owl(onto))
