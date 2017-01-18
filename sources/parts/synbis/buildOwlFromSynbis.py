@@ -80,6 +80,6 @@ for typeName, props in sorted(types.items()):
     for p in props:
         print('  ' + p)
 
-    typs.new_class(imTypeName, (owlready.Thing,), kwds = { "ontology" : onto })
+    typs.new_class(imTypeName, (owlready.Thing,), kwds = { 'ontology' : onto })
 
 # print(owlready.to_owl(onto))
