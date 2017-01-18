@@ -17,6 +17,14 @@ import synbio.data as sbd
 #################
 ### FUNCTIONS ###
 #################
+def addPropertiesFromRdf(graph, props, instance):
+    triples = graph.triples((instance, None, None))
+    for _, p, _ in triples:
+        if p not in props:
+            print('Adding [%s]' % p)
+            props[str(p)] = 1
+
+
 def generateImTypeName(rdfTypeName):
     """
     We're gonna do something super hacky and generate the InterMine class name as a compound of the first dotted part
@@ -59,14 +67,19 @@ for partsPath in glob.glob(ds.getRawPath() + 'parts/*.xml'):
 types = {}
 
 typeTriples = graph.triples((None, RDF.type, None))
-for _, _, type in typeTriples:
+for instance, _, type in typeTriples:
     if type not in types:
-        types[type] = 1
+        types[type] = {}
+    props = types[type]
+    addPropertiesFromRdf(graph, props, instance)
 
-for typeName, _ in sorted(types.items()):
-    imTypeName = generateImTypeName(typeName);
+for typeName, props in sorted(types.items()):
+    imTypeName = generateImTypeName(typeName)
     print(', '.join((typeName, imTypeName)))
+
+    for p in props:
+        print('  ' + p)
 
     typs.new_class(imTypeName, (owlready.Thing,), kwds = { "ontology" : onto })
 
-print(owlready.to_owl(onto))
+# print(owlready.to_owl(onto))
