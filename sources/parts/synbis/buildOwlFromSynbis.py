@@ -72,6 +72,11 @@ typeTriples = graph.triples((None, RDF.type, None))
 for instance, _, type in typeTriples:
     instanceTriples = graph.triples((instance, None, None))
     for _, p, o in instanceTriples:
+
+        # We don't want to translate the properties that are just signalling instanceof in the RDF
+        if p == RDF.type:
+            continue
+
         imPropName = generateImName(str(p))
         if imPropName not in imProps:
             print('Adding [%s]' % p)
@@ -89,6 +94,8 @@ for instance, _, type in typeTriples:
         """
 
         # Add range if necessary
+        # FIXME: We really need to only allow 1 here unless/until we implement automatically generating a class
+        # hierarchy since we can't have multiple inheritance...
         if isinstance(o, rdflib.term.URIRef):
             #print('PING')
             objectTypeTriples = graph.triples((instance, RDF.type, None))
