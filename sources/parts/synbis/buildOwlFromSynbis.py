@@ -22,16 +22,16 @@ def addPropertiesFromRdf(graph, props, instance):
     for _, p, _ in triples:
         if p not in props:
             print('Adding [%s]' % p)
-            props[str(p)] = 1
+            props[generateImName(str(p))] = 1
 
 
-def generateImTypeName(rdfTypeName):
+def generateImName(rdfName):
     """
-    We're gonna do something super hacky and generate the InterMine class name as a compound of the first dotted part
-    of the host name and the type name
+    We're gonna do something super hacky and generate InterMine names from RDF URLs by welding the first dotted part
+    of the host name to the last part or fragment (if available) of the path
     """
 
-    _, host, path, _, _, fragment = up.urlparse(rdfTypeName)
+    _, host, path, _, _, fragment = up.urlparse(rdfName)
     a = host.split('.')[0]
     if fragment != '':
         b = fragment
@@ -74,7 +74,7 @@ for instance, _, type in typeTriples:
     addPropertiesFromRdf(graph, props, instance)
 
 for typeName, props in sorted(types.items()):
-    imTypeName = generateImTypeName(typeName)
+    imTypeName = generateImName(typeName)
     print(', '.join((typeName, imTypeName)))
 
     for p in props:
