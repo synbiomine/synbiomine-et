@@ -97,7 +97,6 @@ for instance, _, type in typeTriples:
         # FIXME: We really need to only allow 1 here unless/until we implement automatically generating a class
         # hierarchy since we can't have multiple inheritance...
         if isinstance(o, rdflib.term.URIRef):
-            #print('PING')
             objectTypeTriples = graph.triples((instance, RDF.type, None))
             objectTypeName = next(objectTypeTriples)[2]
             objectImTypeName = generateImName(objectTypeName)
