@@ -35,7 +35,7 @@ def generateImName(rdfName):
 ############
 ### MAIN ###
 ############
-parser = jargparse.ArgParser('Take raw data downloaded from synbis and turn into InterMine Item XML.')
+parser = jargparse.ArgParser('Take raw data downloaded from synbis and deduce a data model in bastardized OWL form.')
 parser.add_argument('colPath', help='path to the data collection.')
 parser.add_argument('-d', '--dummy', action='store_true', help='dummy run, do not store anything')
 parser.add_argument('-v', '--verbose', action='store_true', help='be verbose')
