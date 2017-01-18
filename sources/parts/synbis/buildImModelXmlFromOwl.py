@@ -34,7 +34,9 @@ for owlClass in synbisOnto.classes:
     # very inefficient but not sure if there is an easier way to do this yet
     for owlProp in synbisOnto.properties:
         if owlClass in owlProp.domain:
-            attribute_e = etree.SubElement(class_e, 'attribute', { 'name':str(owlProp), 'type':'java.lang.String' })
+            attribute_e = etree.SubElement(class_e, 'attribute', { 'name':str(owlProp) })
+            if len(owlProp.range) == 0:
+                attribute_e.set('type', 'java.lang.String')
 
 print(etree.tostring(classes_e, pretty_print=True).decode('unicode_escape'))
 #print(owlready.to_owl(synbisOnto))
