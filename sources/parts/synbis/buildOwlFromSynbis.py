@@ -7,10 +7,30 @@ import owlready as owr
 import rdflib
 from rdflib.namespace import RDF
 import sys
+import types as typs
+import urllib.parse as up
 
 sys.path.insert(1, os.path.dirname(os.path.abspath(__file__)) + '/../../../modules/python')
 import intermyne.utils as imu
 import synbio.data as sbd
+
+#################
+### FUNCTIONS ###
+#################
+def generateImTypeName(rdfTypeName):
+    """
+    We're gonna do something super hacky and generate the InterMine class name as a compound of the first dotted part
+    of the host name and the type name
+    """
+
+    _, host, path, _, _, fragment = up.urlparse(rdfTypeName)
+    a = host.split('.')[0]
+    if fragment != '':
+        b = fragment
+    else:
+        b = path.split('/')[-1]
+
+    return a + b
 
 ############
 ### MAIN ###
@@ -40,7 +60,7 @@ for _, _, type in typeTriples:
         types[type] = 1
 
 for type, _ in sorted(types.items()):
-    print(type)
+    print(', '.join([type, generateImTypeName(type)]))
 
 # print(g.serialize(format='turtle').decode('unicode_escape'))
 
