@@ -60,7 +60,7 @@ for _, _, type in typeTriples:
         types[type] = 1
 
 for type, _ in sorted(types.items()):
-    print(', '.join([type, generateImTypeName(type)]))
+    print(', '.join((type, generateImTypeName(type))))
 
 # print(g.serialize(format='turtle').decode('unicode_escape'))
 
