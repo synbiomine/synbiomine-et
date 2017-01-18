@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import jargparse
+from lxml import etree
 import os
 import owlready
 import sys
@@ -24,4 +25,11 @@ ds.startLogging(__file__)
 owlready.onto_path.append(ds.getLoadPath())
 synbisOnto = owlready.get_ontology('http://intermine.org/synbiomine/synbis.owl').load()
 
-print(owlready.to_owl(synbisOnto))
+classes_e = etree.Element('classes')
+
+for owlClass in synbisOnto.classes:
+    print(owlClass)
+    class_e = etree.SubElement(classes_e, 'class', { 'name':str(owlClass), 'is-interface':'true' })
+
+print(etree.tostring(classes_e, pretty_print=True).decode('unicode_escape'))
+#print(owlready.to_owl(synbisOnto))
