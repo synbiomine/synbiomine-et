@@ -6,31 +6,13 @@ import os
 import owlready
 import rdflib
 from rdflib.namespace import RDF
+import synbisUtils
 import sys
 import types as typs
-import urllib.parse as up
 
 sys.path.insert(1, os.path.dirname(os.path.abspath(__file__)) + '/../../../modules/python')
 import intermyne.utils as imu
 import synbio.data as sbd
-
-#################
-### FUNCTIONS ###
-#################
-def generateImName(rdfName):
-    """
-    We're gonna do something super hacky and generate InterMine names from RDF URLs by welding the first dotted part
-    of the host name to the last part or fragment (if available) of the path
-    """
-
-    _, host, path, _, _, fragment = up.urlparse(rdfName)
-    a = host.split('.')[0]
-    if fragment != '':
-        b = fragment
-    else:
-        b = path.split('/')[-1]
-
-    return a + b
 
 ############
 ### MAIN ###
@@ -63,7 +45,7 @@ imProps = {}
 typeTriples = graph.triples((None, RDF.type, None))
 
 for _, _, type in typeTriples:
-    imTypeName = generateImName(type)
+    imTypeName = synbisUtils.generateImName(type)
     if imTypeName not in imTypes:
         imTypes[imTypeName] = typs.new_class(imTypeName, (owlready.Thing,), kwds = {'ontology':onto})
 
@@ -77,12 +59,12 @@ for instance, _, type in typeTriples:
         if p == RDF.type:
             continue
 
-        imPropName = generateImName(str(p))
+        imPropName = synbisUtils.generateImName(str(p))
         if imPropName not in imProps:
             print('Adding [%s]' % p)
             imProps[imPropName] = typs.new_class(imPropName, (owlready.Property,), kwds = {'ontology':onto})
         imProp = imProps[imPropName]
-        imTypeName = generateImName(type)
+        imTypeName = synbisUtils.generateImName(type)
         imType = imTypes[imTypeName]
 
         # Add domain if necessary
@@ -99,7 +81,7 @@ for instance, _, type in typeTriples:
         if isinstance(o, rdflib.term.URIRef):
             objectTypeTriples = graph.triples((instance, RDF.type, None))
             objectTypeName = next(objectTypeTriples)[2]
-            objectImTypeName = generateImName(objectTypeName)
+            objectImTypeName = synbisUtils.generateImName(objectTypeName)
             if objectImTypeName in imTypes:
                 #print('Got %s' % objectImTypeName)
                 objectImType = imTypes[objectImTypeName]

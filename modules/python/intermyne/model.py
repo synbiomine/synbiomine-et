@@ -40,7 +40,10 @@ class Document:
         """
         Write the document to the filesystem
         """
+        with open(outFn, 'w') as f:
+            f.write(str(self))
 
+    def __str__(self):
         itemsTag = etree.Element("items")
 
         for item in self._items:
@@ -58,8 +61,7 @@ class Document:
                     # print "Writing attribute [%s]:[%s]" % (name, value)
                     etree.SubElement(itemTag, "attribute", attrib={"name": name, "value": str(value)})
 
-        tree = etree.ElementTree(itemsTag)
-        tree.write(outFn, pretty_print=True)
+        return etree.tostring(itemsTag, pretty_print=True).decode('unicode_escape')
 
 
 class Item:

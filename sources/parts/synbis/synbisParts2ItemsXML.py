@@ -4,9 +4,12 @@ import glob
 import jargparse
 import os
 import rdflib
+from rdflib.namespace import RDF
+import synbisUtils
 import sys
 
 sys.path.insert(1, os.path.dirname(os.path.abspath(__file__)) + '/../../../modules/python')
+import intermyne.model as imm
 import intermyne.utils as imu
 import synbio.data as sbd
 
@@ -30,4 +33,22 @@ for partsPath in glob.glob(ds.getRawPath() + 'parts/*.xml'):
     with open(partsPath) as f:
         graph.load(f)
 
-print(graph.serialize(format='turtle').decode('unicode_escape'))
+model = dc.getModel()
+doc = imm.Document(model)
+
+items = {}
+rdfInstanceOfTriples = graph.triples((None, RDF.type, None))
+
+for name, _, type in rdfInstanceOfTriples:
+    if name not in items:
+        # This may not be a good way to get an InterMine suitable name from an url
+        imTypeName = synbisUtils.generateImName(type)
+        items[name] = doc.createItem(imTypeName)
+        doc.addItem(items[name])
+
+#print(doc)
+doc.write(ds.getLoadPath() + 'items.xml')
+
+#item = doc.createItem(name)
+
+# print(graph.serialize(format='turtle').decode('unicode_escape'))

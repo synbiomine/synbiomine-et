@@ -1,0 +1,16 @@
+import urllib.parse as up
+
+def generateImName(rdfName):
+    """
+    We're gonna do something super hacky and generate InterMine names from RDF URLs by welding the first dotted part
+    of the host name to the last part or fragment (if available) of the path
+    """
+
+    _, host, path, _, _, fragment = up.urlparse(rdfName)
+    a = host.split('.')[0]
+    if fragment != '':
+        b = fragment
+    else:
+        b = path.split('/')[-1]
+
+    return a + b
