@@ -111,10 +111,14 @@ class Set:
         self._basePath = basePath
         self._rawPath = '%s/raw/' % (self._basePath)
         self._loadPath = '%s/load/' % (self._basePath)
+        self._processingPath = '%s/process/' % (self._basePath)
         self._logsPath = '%s/logs/' % (self._basePath)
 
         if not os.path.exists(self._rawPath):
             os.mkdir(self._rawPath)
+
+        if not os.path.exists(self._processingPath):
+            os.mkdir(self._processingPath)
 
         if not os.path.exists(self._loadPath):
             os.mkdir(self._loadPath)
@@ -137,18 +141,27 @@ class Set:
     def getCollection(self):
         return self._parentCollection
 
-    def getLoadPath(self):
-        """
-        Return the path where InterMine Item XML is placed for loading by InterMine.
-        Will always terminate with a /
-        :return:
-        """
-        return self._loadPath
-
     def getRawPath(self):
         """
-        Get the path for raw data files before transformation into InterMine Items XML (if done for this dataset)
+        Get the path for raw data files before processing (if done for this dataset).
         Will always terminate with a /
         :return:
         """
         return self._rawPath
+
+    def getProcessingPath(self):
+        """
+        Get the path that holds intermediate data processing files.
+        Will always terminate with a /
+        :return:
+        """
+
+        return self._processingPath
+
+    def getLoadPath(self):
+        """
+        Get the path where InterMine Item XML is placed for loading by InterMine.
+        Will always terminate with a /
+        :return:
+        """
+        return self._loadPath
