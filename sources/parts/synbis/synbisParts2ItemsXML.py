@@ -39,6 +39,7 @@ doc = imm.Document(model)
 items = {}
 rdfInstanceOfTriples = graph.triples((None, RDF.type, None))
 
+# First pass: create the items
 for name, _, type in rdfInstanceOfTriples:
     if name not in items:
         # This may not be a good way to get an InterMine suitable name from an url
@@ -47,13 +48,21 @@ for name, _, type in rdfInstanceOfTriples:
         doc.addItem(items[name])
     item = items[name]
 
+# Second pass: create the attributes and internal links
+for name, item in items.items():
     propTriples = graph.triples((name, None, None))
     for _, p, o in propTriples:
         if p == RDF.type:
             continue
-        elif not isinstance(o, rdflib.term.URIRef):  # external edges will not be of type rdflib.term.URIRef
-            imPropName = synbisUtils.generateImName(str(p))
-            item.addAttribute(imPropName, o)
+
+        imPropName = synbisUtils.generateImName(str(p))
+
+        if isinstance(o, rdflib.term.URIRef) and o in items:  # external edges will not be of type rdflib.term.URIRef
+            value = items[o]
+        else:
+            value = str(o)
+
+        item.addAttribute(imPropName, value)
 
 #print(doc)
 doc.write(ds.getLoadPath() + 'items.xml')
