@@ -57,7 +57,7 @@ for name, item in items.items():
 
         imPropName = synbisUtils.generateImName(str(p))
 
-        if isinstance(o, rdflib.term.URIRef) and o in items:  # external edges will not be of type rdflib.term.URIRef
+        if isinstance(o, rdflib.term.URIRef) and o in items:g
             value = items[o]
         else:
             value = str(o)
