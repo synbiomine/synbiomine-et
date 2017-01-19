@@ -45,6 +45,15 @@ for name, _, type in rdfInstanceOfTriples:
         imTypeName = synbisUtils.generateImName(type)
         items[name] = doc.createItem(imTypeName)
         doc.addItem(items[name])
+    item = items[name]
+
+    propTriples = graph.triples((name, None, None))
+    for _, p, o in propTriples:
+        if p == RDF.type:
+            continue
+        elif not isinstance(o, rdflib.term.URIRef):  # external edges will not be of type rdflib.term.URIRef
+            imPropName = synbisUtils.generateImName(str(p))
+            item.addAttribute(imPropName, o)
 
 #print(doc)
 doc.write(ds.getLoadPath() + 'items.xml')
