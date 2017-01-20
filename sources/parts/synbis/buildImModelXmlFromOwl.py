@@ -35,9 +35,13 @@ for owlClass in synbisOnto.classes:
     for owlProp in synbisOnto.properties:
         if owlClass in owlProp.domain:
             if len(owlProp.range) == 0:
-                attribute_e = etree.SubElement(class_e, 'attribute', { 'name':str(owlProp), 'type':'java.lang.String' })
+                etree.SubElement(class_e, 'attribute', { 'name':str(owlProp), 'type':'java.lang.String' })
             else:
-                reference_e = etree.SubElement(class_e, 'reference', { 'name':str(owlProp), 'referenced-type':str(owlProp.range[0]) })
+                etree.SubElement(class_e, 'reference', { 'name':str(owlProp), 'referenced-type':str(owlProp.range[0]) })
+
+    # TODO: should be in config
+    if str(owlClass) == 'synbisDatasheet':
+        etree.SubElement(class_e, 'collection', { 'name':'dataSet', 'referenced-type':'DataSet' })
 
 #print(etree.tostring(classes_e, pretty_print=True).decode('unicode_escape'))
 #print(owlready.to_owl(synbisOnto))
