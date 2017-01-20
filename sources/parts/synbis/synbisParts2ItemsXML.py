@@ -10,6 +10,7 @@ import sys
 
 sys.path.insert(1, os.path.dirname(os.path.abspath(__file__)) + '/../../../modules/python')
 import intermyne.model as imm
+import intermyne.metadata as immd
 import intermyne.utils as imu
 import synbio.data as sbd
 
@@ -39,13 +40,23 @@ doc = imm.Document(model)
 items = {}
 rdfInstanceOfTriples = graph.triples((None, RDF.type, None))
 
+# TODO: Should be in config
+dataSourceItem = immd.addDataSource(doc, 'SynBIS', 'http://synbis.bg.ic.ac.uk')
+dataSetItem = immd.addDataSet(doc, 'SYNBIS parts', dataSourceItem)
+
 # First pass: create the items
 for name, _, type in rdfInstanceOfTriples:
     if name not in items:
         # This may not be a good way to get an InterMine suitable name from an url
         imTypeName = synbisUtils.generateImName(type)
         items[name] = doc.createItem(imTypeName)
+
+        # TODO: should be in config
+        if imTypeName == 'synbisDatasheet':
+            items[name].addToAttribute('dataSets', dataSetItem)
+
         doc.addItem(items[name])
+
     item = items[name]
 
 # Second pass: create the attributes and internal links
