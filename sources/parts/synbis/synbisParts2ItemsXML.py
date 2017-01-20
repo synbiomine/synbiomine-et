@@ -57,7 +57,7 @@ for name, item in items.items():
 
         imPropName = synbisUtils.generateImName(str(p))
 
-        if isinstance(o, rdflib.term.URIRef) and o in items:g
+        if isinstance(o, rdflib.term.URIRef) and o in items:
             value = items[o]
         else:
             value = str(o)
