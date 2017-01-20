@@ -89,5 +89,5 @@ for instance, _, type in typeTriples:
                 if objectImType not in imProp.range:
                     imProp.range.append(objectImType)
 
-with open(ds.getLoadPath() + 'synbis.owl', 'w') as f:
+with open(ds.getProcessingPath() + 'synbis.owl', 'w') as f:
     f.write(owlready.to_owl(onto))

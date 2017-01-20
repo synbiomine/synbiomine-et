@@ -22,7 +22,7 @@ dc = sbd.Collection(args.colPath)
 ds = dc.getSet('parts/synbis')
 ds.startLogging(__file__)
 
-owlready.onto_path.append(ds.getLoadPath())
+owlready.onto_path.append(ds.getProcessingPath())
 synbisOnto = owlready.get_ontology('http://intermine.org/synbiomine/synbis.owl').load()
 
 classes_e = etree.Element('classes')
