@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import jargparse
 import os
 import shutil
 import sys
@@ -17,33 +18,28 @@ newDatasetSymlink = '../new'
 ############
 ### MAIN ###
 ############
-parser = imu.ArgParser('Prepare a new dataset structure in the data repository')
-parser.add_argument('projectXmlPath', help='path to the project XML template')
+parser = jargparse.ArgParser('Prepare a new data collection in the data repository')
 parser.add_argument('modelPath', help='path to the mine model XML')
-parser.add_argument('datasetPath', help='path for the dataset')
+parser.add_argument('colPath', help='path to the data collection')
 args = parser.parse_args()
 
-templatePath = args.projectXmlPath
 modelPath = args.modelPath
-datasetPath = args.datasetPath
-newDatasetSymlinkPath = "%s/%s" % (datasetPath, newDatasetSymlink)
+colPath = args.colPath
+newDatasetSymlinkPath = "%s/%s" % (colPath, newDatasetSymlink)
 
-if os.path.exists(datasetPath):
-    raise Exception("Dataset path %s already exists!" % datasetPath)
+if os.path.exists(colPath):
+    raise Exception("Dataset path %s already exists!" % colPath)
 
-os.mkdir(datasetPath)
-os.mkdir("%s/%s" % (datasetPath, logsDir))
+os.mkdir(colPath)
+os.mkdir("%s/%s" % (colPath, logsDir))
 
 for section in sections:
-    sectionPath = "%s/%s" % (datasetPath, section)
+    sectionPath = "%s/%s" % (colPath, section)
     os.mkdir(sectionPath)
 
-projectXmlPath = "%s/intermine/project.xml" % datasetPath
-shutil.copy(templatePath, projectXmlPath)
-
-datasetModelPath = "%s/intermine/genomic_model.xml" % datasetPath
+datasetModelPath = "%s/intermine/genomic_model.xml" % colPath
 shutil.copy(modelPath, datasetModelPath)
 
-os.symlink(os.path.basename(datasetPath), newDatasetSymlinkPath)
+os.symlink(os.path.basename(colPath), newDatasetSymlinkPath)
 
-print('Created dataset structure at %s, symlinked %s' % (datasetPath, newDatasetSymlink))
+print('Created dataset structure at %s, symlinked %s' % (colPath, newDatasetSymlink))
