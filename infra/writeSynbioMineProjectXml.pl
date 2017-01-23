@@ -203,7 +203,7 @@ sub gen_chrm {
 
   return <<XML;
 
-    <source name="$sourceName" type="fasta">
+    <source name="$sourceName" type="fasta" dump="true">
       <property name="fasta.taxonId" value="$taxID"/>
       <property name="fasta.className" value="org.intermine.model.bio.Chromosome"/>
       <property name="fasta.dataSourceName" value="GenBank"/>
