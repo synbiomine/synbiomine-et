@@ -6,8 +6,8 @@ def handleSimpleSourceAddProcess(datasetName, sources):
     """
     Handle a simple source add process.  Anything more complicated will need to handle its own arg parsing, etc.
 
-    :param datasetName:
-    :param sources:
+    :param datasetName: This must match the directory name in the data collection
+    :param sources: list of intermyne.project.Source
     :return:
     """
 
