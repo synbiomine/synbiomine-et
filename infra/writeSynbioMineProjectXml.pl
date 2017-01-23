@@ -140,7 +140,7 @@ while (my $subdir = readdir DIR) {
   my $chrm = "$largest\.fna"; # chromosome fasta
 
   try_add_source(
-    $taxID, "$orgm-gff", sub { gen_gff("$orgm-gff", $taxID, $taxname, $subdir, $projectAssemblyDir, $gffFile); });
+    $taxID, "$orgm-gff", sub { gen_gff("$orgm-gff", $taxID, $taxname, $projectAssemblyDir, $gffFile); });
   try_add_source(
     $taxID, "$orgm-chromosome-fasta", sub { gen_chrm("$orgm-chromosome-fasta", $taxID, $taxname, $chrm, $projectAssemblyDir); });
 }
@@ -180,7 +180,7 @@ sub try_add_source {
 
 ### subs to print the source XML for properties.xml
 sub gen_gff {
-  my ($sourceName, $taxID, $taxname, $subdir, $gbDir, $gffFile) = @_;
+  my ($sourceName, $taxID, $taxname, $gbDir, $gffFile) = @_;
 
   # This is terribly messy but detecting the correct indent level automatically
   # in the project XML doc is not trivial
