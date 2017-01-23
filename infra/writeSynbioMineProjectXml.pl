@@ -3,6 +3,7 @@
 use strict;
 use warnings;
 use File::Spec::Functions;
+use File::Tee qw(tee);
 use Getopt::Std;
 use XML::LibXML;
 
@@ -44,6 +45,9 @@ my $insertPath = "$base/intermine/project.xml";
 my $genbankProjectDir = "data/current/genbank";
 
 opendir(DIR, $genbankdir) or die "cannot open dir: $!";
+
+# At this point we have established that the dataset exists and want to start logging our activity
+tee STDOUT, '>>', "$base/logs/writeSynbioMineProjectXml.log";
 
 my ($projectXml, $sources_e);
 my $xmlParser = XML::LibXML->new();
