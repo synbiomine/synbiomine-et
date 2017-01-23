@@ -46,4 +46,4 @@ for owlClass in synbisOnto.classes:
 #print(etree.tostring(classes_e, pretty_print=True).decode('unicode_escape'))
 #print(owlready.to_owl(synbisOnto))
 
-etree.ElementTree(classes_e).write(ds.getProcessingPath() + 'synbis_additions.xml', pretty_print=True)
+etree.ElementTree(classes_e).write(ds.getProcessingPath() + 'synbio-synbis_additions.xml', pretty_print=True)
