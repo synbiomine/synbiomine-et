@@ -12,12 +12,12 @@ import synbio.data as sbd
 ### CONSTANTS ###
 #################
 currentSymlink = 'current'
-newSymlink = 'new'
+toAdoptSymlink = 'new'
 
 ############
 ### MAIN ###
 ############
-parser = jargparse.ArgParser('Adopt the given data collection for loading into InterMine')
+parser = jargparse.ArgParser('Adopt the given data collection for loading into InterMine.  If the data collection is already the current, then the files are just updated instead.')
 parser.add_argument('colPath', help='path to the data collection')
 parser.add_argument('minePath', help='path to the mine')
 args = parser.parse_args()
@@ -38,18 +38,15 @@ dc = sbd.Collection(args.colPath)
 ds = dc.getSet('parts/synbis')
 shutil.copy(ds.getProcessingPath() + 'synbio-synbis_additions.xml', minePath + '/bio/sources/synbio/synbio-synbis/synbio-synbis_additions.xml')
 
-# update symlink
-dsCurrentSymlink = '%s/%s' % (colPath, currentSymlink)
-dsNewSymlink = '%s/%s' % (colPath, newSymlink)
+# update symlink if appropriate
+toAdoptColPath = os.path.realpath('%s/../%s' % (colPath, toAdoptSymlink))
+currentColPath = os.path.realpath('%s/../%s' % (colPath, currentSymlink))
 
-if os.path.islink(colPath):
-    realDsPath = os.readlink(colPath)
+if os.path.realpath(colPath) != currentColPath:
+    os.chdir('%s/..' % colPath)
+    os.remove(currentSymlink)
+    os.remove(toAdoptSymlink)
+    os.symlink(os.path.basename(toAdoptColPath), currentSymlink)
+    print('Adopted dataset %s to %s' % (toAdoptColPath, currentSymlink))
 else:
-    realDsPath = colPath
-
-os.chdir('%s/..' % colPath)
-os.remove(currentSymlink)
-os.remove(newSymlink)
-os.symlink(os.path.basename(realDsPath), currentSymlink)
-
-print('Adopted dataset')
+    print('Updated files on already adopted dataset %s' % currentColPath)
