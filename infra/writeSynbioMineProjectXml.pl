@@ -135,7 +135,7 @@ while (my $subdir = readdir DIR) {
 
   say "TAX:$taxname, $taxID" if ($verbose);
 
-  my $projectAssemblyDir = "$genbankProjectDir/$subdir";
+  my $projectAssemblyDir = "data/genbank/$subdir";
   my $gffFile = "$largest\.gff";
   my $chrm = "$largest\.fna"; # chromosome fasta
 
