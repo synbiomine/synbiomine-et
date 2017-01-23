@@ -5,18 +5,17 @@ import sys
 
 sys.path.insert(1, os.path.dirname(os.path.abspath(__file__)) + '/../../modules/python')
 import intermyne.project as imp
-import intermyne.utils as imu
+import synbio.utils as sbu
 
 ############
 ### MAIN ###
 ############
-imu.handleSimpleSourceAddProcess(
-    "Ecocyc",
+sbu.handleSimpleSourceAddProcess(
+    "ecocyc",
     [
         imp.Source(
             'synbio-ecocyc', 'synbio-ecocyc',
             [
                 { 'name':'src.data.dir',        'location':'data/current/ecocyc' },
             ])
-    ],
-    "writeEcocycProjectXml")
+    ])
