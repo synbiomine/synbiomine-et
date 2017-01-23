@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python3
 
 import os
 import shutil
@@ -46,4 +46,4 @@ shutil.copy(modelPath, datasetModelPath)
 
 os.symlink(os.path.basename(datasetPath), newDatasetSymlinkPath)
 
-print "Created dataset structure at %s, symlinked %s" % (datasetPath, newDatasetSymlink)
+print('Created dataset structure at %s, symlinked %s' % (datasetPath, newDatasetSymlink))
