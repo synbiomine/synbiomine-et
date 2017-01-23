@@ -111,7 +111,7 @@ class Set:
         self._basePath = basePath
         self._rawPath = '%s/raw/' % (self._basePath)
         self._loadPath = '%s/load/' % (self._basePath)
-        self._processingPath = '%s/process/' % (self._basePath)
+        self._processingPath = '%s/processing/' % (self._basePath)
         self._logsPath = '%s/logs/' % (self._basePath)
 
         if not os.path.exists(self._rawPath):
