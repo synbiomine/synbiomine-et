@@ -45,7 +45,7 @@ imProps = {}
 typeTriples = graph.triples((None, RDF.type, None))
 
 for _, _, type in typeTriples:
-    imTypeName = synbisUtils.generateImName(type)
+    imTypeName = synbisUtils.generateImClassName(type)
     if imTypeName not in imTypes:
         imTypes[imTypeName] = typs.new_class(imTypeName, (owlready.Thing,), kwds = {'ontology':onto})
 
@@ -59,12 +59,12 @@ for instance, _, type in typeTriples:
         if p == RDF.type:
             continue
 
-        imPropName = synbisUtils.generateImName(str(p))
+        imPropName = synbisUtils.generateImPropertyName(str(p))
         if imPropName not in imProps:
             print('Adding [%s]' % p)
             imProps[imPropName] = typs.new_class(imPropName, (owlready.Property,), kwds = {'ontology':onto})
         imProp = imProps[imPropName]
-        imTypeName = synbisUtils.generateImName(type)
+        imTypeName = synbisUtils.generateImClassName(type)
         imType = imTypes[imTypeName]
 
         # Add domain if necessary
@@ -81,7 +81,7 @@ for instance, _, type in typeTriples:
         if isinstance(o, rdflib.term.URIRef):
             objectTypeTriples = graph.triples((instance, RDF.type, None))
             objectTypeName = next(objectTypeTriples)[2]
-            objectImTypeName = synbisUtils.generateImName(objectTypeName)
+            objectImTypeName = synbisUtils.generateImClassName(objectTypeName)
             if objectImTypeName in imTypes:
                 #print('Got %s' % objectImTypeName)
                 objectImType = imTypes[objectImTypeName]
