@@ -24,10 +24,12 @@ args = parser.parse_args()
 dsPath = args.datasetPath
 minePath = args.minePath
 
+# copy general config files
 dsProjectXmlPath = '%s/intermine/project.xml' % (dsPath)
 mineProjectXmlPath = '%s/project.xml' % (minePath)
 shutil.copy(dsProjectXmlPath, mineProjectXmlPath)
 
+# update symlink
 dsCurrentSymlink = '%s/%s' % (dsPath, currentSymlink)
 dsNewSymlink = '%s/%s' % (dsPath, newSymlink)
 
