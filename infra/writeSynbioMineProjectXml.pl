@@ -82,7 +82,7 @@ while (my $subdir = readdir DIR) {
   my @gff = grep( /gff/, @list ); # make a list of the gff files
   my @report = grep( /txt/, @list ); # make a list of the report files
 
-# which is the biggest gff file - this is probably the chrm
+  # which is the biggest gff file - this is probably the chrm
   if ( @gff ) {
     foreach my $file (@gff) {
       my $fSize = -s "$currAssemblyDir/$file";
@@ -99,16 +99,16 @@ while (my $subdir = readdir DIR) {
   my $report = $report[0];
   say $report if ($verbose);
 
-# We use the assembly report file to get the strain to assembly ID mappings
+  # We use the assembly report file to get the strain to assembly ID mappings
   open REPORT_IN, "$currAssemblyDir/$report" or die "can't open file: $!";
 
   my ($taxname, $taxID, $orgm);
   while (<REPORT_IN>) {
     chomp;
 
-# Header format is :
-# Organism name:  Bacillus anthracis str. Ames
-# Taxid:          198094
+  # Header format is :
+  # Organism name:  Bacillus anthracis str. Ames
+  # Taxid:          198094
 
     if ($_ =~ /Organism name/) {
       $_ =~ /Organism name:\s+(.+)/;
