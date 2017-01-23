@@ -36,7 +36,7 @@ shutil.copy(dsProjectXmlPath, mineProjectXmlPath)
 # be generalized
 dc = sbd.Collection(args.colPath)
 ds = dc.getSet('parts/synbis')
-shutil.copy(ds.getProcessingPath() + 'synbio-synbis_additions.xml', minePath + '/bio/sources/synbio/synbio-synbis/synbio-synbis_additions.xml')
+shutil.copy(ds.getProcessingPath() + 'synbio-synbis_additions.xml', minePath + '/../bio/sources/synbio/synbio-synbis/synbio-synbis_additions.xml')
 
 # update symlink if appropriate
 toAdoptColPath = os.path.realpath('%s/../%s' % (colPath, toAdoptSymlink))
