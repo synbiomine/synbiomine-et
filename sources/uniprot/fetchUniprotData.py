@@ -12,34 +12,35 @@ import synbio.data as sbd
 ### FUNCTIONS ###
 #################
 def getSwissProtData(ds, taxon):
-    uriStub = 'http://www.uniprot.org/uniprot/?query=organism:%s+reviewed:yes&include=yes' % taxon
-    resp = requests.get(uriStub + '&format=list')
-    results = int(resp.headers['X-Total-Results'])
-    print('Got %s swiss-prot results' % results)
-
-    if results > 0:
-        localPath = '%s/%s_uniprot_sprot.xml' % (ds.getLoadPath(), taxon)
-
-        # reviewed:yes (sprot) proteomes are human curated
-        resp = requests.get(uriStub + '&format=xml')
-
-        with open(localPath, 'w') as f:
-            f.write(resp.text)
+    return _getUniprotData(ds, 'sprot', 'yes', taxon)
 
 def getTremblData(ds, taxon):
-    uriStub = 'http://www.uniprot.org/uniprot/?query=organism:%s+reviewed:no&include=yes' % taxon
+    return _getUniprotData(ds, 'trembl', 'no', taxon)
+
+def _getUniprotData(ds, databaseName, reviewed, taxon):
+    """
+    :param ds:
+    :param databaseName: 'uniprot' or 'sprot'
+    :param reviewed: 'yes' for sprot, 'no' for uniprot
+    :param taxon:
+    :return:
+    """
+
+    uriStub = 'http://www.uniprot.org/uniprot/?query=organism:%s+reviewed:%s&include=yes' % (taxon, reviewed)
     resp = requests.get(uriStub + '&format=list')
     results = int(resp.headers['X-Total-Results'])
-    print('Got %s trembl results' % results)
+    print('Got %d %s results' % (results, databaseName))
 
     if results > 0:
-        localPath = '%s/%s_uniprot_trembl.xml' % (ds.getLoadPath(), taxon)
+        localPath = '%s/%s_uniprot_%s.xml' % (ds.getLoadPath(), taxon, databaseName)
 
         # reviewed:yes (sprot) proteomes are human curated
         resp = requests.get(uriStub + '&format=xml')
 
         with open(localPath, 'w') as f:
             f.write(resp.text)
+
+    return results
 
 ############
 ### MAIN ###
