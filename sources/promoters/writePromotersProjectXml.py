@@ -22,5 +22,6 @@ sbu.handleSimpleSourceAddProcess(
             'nicolas2012-regulation-Bsub168', 'synbio-regulation',
             [
                 { 'name':'src.data.dir',        'location':'{{imDataPath}}/promoters/load/nicolas-2012' },
-            ])
+            ],
+            dump=True)
     ])
