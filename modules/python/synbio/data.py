@@ -82,7 +82,7 @@ class Collection:
 
     def getTaxons(self):
         """
-        Get the string list of taxons
+        Get a sorted list of taxon ints.
         """
 
         # Lazy load the taxons so that scripts that don't need them can still run if it isn't present
@@ -93,15 +93,19 @@ class Collection:
 
     def getTaxonsAsString(self):
         """
-        Get the taxons as a single ' ' separated string
+        Get the taxons as a single ' '-separated, int-sorted string
         """
 
-        return ' '.join(self.getTaxons())
+        return ' '.join(str(d) for d in self.getTaxons())
 
     def getProjectXmlPath(self):
         return self.basePath + '/intermine/project.xml'
 
     def _parseTaxons(self, taxonsPath):
+        """
+        :param taxonsPath:
+        :return: sorted list of ints
+        """
         with open(taxonsPath) as f:
             self._taxons = sorted([int(s) for s in set(f.read().strip().split())])
 
