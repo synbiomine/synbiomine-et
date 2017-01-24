@@ -6,9 +6,7 @@ import requests
 import sys
 
 sys.path.insert(1, os.path.dirname(os.path.abspath(__file__)) + '/../../modules/python')
-import intermyne.project as imp
 import synbio.data as sbd
-import synbio.utils as sbu
 
 ############
 ### MAIN ###
@@ -29,18 +27,29 @@ print('Fetching %d taxons' % len(taxons))
 for taxon in taxons:
     print('### Processing taxon: %s ###' % taxon)
 
-    sprotLocalPath = '%s/%s_uniprot_sprot.xml' % (ds.getLoadPath(), taxon)
+    resp = requests.get('http://www.uniprot.org/uniprot/?query=organism:%s+reviewed:yes&format=list&include=yes' % (taxon))
+    results = int(resp.headers['X-Total-Results'])
+    print('Got %s sprot results' % results)
 
-    # reviewed:yes (sprot) proteomes are human curated
-    resp = requests.get('http://www.uniprot.org/uniprot/?query=organism:%s+reviewed:yes&format=xml&include=yes' % (taxon))
+    if results > 0:
+        sprotLocalPath = '%s/%s_uniprot_sprot.xml' % (ds.getLoadPath(), taxon)
 
-    with open(sprotLocalPath, 'w') as f:
-        f.write(resp.text)
+        # reviewed:yes (sprot) proteomes are human curated
+        resp = requests.get('http://www.uniprot.org/uniprot/?query=organism:%s+reviewed:yes&format=xml&include=yes' % (taxon))
 
-    tremblLocalPath = '%s/%s_uniprot_trembl.xml' % (ds.getLoadPath(), taxon)
+        with open(sprotLocalPath, 'w') as f:
+            f.write(resp.text)
 
-    # reviewed:no (trembl) proteomes are machine curated
-    resp = requests.get('http://www.uniprot.org/uniprot/?query=organism:%s+reviewed:no&format=xml&include=yes' % (taxon))
 
-    with open(tremblLocalPath, 'w') as f:
-        f.write(resp.text)
+    resp = requests.get('http://www.uniprot.org/uniprot/?query=organism:%s+reviewed:no&format=list&include=yes' % (taxon))
+    results = int(resp.headers['X-Total-Results'])
+    print('Got %s trembl results' % results)
+
+    if results > 0:
+        tremblLocalPath = '%s/%s_uniprot_trembl.xml' % (ds.getLoadPath(), taxon)
+
+        # reviewed:no (trembl) proteomes are machine curated
+        resp = requests.get('http://www.uniprot.org/uniprot/?query=organism:%s+reviewed:no&format=xml&include=yes' % (taxon))
+
+        with open(tremblLocalPath, 'w') as f:
+            f.write(resp.text)
