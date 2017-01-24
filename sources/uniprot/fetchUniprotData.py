@@ -26,6 +26,7 @@ def _getUniprotData(ds, databaseName, reviewed, taxon):
     :return:
     """
 
+    # compress=yes makes this take vastly longer
     uriStub = 'http://www.uniprot.org/uniprot/?query=organism:%s+reviewed:%s&include=yes' % (taxon, reviewed)
     resp = requests.get(uriStub + '&format=list')
     results = int(resp.headers['X-Total-Results'])
@@ -34,11 +35,17 @@ def _getUniprotData(ds, databaseName, reviewed, taxon):
     if results > 0:
         localPath = '%s/%s_uniprot_%s.xml' % (ds.getLoadPath(), taxon, databaseName)
 
-        # reviewed:yes (sprot) proteomes are human curated
-        resp = requests.get(uriStub + '&format=xml')
+        while True:
+            # reviewed:yes (sprot) proteomes are human curated
+            resp = requests.get(uriStub + '&format=xml')
 
-        with open(localPath, 'w') as f:
-            f.write(resp.text)
+            with open(localPath, 'w') as f:
+                f.write(resp.text)
+
+            if os.path.getsize(localPath) > 0:
+                break
+            else:
+                print('Retrying download of %s since size is unexpectedly 0' % localPath)
 
     return results
 
