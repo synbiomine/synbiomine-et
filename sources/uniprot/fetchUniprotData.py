@@ -8,6 +8,24 @@ import sys
 sys.path.insert(1, os.path.dirname(os.path.abspath(__file__)) + '/../../modules/python')
 import synbio.data as sbd
 
+#################
+### FUNCTIONS ###
+#################
+def getSwissProtData(ds, taxon):
+    uriStub = 'http://www.uniprot.org/uniprot/?query=organism:%s+reviewed:yes&include=yes' % taxon
+    resp = requests.get(uriStub + 'format=list')
+    results = int(resp.headers['X-Total-Results'])
+    print('Got %s swiss-prot results' % results)
+
+    if results > 0:
+        sprotLocalPath = '%s/%s_uniprot_sprot.xml' % (ds.getLoadPath(), taxon)
+
+        # reviewed:yes (sprot) proteomes are human curated
+        resp = requests.get(uriStub + 'format=xml')
+
+        with open(sprotLocalPath, 'w') as f:
+            f.write(resp.text)
+
 ############
 ### MAIN ###
 ############
@@ -27,19 +45,7 @@ print('Fetching %d taxons' % len(taxons))
 for taxon in taxons:
     print('### Processing taxon: %s ###' % taxon)
 
-    resp = requests.get('http://www.uniprot.org/uniprot/?query=organism:%s+reviewed:yes&format=list&include=yes' % (taxon))
-    results = int(resp.headers['X-Total-Results'])
-    print('Got %s sprot results' % results)
-
-    if results > 0:
-        sprotLocalPath = '%s/%s_uniprot_sprot.xml' % (ds.getLoadPath(), taxon)
-
-        # reviewed:yes (sprot) proteomes are human curated
-        resp = requests.get('http://www.uniprot.org/uniprot/?query=organism:%s+reviewed:yes&format=xml&include=yes' % (taxon))
-
-        with open(sprotLocalPath, 'w') as f:
-            f.write(resp.text)
-
+    getSwissProtData(ds, taxon)
 
     resp = requests.get('http://www.uniprot.org/uniprot/?query=organism:%s+reviewed:no&format=list&include=yes' % (taxon))
     results = int(resp.headers['X-Total-Results'])
