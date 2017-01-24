@@ -16,11 +16,11 @@ sbu.handleSimpleSourceAddProcess(
         imp.Source(
             'faith-GEOSeries-EcoliK12', 'synbio-GEOSeries',
             [
-                { 'name':'src.data.dir',        'location':'data/current/geo/load/faith-2007' },
+                { 'name':'src.data.dir',        'location':'{{imDataPath}}/geo/load/faith-2007' },
             ]),
         imp.Source(
             'nicolas2012-GEOSeries-Bsub168', 'synbio-GEOSeries',
             [
-                { 'name':'src.data.dir',        'location':'data/current/geo/load/nicolas-2012' },
+                { 'name':'src.data.dir',        'location':'{{imDataPath}}/geo/load/nicolas-2012' },
             ])
     ])

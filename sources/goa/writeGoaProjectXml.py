@@ -16,6 +16,6 @@ sbu.handleSimpleSourceAddProcess(
         imp.Source(
             'go-annotation', 'go-annotation',
             [
-                { 'name':'src.data.dir',        'location':'data/current/goa' },
+                { 'name':'src.data.dir',        'location':'{{imDataPath}}/goa' },
             ])
     ])

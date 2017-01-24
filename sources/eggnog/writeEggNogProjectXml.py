@@ -16,6 +16,6 @@ sbu.handleSimpleSourceAddProcess(
         imp.Source(
             'eggnog-functional-categories', 'synbio-funccat',
             [
-                { 'name':'src.data.dir',        'location':'data/current/eggnog/load' },
+                { 'name':'src.data.dir',        'location':'{{imDataPath}}/eggnog/load' },
             ])
     ])

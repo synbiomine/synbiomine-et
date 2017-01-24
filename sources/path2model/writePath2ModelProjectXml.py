@@ -16,11 +16,11 @@ sbu.handleSimpleSourceAddProcess(
         imp.Source(
             'pathway2model-Bsub168', 'synbio-reaction',
             [
-                { 'name':'src.data.dir',        'location':'data/current/path2model/load/Bsub168' },
+                { 'name':'src.data.dir',        'location':'{{imDataPath}}/path2model/load/Bsub168' },
             ]),
         imp.Source(
             'pathway2model-EcoliMG1655', 'synbio-reaction',
             [
-                { 'name':'src.data.dir',        'location':'data/current/path2model/load/EcoliMG1655' },
+                { 'name':'src.data.dir',        'location':'{{imDataPath}}/path2model/load/EcoliMG1655' },
             ])
     ])

@@ -20,7 +20,7 @@ dc = sbd.Collection(args.colPath)
 ds = dc.getSet('uniprot')
 ds.startLogging(__file__)
 
-uniprotDataPath = 'data/current/uniprot'
+uniprotDataPath = '{{imDataPath}}/uniprot'
 
 imp.addSourcesToProject(
     dc.getProjectXmlPath(),
