@@ -13,17 +13,32 @@ import synbio.data as sbd
 #################
 def getSwissProtData(ds, taxon):
     uriStub = 'http://www.uniprot.org/uniprot/?query=organism:%s+reviewed:yes&include=yes' % taxon
-    resp = requests.get(uriStub + 'format=list')
+    resp = requests.get(uriStub + '&format=list')
     results = int(resp.headers['X-Total-Results'])
     print('Got %s swiss-prot results' % results)
 
     if results > 0:
-        sprotLocalPath = '%s/%s_uniprot_sprot.xml' % (ds.getLoadPath(), taxon)
+        localPath = '%s/%s_uniprot_sprot.xml' % (ds.getLoadPath(), taxon)
 
         # reviewed:yes (sprot) proteomes are human curated
-        resp = requests.get(uriStub + 'format=xml')
+        resp = requests.get(uriStub + '&format=xml')
 
-        with open(sprotLocalPath, 'w') as f:
+        with open(localPath, 'w') as f:
+            f.write(resp.text)
+
+def getTremblData(ds, taxon):
+    uriStub = 'http://www.uniprot.org/uniprot/?query=organism:%s+reviewed:no&include=yes' % taxon
+    resp = requests.get(uriStub + '&format=list')
+    results = int(resp.headers['X-Total-Results'])
+    print('Got %s trembl results' % results)
+
+    if results > 0:
+        localPath = '%s/%s_uniprot_trembl.xml' % (ds.getLoadPath(), taxon)
+
+        # reviewed:yes (sprot) proteomes are human curated
+        resp = requests.get(uriStub + '&format=xml')
+
+        with open(localPath, 'w') as f:
             f.write(resp.text)
 
 ############
@@ -46,16 +61,4 @@ for taxon in taxons:
     print('### Processing taxon: %s ###' % taxon)
 
     getSwissProtData(ds, taxon)
-
-    resp = requests.get('http://www.uniprot.org/uniprot/?query=organism:%s+reviewed:no&format=list&include=yes' % (taxon))
-    results = int(resp.headers['X-Total-Results'])
-    print('Got %s trembl results' % results)
-
-    if results > 0:
-        tremblLocalPath = '%s/%s_uniprot_trembl.xml' % (ds.getLoadPath(), taxon)
-
-        # reviewed:no (trembl) proteomes are machine curated
-        resp = requests.get('http://www.uniprot.org/uniprot/?query=organism:%s+reviewed:no&format=xml&include=yes' % (taxon))
-
-        with open(tremblLocalPath, 'w') as f:
-            f.write(resp.text)
+    getTremblData(ds, taxon)
