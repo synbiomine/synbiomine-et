@@ -276,10 +276,6 @@ for my $taxon (@taxa) {
 
   kegg_dbget($taxon); # send the taxon ID to the KEGG search subroutine - get the org acronym
 
-# Send the Taxon IDs to the UniProt subroutine to get the proteins
-  query_uniprot($db_sp, $taxon, $reference); # Get swissprot
-  query_uniprot($db_tr, $taxon, $complete); # Get TrEMBL
-  
   print "\n";
 }
 
@@ -377,55 +373,6 @@ sub fetch_assemblies {
   }
 
   $ftp->quit;
-}
-
-=pod
-Subroutine user agent to connect to UniProt
-=cut
-sub query_uniprot {
-
-  my ($db, $taxon, $reference) = @_;
-
-# Alternative formats: html | tab | xls | fasta | gff | txt | xml | rdf | list | rss
-  my $file = $base . "/uniprot/". $taxon . "_" . $db . '.xml';
-  my $query_taxon = "http://www.uniprot.org/uniprot/?query=organism:$taxon+$reference&format=xml&include=yes";
-
-  my $response_taxon = $agent->mirror($query_taxon, $file);
-
-  if ($response_taxon->is_success) {
-
-    # Check the header for results
-    my $results = $response_taxon->header('X-Total-Results');
-    unless ($results) {
-      if ($db =~ /sprot/) {
-        say "No SwissProt results for $taxon";
-        unlink $file; # unlink - if the file doesn't exist
-      }
-      else {
-        say "No TrEMBL results for $taxon";
-        unlink $file; # unlink - if the file doesn't exist
-      }
-
-      return;
-    }
-
-    # Check the timestamps to see if the server data is newer
-    my $release = $response_taxon->header('X-UniProt-Release');
-    my $date = sprintf("%4d-%02d-%02d", (HTTP::Date::parse_date($response_taxon->header('Last-Modified')))[0..2]);
-
-    say "Fetched $results entries in UniProt release $release ($date) for $db";
-
-    # say "Success for Taxon: $taxon with $db";
-    # say "File $file: downloaded $results entries of UniProt release $release ($date)";
-    # say "\n";
-  }
-  elsif ($response_taxon->code == HTTP::Status::RC_NOT_MODIFIED) {
-    say "File $file: up-to-date"; # if it's not newer, don't download
-  }
-  else {
-    log_error('Failed, got ' . $response_taxon->status_line .
-      ' for ' . $response_taxon->request->uri);
-  }
 }
 
 =pod
