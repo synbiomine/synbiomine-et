@@ -21,7 +21,7 @@ dc = sbd.Collection(args.colPath)
 ds = dc.getSet('uniprot')
 ds.startLogging(__file__)
 
-uniprotDataPath = '{{imDataPath}}/uniprot'
+uniprotDataPath = '{{imDataPath}}/uniprot/load'
 
 sbu.addSourcesToProject(
     dc,
