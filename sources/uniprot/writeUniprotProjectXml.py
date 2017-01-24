@@ -7,6 +7,7 @@ import sys
 sys.path.insert(1, os.path.dirname(os.path.abspath(__file__)) + '/../../modules/python')
 import intermyne.project as imp
 import synbio.data as sbd
+import synbio.utils as sbu
 
 ############
 ### MAIN ###
@@ -22,8 +23,8 @@ ds.startLogging(__file__)
 
 uniprotDataPath = '{{imDataPath}}/uniprot'
 
-imp.addSourcesToProject(
-    dc.getProjectXmlPath(),
+sbu.addSourcesToProject(
+    dc,
     [
         imp.Source('uniprot', 'uniprot',
         [
