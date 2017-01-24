@@ -11,11 +11,11 @@ import synbio.utils as sbu
 ### MAIN ###
 ############
 sbu.handleSimpleSourceAddProcess(
-    "ecocyc",
+    'ecocyc',
     [
         imp.Source(
             'synbio-ecocyc', 'synbio-ecocyc',
             [
-                { 'name':'src.data.dir',        'location':'data/current/ecocyc' },
+                { 'name':'src.data.dir',        'location':'{{imDataPath}}/ecocyc' },
             ])
     ])

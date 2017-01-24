@@ -7,7 +7,7 @@ import subprocess
 #################
 ### FUNCTIONS ###
 #################
-def writeProjectXml(path):
+def writeProjectXml(path, colPath):
     print('Executing ' + path)
     subprocess.call([path, colPath])
 
@@ -18,23 +18,23 @@ parser = jargparse.ArgParser('Create the InterMine project XML for this data col
 parser.add_argument('colPath', help='path to the data collection')
 
 args = parser.parse_args()
-
 colPath = args.colPath
 
-shutil.copy('etc/project.xml.template', colPath + '/intermine/project.xml')
-writeProjectXml('./infra/writeSynbioMineProjectXml.pl')
-writeProjectXml('./sources/ecocyc/writeEcocycProjectXml.py')
-writeProjectXml('./sources/uniprot/writeUniprotProjectXml.py')
-writeProjectXml('./sources/eggnog/writeEggNogProjectXml.py')
-writeProjectXml('./sources/promoters/writePromotersProjectXml.py')
-writeProjectXml('./sources/geo/writeGeoProjectXml.py')
-writeProjectXml('./sources/interpro/writeInterProProjectXml.py')
-writeProjectXml('./sources/go/writeGoProjectXml.py')
-writeProjectXml('./sources/goa/writeGoaProjectXml.py')
-writeProjectXml('./sources/biogrid/writeBiogridProjectXml.py')
-writeProjectXml('./sources/reactome/writeReactomeProjectXml.py')
-writeProjectXml('./sources/orthodb/writeOrthoDbProjectXml.py')
-writeProjectXml('./sources/path2model/writePath2ModelProjectXml.py')
-writeProjectXml('./sources/parts/synbis/writeSynbisProjectXml.py')
-writeProjectXml('./sources/pubmed/writePubMedProjectXml.py')
-writeProjectXml('./sources/entrez/writeEntrezOrganismProjectXml.py')
+shutil.copy('config/project.xml.template', colPath + '/intermine/project.xml')
+writeProjectXml('./infra/writeSynbioMineProjectXml.pl', colPath)
+writeProjectXml('./sources/ecocyc/writeEcocycProjectXml.py', colPath)
+writeProjectXml('./sources/uniprot/writeUniprotProjectXml.py', colPath)
+writeProjectXml('./sources/eggnog/writeEggNogProjectXml.py', colPath)
+writeProjectXml('./sources/promoters/writePromotersProjectXml.py', colPath)
+writeProjectXml('./sources/geo/writeGeoProjectXml.py', colPath)
+writeProjectXml('./sources/interpro/writeInterProProjectXml.py', colPath)
+writeProjectXml('./sources/go/writeGoProjectXml.py', colPath)
+writeProjectXml('./sources/goa/writeGoaProjectXml.py', colPath)
+writeProjectXml('./sources/biogrid/writeBiogridProjectXml.py', colPath)
+writeProjectXml('./sources/reactome/writeReactomeProjectXml.py', colPath)
+writeProjectXml('./sources/orthodb/writeOrthoDbProjectXml.py', colPath)
+writeProjectXml('./sources/path2model/writePath2ModelProjectXml.py', colPath)
+writeProjectXml('./sources/parts/synbis/writeSynbisProjectXml.py', colPath)
+writeProjectXml('./sources/pubmed/writePubMedProjectXml.py', colPath)
+writeProjectXml('./sources/entrez/writeEntrezOrganismProjectXml.py', colPath)
+

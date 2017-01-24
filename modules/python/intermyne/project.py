@@ -40,6 +40,12 @@ class Project:
 
 class Source:
     def __init__(self, name, type, properties, dump = False):
+        """
+        :param name:
+        :param type:
+        :param properties: An array of dictionaries containing property attributes, e.g. [{'name':'src.data.dir', 'location':'data/ecocyc'}]
+        :param dump:
+        """
         self.name = name
         self.type = type
         self.properties = properties
