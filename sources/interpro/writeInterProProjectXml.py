@@ -17,7 +17,8 @@ sbu.handleSimpleSourceAddProcess(
             'interpro', 'interpro',
             [
                 { 'name':'src.data.dir',            'location':'/micklem/data/interpro/current' },
-            ]),
+            ],
+            dump=True),
 
         imp.Source(
             'protein2ipr', 'protein2ipr',
