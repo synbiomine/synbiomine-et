@@ -89,7 +89,7 @@ class Collection:
         if self._taxons == None:
             self._parseTaxons('%s/taxons/taxons.txt' % self.basePath)
 
-        return set(self._taxons)
+        return self._taxons
 
     def getTaxonsAsString(self):
         """
@@ -103,7 +103,7 @@ class Collection:
 
     def _parseTaxons(self, taxonsPath):
         with open(taxonsPath) as f:
-            self._taxons = set(f.read().strip().split())
+            self._taxons = sorted([int(s) for s in set(f.read().strip().split())])
 
 class Set:
     def __init__(self, dc, basePath):
