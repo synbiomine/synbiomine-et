@@ -17,5 +17,6 @@ sbu.handleSimpleSourceAddProcess(
             'go', 'go',
             [
                 { 'name':'src.data.file',        'location':'data/go/load/go-basic.obo' },
-            ])
+            ],
+            dump=True)
     ])
