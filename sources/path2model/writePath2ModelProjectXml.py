@@ -22,5 +22,6 @@ sbu.handleSimpleSourceAddProcess(
             'pathway2model-EcoliMG1655', 'synbio-reaction',
             [
                 { 'name':'src.data.dir',        'location':'{{imDataPath}}/path2model/load/EcoliMG1655' },
-            ])
+            ],
+            dump=True)
     ])
