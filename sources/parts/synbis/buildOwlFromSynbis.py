@@ -79,8 +79,14 @@ for instance, _, type in typeTriples:
         # FIXME: We really need to only allow 1 here unless/until we implement automatically generating a class
         # hierarchy since we can't have multiple inheritance...
         if isinstance(o, rdflib.term.URIRef):
-            objectTypeTriples = graph.triples((instance, RDF.type, None))
-            objectTypeName = next(objectTypeTriples)[2]
+            objectTypeTriples = graph.triples((o, RDF.type, None))
+
+            # Only progress for URLs that are instance IDs within this document
+            try:
+                objectTypeName = next(objectTypeTriples)[2]
+            except StopIteration:
+                continue
+
             objectImTypeName = synbisUtils.generateImClassName(objectTypeName)
             if objectImTypeName in imTypes:
                 #print('Got %s' % objectImTypeName)
