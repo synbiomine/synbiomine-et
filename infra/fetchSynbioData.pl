@@ -150,7 +150,7 @@ my $ebi_hostname = 'ftp.ebi.ac.uk';
 my $ebi_home = '/pub/databases/GO/goa/proteomes'; 
 my $ebi_file = 'proteome2taxid'; # this is where we get the look-up file that maps GO proteome to organism
 
-my $go_dir = catdir($base, "goa");
+my $go_dir = catdir($base, "goa/load");
 
 # say "Trying FTP for: $ebi_hostname";
 my $ftp3 = Net::FTP->new($ebi_hostname, BlockSize => 20480, Timeout => $timeout);
