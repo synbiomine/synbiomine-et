@@ -48,7 +48,7 @@ dataSetItem = immd.addDataSet(doc, 'SYNBIS parts', dataSourceItem)
 for name, _, type in rdfInstanceOfTriples:
     if name not in items:
         # This may not be a good way to get an InterMine suitable name from an url
-        imTypeName = synbisUtils.generateImName(type)
+        imTypeName = synbisUtils.generateImClassName(type)
         items[name] = doc.createItem(imTypeName)
 
         # TODO: should be in config
@@ -66,7 +66,7 @@ for name, item in items.items():
         if p == RDF.type:
             continue
 
-        imPropName = synbisUtils.generateImName(str(p))
+        imPropName = synbisUtils.generateImPropertyName(str(p))
 
         if isinstance(o, rdflib.term.URIRef) and o in items:
             value = items[o]
