@@ -52,6 +52,8 @@ for _, _, type in typeTriples:
 # For every instance:
 typeTriples = graph.triples((None, RDF.type, None))
 for instance, _, type in typeTriples:
+    # print('Processing type %s' % type)
+
     instanceTriples = graph.triples((instance, None, None))
 
     # For every property of an instance:
@@ -62,12 +64,14 @@ for instance, _, type in typeTriples:
             continue
 
         imPropName = synbisUtils.generateImPropertyName(str(p))
-        if imPropName not in imProps:
-            print('Adding [%s]' % p)
-            imProps[imPropName] = typs.new_class(imPropName, (owlready.Property,), kwds = {'ontology':onto})
-        imProp = imProps[imPropName]
         imTypeName = synbisUtils.generateImClassName(type)
         imType = imTypes[imTypeName]
+
+        if imPropName not in imProps:
+            print('  Adding property %s.%s' % (imTypeName, imPropName))
+            imProps[imPropName] = typs.new_class(imPropName, (owlready.Property,), kwds = {'ontology':onto})
+
+        imProp = imProps[imPropName]
 
         # Add domain if necessary
         if imType not in imProp.domain:
@@ -97,7 +101,11 @@ for instance, _, type in typeTriples:
                 objectImType = imTypes[objectImTypeName]
 
                 if objectImType not in imProp.range:
+                    print('  Adding range type %s for %s.%s' % (objectImType, instance, p))
                     imProp.range.append(objectImType)
+
+                if len(imProp.range) > 1:
+                    imu.printWarning('Range for %s.%s now has %d entities, %s' % (instance, p, len(imProp.range), imProp.range))
             else:
                 imu.printError('Found %s but not in imTypes' % objectImTypeName)
 

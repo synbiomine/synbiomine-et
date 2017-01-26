@@ -21,3 +21,6 @@ def printSection(text):
 
 def printError(text):
     print(Fore.RED + 'ERROR: ' + text + Fore.RESET)
+
+def printWarning(text):
+    print(Fore.YELLOW + 'WARNING: ' + text + Fore.RESET)
