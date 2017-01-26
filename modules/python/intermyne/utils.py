@@ -1,3 +1,4 @@
+from colorama import Fore
 import sys
 
 class Logger(object):
@@ -17,3 +18,6 @@ class Logger(object):
 
 def printSection(text):
     print('~~~ %s ~~~' % text)
+
+def printError(text):
+    print(Fore.RED + 'ERROR: ' + text + Fore.RESET)

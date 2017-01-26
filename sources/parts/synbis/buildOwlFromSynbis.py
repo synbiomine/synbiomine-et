@@ -98,6 +98,10 @@ for instance, _, type in typeTriples:
 
                 if objectImType not in imProp.range:
                     imProp.range.append(objectImType)
+            else:
+                imu.printError('Found %s but not in imTypes' % objectImTypeName)
+
+
 
 with open(ds.getProcessingPath() + 'synbis.owl', 'w') as f:
     f.write(owlready.to_owl(onto))
