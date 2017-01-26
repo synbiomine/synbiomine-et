@@ -104,11 +104,9 @@ for instance, _, type in typeTriples:
                     imProp.range.append(objectImType)
 
                     if len(imProp.range) > 1:
-                        imu.printWarning('Range for %s.%s now has %d entities, %s' % (instance, p, len(imProp.range), imProp.range))
+                        imu.printWarning('Range for %s.%s now has %d entities, %s' % (imTypeName, imPropName, len(imProp.range), imProp.range))
             else:
                 imu.printError('Found %s but not in imTypes' % objectImTypeName)
-
-
 
 with open(ds.getProcessingPath() + 'synbis.owl', 'w') as f:
     f.write(owlready.to_owl(onto))
