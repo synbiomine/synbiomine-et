@@ -67,6 +67,11 @@ for instance, _, type in typeTriples:
         imTypeName = synbisUtils.generateImClassName(type)
         imType = imTypes[imTypeName]
 
+        if imTypeName == 'synbisProtocol' and imPropName == 'synbis_definition':
+            # We're going to skip this multi-range property temporarily until we have other things working
+            print('Skipping %s.%s' % (imTypeName, imPropName))
+            continue
+
         if imPropName not in imProps:
             print('  Adding property %s.%s' % (imTypeName, imPropName))
             imProps[imPropName] = typs.new_class(imPropName, (owlready.Property,), kwds = {'ontology':onto})
