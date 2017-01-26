@@ -84,8 +84,7 @@ for instance, _, type in typeTriples:
         # Add range if necessary
         # FIXME: We really need to only allow 1 here unless/until we implement automatically generating a class
         # hierarchy since we can't have multiple inheritance...
-        # If rdflib considers the property value to be a uri
-        if isinstance(o, rdflib.term.URIRef):
+        if isinstance(o, rdflib.term.URIRef) and not str(p) == 'http://sbols.org/v2#persistentIdentity':
             # See if this URI matches the ID of any internal instance
             objectTypeTriples = graph.triples((o, RDF.type, None))
 
@@ -104,8 +103,8 @@ for instance, _, type in typeTriples:
                     print('  Adding range type %s for %s.%s' % (objectImType, instance, p))
                     imProp.range.append(objectImType)
 
-                if len(imProp.range) > 1:
-                    imu.printWarning('Range for %s.%s now has %d entities, %s' % (instance, p, len(imProp.range), imProp.range))
+                    if len(imProp.range) > 1:
+                        imu.printWarning('Range for %s.%s now has %d entities, %s' % (instance, p, len(imProp.range), imProp.range))
             else:
                 imu.printError('Found %s but not in imTypes' % objectImTypeName)
 
