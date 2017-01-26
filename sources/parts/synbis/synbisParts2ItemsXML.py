@@ -68,7 +68,9 @@ for name, item in items.items():
 
         imPropName = synbisUtils.generateImPropertyName(str(p))
 
-        if isinstance(o, rdflib.term.URIRef) and o in items:
+        # don't create an internal linkage of sbols_persistentIdentity as a string back to itself, leave as the external
+        # uri instead
+        if isinstance(o, rdflib.term.URIRef) and o in items and imPropName != 'sbols_persistentIdentity':
             value = items[o]
         else:
             value = str(o)
