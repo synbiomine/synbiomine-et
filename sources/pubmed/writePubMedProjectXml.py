@@ -26,7 +26,7 @@ imp.addSourcesToProject(
         imp.Source(
             'pubmed-gene', 'pubmed-gene',
             [
-                { 'name':'src.data.dir',            'location':'/micklem/data/pubmed' },
+                { 'name':'src.data.dir',            'location':'/micklem/data/pubmed/current' },
                 { 'name':'src.data.dir.includes',   'value':'gene2pubmed' },
                 { 'name':'pubmed.organisms',        'value':dc.getTaxonsAsString() }
             ]),
