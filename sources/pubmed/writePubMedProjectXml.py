@@ -36,5 +36,6 @@ imp.addSourcesToProject(
             [
                 { 'name':'src.data.file', 'location':'build/publications.xml' },
                 { 'name':'loadFullRecord', 'value':'true' }
-            ])
+            ],
+            dump=True)
     ])
