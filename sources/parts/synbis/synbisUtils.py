@@ -1,6 +1,6 @@
 import urllib.parse as up
 
-def _getImNameParts(rdfName, rdfNsToImNameMap = None):
+def _getImNameParts(rdfName, rdfNsToImNameMap):
     """
     Get name parts from an RDF name.
 
@@ -47,13 +47,13 @@ def generateImClassName(rdfName, rdfNsToImNameMap):
 
     return a + b
 
-def generateImPropertyName(rdfName):
+def generateImPropertyName(rdfName, rdfNsToImNameMap):
     """
     For IM property names, we're going to weld the two parts from _getImNameParts() together with a _.
     This is to avoid an issue if class and individual names are the same
     (this punning is not supported by the owlready library that we're using).
     """
 
-    (a, b) = _getImNameParts(rdfName)
+    (a, b) = _getImNameParts(rdfName, rdfNsToImNameMap)
 
     return a + '_' + b
