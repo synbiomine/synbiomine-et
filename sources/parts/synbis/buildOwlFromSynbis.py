@@ -6,6 +6,7 @@ import os
 import owlready
 import rdflib
 from rdflib.namespace import RDF
+import synbisConfig
 import synbisUtils
 import sys
 import types as typs
@@ -45,7 +46,7 @@ imProps = {}
 typeTriples = graph.triples((None, RDF.type, None))
 
 for _, _, type in typeTriples:
-    imTypeName = synbisUtils.generateImClassName(type)
+    imTypeName = synbisUtils.generateImClassName(type, synbisConfig.rdfNsToImName)
     if imTypeName not in imTypes:
         imTypes[imTypeName] = typs.new_class(imTypeName, (owlready.Thing,), kwds = {'ontology':onto})
 
@@ -63,16 +64,16 @@ for instance, _, type in typeTriples:
         if p == RDF.type:
             continue
 
-        imTypeName = synbisUtils.generateImClassName(type)
+        imTypeName = synbisUtils.generateImClassName(type, synbisConfig.rdfNsToImName)
         imPropName = synbisUtils.generateImPropertyName(str(p))
         imType = imTypes[imTypeName]
 
-        if imTypeName == 'synbisProtocol' and imPropName == 'synbis_definition':
+        if imTypeName == 'SynBISProtocol' and imPropName == 'synbis_definition':
             # We're going to skip this multi-range property temporarily until we have other things working
             imu.printWarning('Skipping %s.%s' % (imTypeName, imPropName))
             continue
 
-        if imTypeName == 'synbisTransferFunction' and imPropName == 'synbis_modality':
+        if imTypeName == 'SynBISTransferFunction' and imPropName == 'synbis_modality':
             # the synbis_modality property is a reference in some places but just a string in others!
             # this might be a problem with the synbis data model
             # We're going to skip this temporarily until we get other things working (a fix may be doing some post
@@ -107,7 +108,7 @@ for instance, _, type in typeTriples:
             except StopIteration:
                 continue
 
-            objectImTypeName = synbisUtils.generateImClassName(objectTypeName)
+            objectImTypeName = synbisUtils.generateImClassName(objectTypeName, synbisConfig.rdfNsToImName)
             if objectImTypeName in imTypes:
                 #print('Got %s' % objectImTypeName)
                 objectImType = imTypes[objectImTypeName]
