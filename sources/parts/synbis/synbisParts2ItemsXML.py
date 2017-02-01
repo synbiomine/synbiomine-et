@@ -76,7 +76,12 @@ for name, item in items.items():
         else:
             value = str(o)
 
-        item.addAttribute(imPropName, value)
+        # FIXME: It would be much, much more efficient to do this by inspecting the generated model XML
+        triplesWithThisPropertyCount = len(list(graph.triples((name, p, None))))
+        if triplesWithThisPropertyCount > 1:
+            item.addToAttribute(imPropName, value)
+        else:
+            item.addAttribute(imPropName, value)
 
 #print(doc)
 doc.write(ds.getLoadPath() + 'items.xml')
