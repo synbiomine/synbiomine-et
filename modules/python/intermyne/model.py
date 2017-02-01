@@ -98,3 +98,6 @@ class Item:
 
     def hasAttribute(self, name):
         return name in self._attrs
+
+    def getClassName(self):
+        return self._className

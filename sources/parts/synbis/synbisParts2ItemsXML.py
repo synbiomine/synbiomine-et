@@ -78,7 +78,16 @@ for name, item in items.items():
 
         # FIXME: It would be much, much more efficient to do this by inspecting the generated model XML
         triplesWithThisPropertyCount = len(list(graph.triples((name, p, None))))
-        if triplesWithThisPropertyCount > 1:
+
+        # FIXME: Yes, this hard-coding when we're dealing with a collection that sometimes only has one element is
+        # super bad.  We really do need to load the model XML and check that.
+        # Alternatively, if the Python items XML generation were really to load the model, it might be able to handle
+        # all these things more transparently
+        if triplesWithThisPropertyCount > 1 \
+            or imPropName == 'SYNBIS_plateReaderMetrics' \
+            or imPropName == 'SYNBIS_flowCytometryMetrics' \
+            or imPropName == 'SYNBIS_ingredient' \
+            or (imPropName == 'SYNBIS_modality' and item.getClassName() == 'SYNBISExperimentalProtocol'):
             item.addToAttribute(imPropName, value)
         else:
             item.addAttribute(imPropName, value)
