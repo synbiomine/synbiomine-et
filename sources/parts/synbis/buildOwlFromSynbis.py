@@ -68,12 +68,12 @@ for instance, _, type in typeTriples:
         imPropName = synbisUtils.generateImPropertyName(str(p), synbisConfig.rdfNsToImName)
         imType = imTypes[imTypeName]
 
-        if imTypeName == 'SynBISProtocol' and imPropName == 'SynBIS_definition':
+        if imTypeName == 'SYNBISProtocol' and imPropName == 'SynBIS_definition':
             # We're going to skip this multi-range property temporarily until we have other things working
             imu.printWarning('Skipping %s.%s' % (imTypeName, imPropName))
             continue
 
-        if imTypeName == 'SynBISTransferFunction' and imPropName == 'SynBIS_modality':
+        if imTypeName == 'SYNBISTransferFunction' and imPropName == 'SynBIS_modality':
             # the synbis_modality property is a reference in some places but just a string in others!
             # this might be a problem with the synbis data model
             # We're going to skip this temporarily until we get other things working (a fix may be doing some post

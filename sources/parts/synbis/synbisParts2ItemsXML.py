@@ -43,7 +43,7 @@ rdfInstanceOfTriples = graph.triples((None, RDF.type, None))
 
 # TODO: Should be in config
 dataSourceItem = immd.addDataSource(doc, 'SynBIS', 'http://synbis.bg.ic.ac.uk')
-dataSetItem = immd.addDataSet(doc, 'SYNBIS parts', dataSourceItem)
+dataSetItem = immd.addDataSet(doc, 'SynBIS parts', dataSourceItem)
 
 # First pass: create the items
 for name, _, type in rdfInstanceOfTriples:
@@ -53,7 +53,7 @@ for name, _, type in rdfInstanceOfTriples:
         items[name] = doc.createItem(imTypeName)
 
         # TODO: should be in config
-        if imTypeName == 'synbisDatasheet':
+        if imTypeName == 'SYNBISDatasheet':
             items[name].addToAttribute('dataSets', dataSetItem)
 
         doc.addItem(items[name])
