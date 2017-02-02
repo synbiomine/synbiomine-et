@@ -26,7 +26,7 @@ imp.addSourcesToProject(
         imp.Source(
             'orthodb', 'orthodb',
             [
-                { 'name':'src.data.dir',        'location':'/micklem/data/orthodb/current' },
+                { 'name':'src.data.dir',        'location':'data/orthodb/load' },
                 { 'name':'orthodb.organisms',   'value':dc.getTaxonsAsString() }
             ],
             dump=True)

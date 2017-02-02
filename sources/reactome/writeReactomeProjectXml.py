@@ -16,7 +16,7 @@ sbu.handleSimpleSourceAddProcess(
         imp.Source(
             'reactome', 'reactome',
             [
-                { 'name':'src.data.dir',            'location':'/micklem/data/reactome/current' },
+                { 'name':'src.data.dir',            'location':'data/reactome/load' },
                 { 'name':'reactome.organisms',      'value':'511145'},
                 { 'name':'reactome.datasourcename', 'value':'Reactome'},
                 { 'name':'reactome.datasetname',    'value':'Reactome data set'},

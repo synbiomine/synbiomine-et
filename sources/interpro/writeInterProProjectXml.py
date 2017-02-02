@@ -16,7 +16,7 @@ sbu.handleSimpleSourceAddProcess(
         imp.Source(
             'interpro', 'interpro',
             [
-                { 'name':'src.data.dir',            'location':'/micklem/data/interpro/current' },
+                { 'name':'src.data.dir',            'location':'data/interpro/load' },
             ],
             dump=True),
 
