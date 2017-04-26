@@ -1,4 +1,4 @@
-= README =
+# README #
 
 This is a Python API for generating InterMine items XML which is the same as the Perl API but does not perform any model checking.
 
